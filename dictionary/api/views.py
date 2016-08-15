@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, detail_route
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User
-from api.models import Sense, Artist, Place, Song, Domain, SemanticClass
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
-    DomainSerializer, SemanticClassSerializer
+    DomainSerializer, SemanticClassSerializer, ExampleSerializer
 from api.permissions import IsOwnerOrReadOnly
 
 
@@ -100,7 +100,7 @@ class DomainViewSet(viewsets.ModelViewSet):
 
 class SemanticClassViewSet(viewsets.ModelViewSet):
     queryset = SemanticClass.objects.all()
-    serializer_class = DomainSerializer
+    serializer_class = SemanticClassSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -108,6 +108,21 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         semantic_class = self.get_object()
         return Response(semantic_class.name)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class ExampleViewSet(viewsets.ModelViewSet):
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        example = self.get_object()
+        return Response(example.text)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

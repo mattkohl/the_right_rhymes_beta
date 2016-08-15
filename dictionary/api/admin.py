@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import Sense, Artist, Song, Place, Domain, SemanticClass
+from api.models import Sense, Artist, Song, Place, Domain, SemanticClass, Example
 
 
 @admin.register(Artist)
@@ -11,6 +11,11 @@ class ArtistAdmin(admin.ModelAdmin):
 @admin.register(Domain)
 class DomainAdmin(admin.ModelAdmin):
     list_display = ['name']
+
+
+@admin.register(Example)
+class ExampleAdmin(admin.ModelAdmin):
+    list_display = ['text']
 
 
 @admin.register(Place)
