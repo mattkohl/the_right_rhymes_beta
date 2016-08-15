@@ -5,9 +5,11 @@ from api import views
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register(r'senses', views.SenseViewSet)
 router.register(r'artists', views.ArtistViewSet)
+router.register(r'domains', views.DomainViewSet)
 router.register(r'places', views.PlaceViewSet)
+router.register(r'semantic-classes', views.SemanticClassViewSet)
+router.register(r'senses', views.SenseViewSet)
 router.register(r'songs', views.SongViewSet)
 router.register(r'users', views.UserViewSet)
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Sense, Artist, Place, Song
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass
 
 
 class SenseSerializer(serializers.HyperlinkedModelSerializer):
@@ -88,6 +88,42 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
             'primary_artist',
             'feat_artist',
             'release_date_verified',
+            'owner'
+        )
+
+
+class DomainSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='domain-highlight', format='html')
+
+    class Meta:
+        model = Domain
+        fields = (
+            'url',
+            'name',
+            'slug',
+            'highlight',
+            'broader',
+            'narrower',
+            'senses',
+            'owner'
+        )
+
+
+class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='semantic-class-highlight', format='html')
+
+    class Meta:
+        model = Domain
+        fields = (
+            'url',
+            'name',
+            'slug',
+            'highlight',
+            'broader',
+            'narrower',
+            'senses',
             'owner'
         )
 

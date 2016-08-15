@@ -26,6 +26,8 @@ class Sense(models.Model):
     antonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     hypernyms = models.ManyToManyField("self", related_name="hyponyms", blank=True, symmetrical=False)
     meronyms = models.ManyToManyField("self", related_name="holonyms", blank=True, symmetrical=False)
+    domains = models.ManyToManyField('Domain', related_name="+", blank=True)
+    semantic_classes = models.ManyToManyField('SemanticClass', related_name="+", blank=True)
     owner = models.ForeignKey("auth.User", related_name="senses")
 
     class Meta:
@@ -94,3 +96,36 @@ class Song(models.Model):
 
     def __str__(self):
         return '"' + str(self.title) + '" (' + str(self.album) + ') '
+
+
+class Domain(models.Model):
+    id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=1000)
+    slug = models.SlugField(max_length=1000)
+    senses = models.ManyToManyField('Sense', through=Sense.domains.through, related_name='+', blank=True)
+    broader = models.ManyToManyField("self", related_name="narrower", blank=True, symmetrical=False)
+    owner = models.ForeignKey("auth.User", related_name="domains")
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class SemanticClass(models.Model):
+    id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=1000)
+    slug = models.SlugField(max_length=1000)
+    senses = models.ManyToManyField('Sense', through=Sense.semantic_classes.through, related_name='+', blank=True)
+    broader = models.ManyToManyField("self", related_name="narrower", blank=True, symmetrical=False)
+    owner = models.ForeignKey("auth.User", related_name="semantic_classes")
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name_plural = "Semantic Classes"
+
+    def __str__(self):
+        return self.name
