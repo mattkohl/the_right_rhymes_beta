@@ -128,8 +128,6 @@ class ExampleViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
-
-
 # User views
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """

@@ -4,10 +4,10 @@ from api import views
 
 
 # Create a router and register our viewsets with it.
-router = DefaultRouter()
+router = DefaultRouter(schema_title='The Right Rhymes API')
 router.register(r'artists', views.ArtistViewSet)
 router.register(r'domains', views.DomainViewSet)
-router.register(r'example', views.ExampleViewSet)
+router.register(r'examples', views.ExampleViewSet)
 router.register(r'places', views.PlaceViewSet)
 router.register(r'semantic-classes', views.SemanticClassViewSet)
 router.register(r'senses', views.SenseViewSet)
