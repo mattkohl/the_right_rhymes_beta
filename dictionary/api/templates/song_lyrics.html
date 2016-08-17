@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link href="/static/css/slate.css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <div class="h1">{{ title }}</div>
+            {% for artist in primary_artists %}
+                <div class="h3">{{ artist.name }}</div>
+            {% endfor %}
+            {% if feat_artists %}
+                <div class="h4">feat.
+                {% for artist in feat_artists %}
+                    <span class="h3">{{ artist.name }}</span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </div>
+            {% endif %}
+            <div class="h3">{{ release_date }}</div>
+            <br/>
+            <div class="h6">{{ lyrics|linebreaks }}</div>
+        </div>
+    </div>
+</body>
+</html>

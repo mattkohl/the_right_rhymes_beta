@@ -74,10 +74,19 @@ class SongViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         song = self.get_object()
-        return Response(song.lyrics)
+        primary_artists = song.primary_artist.all()
+        feat_artists = song.feat_artist.all()
+        data = {
+            "release_date": song.release_date_string,
+            "title": song.title,
+            "lyrics": song.lyrics,
+            "primary_artists": primary_artists,
+            "feat_artists": feat_artists
+        }
+        return Response(data, template_name="song_lyrics.html")
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
