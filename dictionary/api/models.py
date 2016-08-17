@@ -3,6 +3,7 @@ from django.db import models
 
 PARTS_OF_SPEECH = [
     ('adjective', 'adjective'),
+    ('adverb', 'adverb'),
     ('combining_form', 'combining form'),
     ('interjection', 'interjection'),
     ('noun', 'noun'),
@@ -26,8 +27,8 @@ class Sense(models.Model):
     antonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     hypernyms = models.ManyToManyField("self", related_name="hyponyms", blank=True, symmetrical=False)
     meronyms = models.ManyToManyField("self", related_name="holonyms", blank=True, symmetrical=False)
-    domains = models.ManyToManyField('Domain', related_name="+", blank=True)
-    semantic_classes = models.ManyToManyField('SemanticClass', related_name="+", blank=True)
+    domains = models.ManyToManyField('Domain', related_name="+", blank=True, symmetrical=False)
+    semantic_classes = models.ManyToManyField('SemanticClass', related_name="+", blank=True, symmetrical=False)
     owner = models.ForeignKey("auth.User", related_name="senses")
 
     class Meta:
@@ -149,3 +150,24 @@ class SemanticClass(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Annotation(models.Model):
+    id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=1000)
+    slug = models.SlugField(max_length=1000)
+    start_position = models.IntegerField()
+    end_position = models.IntegerField()
+    example = models.ForeignKey("Example", related_name="annotations")
+    sense = models.ForeignKey("Sense", related_name="annotations", blank=True, null=True)
+    artist = models.ForeignKey("Artist", related_name="annotations", blank=True, null=True)
+    place = models.ForeignKey("Place", related_name="annotations", blank=True, null=True)
+    rhymes = models.ManyToManyField("self", related_name="rhymes", blank=True, symmetrical=True)
+    owner = models.ForeignKey("auth.User", related_name="annotations")
+
+    class Meta:
+        ordering = ["text"]
+
+    def __str__(self):
+        return self.text + " [" + str(self.created.strftime("%d %b, %Y %H:%M:%S")) + "]"

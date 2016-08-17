@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, detail_route
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User
-from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
-    DomainSerializer, SemanticClassSerializer, ExampleSerializer
+    DomainSerializer, SemanticClassSerializer, ExampleSerializer, AnnotationSerializer
 from api.permissions import IsOwnerOrReadOnly
 
 
@@ -123,6 +123,21 @@ class ExampleViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         example = self.get_object()
         return Response(example.text)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class AnnotationViewSet(viewsets.ModelViewSet):
+    queryset = Annotation.objects.all()
+    serializer_class = AnnotationSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        annotation = self.get_object()
+        return Response(annotation.text)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from api.models import Sense, Artist, Song, Place, Domain, SemanticClass, Example
+from api.models import Sense, Artist, Song, Place, \
+    Domain, SemanticClass, Example, Annotation
+
+
+@admin.register(Annotation)
+class AnnotationAdmin(admin.ModelAdmin):
+    list_display = ['text', 'created']
 
 
 @admin.register(Artist)
