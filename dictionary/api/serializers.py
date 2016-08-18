@@ -13,7 +13,6 @@ class SenseSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'highlight',
             'headword',
-            'headword_slug',
             'published',
             'part_of_speech',
             'definition',
@@ -42,7 +41,6 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'highlight',
             'name',
-            'slug',
             'also_known_as',
             'members',
             'origin',
@@ -63,7 +61,6 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
             'highlight',
             'name',
             'full_name',
-            'slug',
             'longitude',
             'latitude',
             'artists',
@@ -82,7 +79,6 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'highlight',
-            'slug',
             'release_date_string',
             'release_date',
             'title',
@@ -90,6 +86,7 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
             'lyrics',
             'primary_artist',
             'feat_artist',
+            'examples',
             'release_date_verified',
             'owner'
         )
@@ -104,7 +101,6 @@ class DomainSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'name',
-            'slug',
             'highlight',
             'broader',
             'narrower',
@@ -122,7 +118,6 @@ class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'name',
-            'slug',
             'highlight',
             'broader',
             'narrower',
@@ -139,7 +134,6 @@ class ExampleSerializer(serializers.HyperlinkedModelSerializer):
         model = Example
         fields = (
             'url',
-            'slug',
             'text',
             'highlight',
             'from_song',
@@ -157,7 +151,6 @@ class AnnotationSerializer(serializers.HyperlinkedModelSerializer):
         model = Annotation
         fields = (
             'url',
-            'slug',
             'text',
             'highlight',
             'example',

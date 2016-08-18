@@ -7,6 +7,7 @@ from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Exampl
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
     DomainSerializer, SemanticClassSerializer, ExampleSerializer, AnnotationSerializer
 from api.permissions import IsOwnerOrReadOnly
+from api.utils import slugify
 
 
 @api_view(['GET'])
@@ -35,7 +36,8 @@ class SenseViewSet(viewsets.ModelViewSet):
         return Response(sense.definition)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        headword_slug = slugify(serializer.validated_data['headword'])
+        serializer.save(owner=self.request.user, headword_slug=headword_slug)
 
 
 class ArtistViewSet(viewsets.ModelViewSet):
@@ -50,7 +52,8 @@ class ArtistViewSet(viewsets.ModelViewSet):
         return Response(artist.name)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        slug = slugify(serializer.validated_data['name'])
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class PlaceViewSet(viewsets.ModelViewSet):
@@ -65,7 +68,8 @@ class PlaceViewSet(viewsets.ModelViewSet):
         return Response(place.name)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        slug = slugify(serializer.validated_data['full_name'])
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -79,17 +83,24 @@ class SongViewSet(viewsets.ModelViewSet):
         song = self.get_object()
         primary_artists = song.primary_artist.all()
         feat_artists = song.feat_artist.all()
+        examples = song.examples.all()
         data = {
             "release_date": song.release_date_string,
             "title": song.title,
+            "id": song.id,
             "lyrics": song.lyrics,
             "primary_artists": primary_artists,
-            "feat_artists": feat_artists
+            "feat_artists": feat_artists,
+            "examples": examples
         }
-        return Response(data, template_name="song_lyrics.html")
+        return Response(data, template_name="song.html")
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        artist_names = [a.name for a in serializer.validated_data['primary_artist']]
+        slug_text = " ".join(artist_names) + " " + serializer.validated_data['title']
+        slug = slugify(slug_text)
+        print(slug)
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class DomainViewSet(viewsets.ModelViewSet):
@@ -104,7 +115,8 @@ class DomainViewSet(viewsets.ModelViewSet):
         return Response(domain.name)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        slug = slugify(serializer.validated_data['name'])
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class SemanticClassViewSet(viewsets.ModelViewSet):
@@ -119,7 +131,8 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
         return Response(semantic_class.name)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        slug = slugify(serializer.validated_data['name'])
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class ExampleViewSet(viewsets.ModelViewSet):
@@ -134,7 +147,8 @@ class ExampleViewSet(viewsets.ModelViewSet):
         return Response(example.text)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        slug = slugify(serializer.validated_data['text'])
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class AnnotationViewSet(viewsets.ModelViewSet):
@@ -149,7 +163,8 @@ class AnnotationViewSet(viewsets.ModelViewSet):
         return Response(annotation.text)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        slug = slugify(serializer.validated_data['text'])
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 # User views

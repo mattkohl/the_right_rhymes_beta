@@ -9,6 +9,7 @@
     <div class="container">
         <div class="jumbotron">
             <div class="h1">{{ title }}</div>
+            <div class="hidden">{{ id }}</div>
             {% for artist in primary_artists %}
                 <div class="h3">{{ artist.name }}</div>
             {% endfor %}
@@ -22,7 +23,28 @@
             <div class="h3">{{ release_date }}</div>
             <br/>
             <div class="h6">{{ lyrics|linebreaks }}</div>
+            <br/>
+            <div class="list-group">
+            {% for example in examples %}
+                <div class="list-group-item">{{ example.text }}</div>
+            {% endfor %}
+            </div>
+            <button onclick="getSelectionText();"></button>
         </div>
     </div>
 </body>
+<script>
+
+
+function getSelectionText() {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    var submission = prompt('Submit this example?', text);
+
+}
+</script>
 </html>
