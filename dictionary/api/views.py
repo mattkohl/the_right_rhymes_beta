@@ -75,14 +75,14 @@ class SongViewSet(viewsets.ModelViewSet):
         primary_artists = song.primary_artist.all()
         feat_artists = song.feat_artist.all()
         examples = song.examples.all()
+        example_serializer = ExampleSerializer(context={'request': request})
+
         data = {
-            "release_date": song.release_date_string,
-            "title": song.title,
-            "id": song.id,
-            "lyrics": song.lyrics,
+            "song": song,
             "primary_artists": primary_artists,
             "feat_artists": feat_artists,
-            "examples": examples
+            "examples": examples,
+            "example_serializer": example_serializer
         }
         return Response(data, template_name="song.html")
 
@@ -90,7 +90,6 @@ class SongViewSet(viewsets.ModelViewSet):
         artist_names = [a.name for a in serializer.validated_data['primary_artist']]
         slug_text = " ".join(artist_names) + " " + serializer.validated_data['title']
         slug = slugify(slug_text)
-        print(slug)
         serializer.save(owner=self.request.user, slug=slug)
 
 
@@ -139,6 +138,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['text'])
+        print(serializer.validated_data['artist'])
         serializer.save(owner=self.request.user, slug=slug)
 
 
