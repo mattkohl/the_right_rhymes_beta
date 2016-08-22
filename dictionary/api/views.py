@@ -4,9 +4,9 @@ from rest_framework.decorators import detail_route
 from django.contrib.auth.models import User
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
-    DomainSerializer, SemanticClassSerializer, ExampleSerializer, AnnotationSerializer
+    DomainSerializer, SemanticClassSerializer, ExampleSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer
 from api.permissions import IsOwnerOrReadOnly
-from api.utils import slugify
+from api.utils import slugify, make_uri
 
 
 class SenseViewSet(viewsets.ModelViewSet):
@@ -75,8 +75,15 @@ class SongViewSet(viewsets.ModelViewSet):
         primary_artists = song.primary_artist.all()
         feat_artists = song.feat_artist.all()
         examples = song.examples.all()
-        example_serializer = ExampleSerializer(context={'request': request})
-
+        host = request.get_host()
+        serializer_data = {
+            "text": "",
+            "artist": [make_uri(host, 'artists', artist.id) for artist in primary_artists],
+            "feat_artist": [make_uri(host, 'artists', artist.id) for artist in feat_artists],
+            "from_song": [make_uri(host, 'songs', song.id)]
+        }
+        example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data, partial=True)
+        example_serializer.is_valid()
         data = {
             "song": song,
             "primary_artists": primary_artists,
@@ -101,7 +108,7 @@ class DomainViewSet(viewsets.ModelViewSet):
 
     @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
-        place = self.get_object()
+        domain = self.get_object()
         return Response(domain.name)
 
     def perform_create(self, serializer):
@@ -127,7 +134,7 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
 
 class ExampleViewSet(viewsets.ModelViewSet):
     queryset = Example.objects.all()
-    serializer_class = ExampleSerializer
+    serializer_class = ExampleHyperlinkedSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -136,7 +143,15 @@ class ExampleViewSet(viewsets.ModelViewSet):
         example = self.get_object()
         song = example.from_song.first()
         annotations = example.annotations.all()
-        annotation_serializer = AnnotationSerializer(context={'request': request})
+        host = request.get_host()
+        serializer_data = {
+            "text": "",
+            "start_position": "",
+            "end_position": "",
+            "example": make_uri(host, 'examples', example.id)
+        }
+        annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
+        annotation_serializer.is_valid()
         data = {
             'example': example,
             'primary_artists': example.artist.all(),
@@ -149,7 +164,6 @@ class ExampleViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['text'])
-        print(serializer.validated_data['artist'])
         serializer.save(owner=self.request.user, slug=slug)
 
 

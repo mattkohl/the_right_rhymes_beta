@@ -1,6 +1,10 @@
 import re
 
 
+def make_uri(host, object_type, pk):
+    return "http://" + host + "/" + object_type + "/" + str(pk) + "/"
+
+
 def slugify(text):
     slug = text.strip().lower()
     if slug[0] == "'" or slug[0] == "-":
