@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ example.text }}</title>
-    <link href="/static/css/slate.css" rel="stylesheet"/>
+    <link href="/static/css/slate.css" rel="stylesheet" />
+
 </head>
 <body>
     {% load rest_framework %}
@@ -28,31 +29,40 @@
             <button class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
             <br/>
             <br/>
-            <form action="{% url 'annotation-list' %}" method="POST">
-                {% csrf_token %}
-                {% render_form annotation_serializer %}
-                <input type="submit" value="Save">
-            </form>
+
             <br/>
             <div class="annotations list-group">
             {% for annotation in annotations %}
                 <a href="{% url 'annotation-highlight' pk=annotation.id %}" class="list-group-item">{{ annotation.text }}</a>
             {% endfor %}
             </div>
-
+            <form action="{% url 'annotation-list' %}" method="POST">
+                {% csrf_token %}
+                {% render_form annotation_serializer %}
+                <input type="submit" value="Save">
+            </form>
         </div>
     </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"
         integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous">
+</script>
 <script>
 
-function getSelectionText() {
-    var text = window.getSelection();
-    $('label:contains("Text")').next('input.form-control').attr('name', 'text').val(text.toString());
-    $('label:contains("Start position")').next('input.form-control').attr('name', 'text').val(text.anchorOffset);
-    $('label:contains("End position")').next('input.form-control').attr('name', 'text').val(text.focusOffset);
-}
+    function getSelectionText() {
+        var textSelection = window.getSelection();
+        var text = $("[name='text']");
+        text.val(textSelection.toString());
+
+        var startPosition = $("[name='start_position']");
+        startPosition.val(textSelection.anchorOffset);
+        startPosition.attr("value", textSelection.anchorOffset);
+
+        var endPosition = $("[name='end_position']");
+        endPosition.val(textSelection.focusOffset);
+        endPosition.attr("value", textSelection.focusOffset);
+    }
+
 </script>
 </html>

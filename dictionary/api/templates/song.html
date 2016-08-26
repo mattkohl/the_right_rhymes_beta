@@ -49,13 +49,9 @@
 <script>
 
 function getSelectionText() {
-    var text = "";
-    if (window.getSelection) {
-        text = window.getSelection().toString();
-    } else if (document.selection && document.selection.type != "Control") {
-        text = document.selection.createRange().text;
-    }
-    $('input.form-control').attr('name', 'text').val(text);
+    var textSelection = window.getSelection();
+    var text = $("[name='text']");
+    text.val(textSelection.toString());
 }
 </script>
 </html>

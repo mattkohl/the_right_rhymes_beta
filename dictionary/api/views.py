@@ -146,8 +146,8 @@ class ExampleViewSet(viewsets.ModelViewSet):
         host = request.get_host()
         serializer_data = {
             "text": "",
-            "start_position": "",
-            "end_position": "",
+            "start_position": "0",
+            "end_position": len(example.text),
             "example": make_uri(host, 'examples', example.id)
         }
         annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
