@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %} {{ semantic_cass.name }}{% endblock %}
+
+{% block content %}
+<div class="h2">{{ semantic_class.name }}</div>
+
+{% if senses %}
+    {% for sense in senses %}
+        <div><a href="{% url 'sense-highlight' pk=sense.id %}">{{ sense.headword }}</a></div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %} {{ sense.headword }}{% endblock %}
+
+{% block content %}
+<div class="h2">{{ sense.headword }}, {{ sense.part_of_speech }}</div>
+<div class="h5">{{ sense.definition }}</div>
+<div class="h6">{{ sense.etymology }}</div>
+<div class="h6">{{ sense.notes }}</div>
+<div class="h6"><i>Published: {{ sense.published }}</i></div>
+{% if domains %}
+    <div class="domains">
+        <strong>Domains:</strong>
+        {% for s in domains %}
+            <a href="{% url 'domain-highlight' pk=s.id%}" class="sense-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% if semantic_classes %}
+    <div class="semantic-classes">
+        <strong>Semantic Classes:</strong>
+        {% for s in semantic_classes %}
+            <a href="{% url 'semantic_class-highlight' pk=s.id%}" class="sense-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+<br/>
+{% if synonyms %}
+    <div class="synonyms">
+        <strong>Synonyms:</strong>
+        {% for s in synonyms %}
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% if antonyms %}
+    <div class="antonyms">
+        <strong>Antonyms:</strong>
+        {% for s in antonyms %}
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% if hypernyms %}
+    <div class="hypernyms">
+        <strong>Hypernyms:</strong>
+        {% for s in hypernyms %}
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% if hyponyms %}
+    <div class="hyponyms">
+        <strong>Hyponyms:</strong>
+        {% for s in hyponyms %}
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% if meronyms %}
+    <div class="meronyms">
+        <strong>Meronyms:</strong>
+        {% for s in meronyms %}
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% if holonyms %}
+    <div class="holonyms">
+        <strong>Holonyms:</strong>
+        {% for s in holonyms %}
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="examples list-group">
+{% for example in examples %}
+    <div class="list-group-item">
+        <span class="date">{{ example.song.release_date_string }}</span>
+        <a href="{% url 'artist-highlight' pk=example.primary_artist.id%}" class="artist">{{ example.primary_artist.name }}</a>
+        <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
+        {% if example.feat_artist %}
+            feat.
+            <a href="{% url 'artist-highlight' pk=example.feat_artist.id%}" class="artist">{{ example.feat_artist.name }}</a>
+        {% endif %}
+        <span class="album">[{{example.song.album}}]</span>
+        <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock %}

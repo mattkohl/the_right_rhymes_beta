@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} {{ artist.name }}{% endblock %}
+
+{% block content %}
+<div class="h2">{{ artist.name }}</div>
+
+{% if origin %}
+    <div class="h4">origin: {{ origin.name }}</div>
+{% endif %}
+
+{% if primary_songs %}
+    <div class="h4">Primary Songs</div>
+    {% for song in primary_songs %}
+        <div>
+            <a href="{% url 'song-highlight' pk=song.id %}">{{ song.release_date_string }} "{{ song.title }}" [{{ song.album }}]</a>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if featured_songs %}
+    <div class="h4">Featured Songs</div>
+    {% for song in featured_songs %}
+        <div>
+            <a href="{% url 'song-highlight' pk=song.id %}">{{ song.release_date_string }} "{{ song.title }}" [{{ song.album }}]</a>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+{% endblock %}}

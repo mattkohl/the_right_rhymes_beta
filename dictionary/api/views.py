@@ -21,10 +21,30 @@ class SenseViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         sense = self.get_object()
-        return Response(sense.definition)
+        annotations = sense.annotations.all()
+        examples = [
+            {
+                "ex": a.example,
+                "song": a.example.from_song.first(),
+                "primary_artist": a.example.from_song.first().primary_artist.first(),
+                "feat_artist": a.example.from_song.first().feat_artist.first(),
+            } for a in annotations]
+        data = {
+            'sense': sense,
+            'examples': examples,
+            'domains': sense.domains.all(),
+            'semantic_classes': sense.semantic_classes.all(),
+            'synonyms': sense.synonyms.all(),
+            'antonyms': sense.antonyms.all(),
+            'hypernyms': sense.hypernyms.all(),
+            'hyponyms': sense.hyponyms.all(),
+            'holonyms': sense.holonyms.all(),
+            'meronyms': sense.meronyms.all()
+        }
+        return Response(data, template_name="sense.html")
 
     def perform_create(self, serializer):
         headword_slug = slugify(serializer.validated_data['headword'])
@@ -37,10 +57,16 @@ class ArtistViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         artist = self.get_object()
-        return Response(artist.name)
+        data = {
+            "artist": artist,
+            "origin": artist.origin,
+            "primary_songs": artist.primary_songs.all(),
+            "featured_songs": artist.featured_songs.all(),
+        }
+        return Response(data, template_name="artist.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])
@@ -106,10 +132,14 @@ class DomainViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         domain = self.get_object()
-        return Response(domain.name)
+        data = {
+            "domain": domain,
+            "senses": domain.senses.all()
+        }
+        return Response(data, template_name="domain.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])
@@ -122,10 +152,14 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         semantic_class = self.get_object()
-        return Response(semantic_class.name)
+        data = {
+            "domain": semantic_class,
+            "senses": semantic_class.senses.all()
+        }
+        return Response(data, template_name="semantic_class.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])

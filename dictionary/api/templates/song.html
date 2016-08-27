@@ -1,48 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <link href="/static/css/slate.css" rel="stylesheet"/>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %} {{ song.title }}{% endblock %}
+
+{% block content %}
     {% load rest_framework %}
-    <div class="container">
-        <div class="jumbotron">
-            <div class="song" data-song-id="{{ song.id }}">
-                <div class="h1">{{ song.title }}</div>
-                {% for artist in primary_artists %}
-                    <div class="h3 primary-artist" data-artist-id="{{ artist.id }}">{{ artist.name }}</div>
-                {% endfor %}
-                {% if feat_artists %}
-                    <div class="h4">feat.
-                    {% for artist in feat_artists %}
-                        <span class="h3">{{ artist.name }}</span>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                    </div>
-                {% endif %}
-                <div class="h3">{{ song.release_date }}</div>
-                <br/>
-                <div class="h6">{{ song.lyrics|linebreaks }}</div>
+    <div class="song" data-song-id="{{ song.id }}">
+        <div class="h1">{{ song.title }}</div>
+        {% for artist in primary_artists %}
+            <div class="h3 primary-artist" data-artist-id="{{ artist.id }}">
+                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
             </div>
-            <button class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
-            <br/>
-            <br/>
-            <form action="{% url 'example-list' %}" method="POST">
-                {% csrf_token %}
-                {% render_form example_serializer %}
-                <input type="submit" value="Save">
-            </form>
-            <br/>
-            <div class="examples list-group">
-            {% for example in examples %}
-                <a href="{% url 'example-highlight' pk=example.id %}" class="list-group-item">{{ example.text }}</a>
+        {% endfor %}
+        {% if feat_artists %}
+            <div class="h4">feat.
+            {% for artist in feat_artists %}
+                <span class="h3">
+                    <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                </span>{% if not forloop.last %}, {% endif %}
             {% endfor %}
             </div>
-
-        </div>
+        {% endif %}
+        <div class="h3">{{ song.release_date }}</div>
+        <br/>
+        <div class="h6">{{ song.lyrics|linebreaks }}</div>
     </div>
-</body>
+    <button class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
+    <br/>
+    <br/>
+    <form action="{% url 'example-list' %}" method="POST">
+        {% csrf_token %}
+        {% render_form example_serializer %}
+        <input type="submit" value="Save">
+    </form>
+    <br/>
+    <div class="examples list-group">
+    {% for example in examples %}
+        <a href="{% url 'example-highlight' pk=example.id %}" class="list-group-item">{{ example.text }}</a>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"
         integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
         crossorigin="anonymous"></script>
@@ -54,4 +52,4 @@ function getSelectionText() {
     text.val(textSelection.toString());
 }
 </script>
-</html>
+{% endblock %}
