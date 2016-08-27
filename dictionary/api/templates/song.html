@@ -5,22 +5,22 @@
 {% block content %}
     {% load rest_framework %}
     <div class="song" data-song-id="{{ song.id }}">
-        <div class="h1">{{ song.title }}</div>
+        <div class="h2">{{ song.title }}</div>
         {% for artist in primary_artists %}
-            <div class="h3 primary-artist" data-artist-id="{{ artist.id }}">
+            <div class="h4 primary-artist" data-artist-id="{{ artist.id }}">
                 <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
             </div>
         {% endfor %}
         {% if feat_artists %}
             <div class="h4">feat.
             {% for artist in feat_artists %}
-                <span class="h3">
+                <span class="artist">
                     <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
                 </span>{% if not forloop.last %}, {% endif %}
             {% endfor %}
             </div>
         {% endif %}
-        <div class="h3">{{ song.release_date }}</div>
+        <div class="h5">{{ song.release_date }}</div>
         <br/>
         <div class="h6">{{ song.lyrics|linebreaks }}</div>
     </div>
@@ -41,9 +41,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.1.0.min.js"
-        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-        crossorigin="anonymous"></script>
 <script>
 
 function getSelectionText() {

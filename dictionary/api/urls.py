@@ -7,6 +7,7 @@ from api import views
 router = DefaultRouter()
 router.register(r'annotations', views.AnnotationViewSet)
 router.register(r'artists', views.ArtistViewSet)
+router.register(r'dictionaries', views.DictionaryViewSet)
 router.register(r'domains', views.DomainViewSet)
 router.register(r'examples', views.ExampleViewSet)
 router.register(r'places', views.PlaceViewSet)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation, Dictionary
 
 
 class SenseSerializer(serializers.HyperlinkedModelSerializer):
@@ -92,6 +92,21 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
+class DictionarySerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='dictionary-highlight', format='html')
+
+    class Meta:
+        model = Dictionary
+        fields = (
+            'url',
+            'name',
+            'highlight',
+            'senses',
+            'owner'
+        )
+
+
 class DomainSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='domain-highlight', format='html')
@@ -111,7 +126,7 @@ class DomainSerializer(serializers.HyperlinkedModelSerializer):
 
 class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(view_name='semantic-class-highlight', format='html')
+    highlight = serializers.HyperlinkedIdentityField(view_name='semanticclass-highlight', format='html')
 
     class Meta:
         model = SemanticClass

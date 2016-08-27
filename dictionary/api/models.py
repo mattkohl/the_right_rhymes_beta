@@ -29,6 +29,7 @@ class Sense(models.Model):
     meronyms = models.ManyToManyField("self", related_name="holonyms", blank=True, symmetrical=False)
     domains = models.ManyToManyField('Domain', related_name="+", blank=True, symmetrical=False)
     semantic_classes = models.ManyToManyField('SemanticClass', related_name="+", blank=True, symmetrical=False)
+    dictionaries = models.ManyToManyField('Dictionary', related_name="+", blank=True, symmetrical=False)
     owner = models.ForeignKey("auth.User", related_name="senses")
 
     class Meta:
@@ -36,6 +37,21 @@ class Sense(models.Model):
 
     def __str__(self):
         return self.headword + ' - ' + self.definition + ' [Published: ' + str(self.published) + ']'
+
+
+class Dictionary(models.Model):
+    id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(max_length=500)
+    senses = models.ManyToManyField('Sense', through=Sense.dictionaries.through, related_name='+', blank=True)
+    name = models.CharField(max_length=1000)
+    owner = models.ForeignKey("auth.User", related_name="dictionaries")
+
+    class Meta:
+        ordering = ('name', 'created',)
+
+    def __str__(self):
+        return self.name
 
 
 class Artist(models.Model):

@@ -1,10 +1,12 @@
-from rest_framework import permissions, renderers, viewsets
+from rest_framework import permissions, renderers, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
+import django_filters
 from django.contrib.auth.models import User
-from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation, Dictionary
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
-    DomainSerializer, SemanticClassSerializer, ExampleSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer
+    DomainSerializer, SemanticClassSerializer, ExampleSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer, \
+    DictionarySerializer
 from api.permissions import IsOwnerOrReadOnly
 from api.utils import slugify, make_uri
 
@@ -51,9 +53,19 @@ class SenseViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user, headword_slug=headword_slug)
 
 
+class ArtistFilter(filters.FilterSet):
+    name = django_filters.CharFilter(name="name", lookup_expr='contains')
+
+    class Meta:
+        model = Artist
+        fields = []
+
+
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ArtistFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -89,9 +101,20 @@ class PlaceViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user, slug=slug)
 
 
+class SongFilter(filters.FilterSet):
+    lyrics = django_filters.CharFilter(name="lyrics", lookup_expr='contains')
+    primary_artist = django_filters.CharFilter(name="primary_artist__name", lookup_expr='contains', )
+
+    class Meta:
+        model = Song
+        fields = ['album', 'release_date']
+
+
 class SongViewSet(viewsets.ModelViewSet):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = SongFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -126,6 +149,26 @@ class SongViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user, slug=slug)
 
 
+class DictionaryViewSet(viewsets.ModelViewSet):
+    queryset = Dictionary.objects.all()
+    serializer_class = DictionarySerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        dictionary = self.get_object()
+        data = {
+            "dictionary": dictionary,
+            "senses": dictionary.senses.all()
+        }
+        return Response(data, template_name="dictionary.html")
+
+    def perform_create(self, serializer):
+        slug = slugify(serializer.validated_data['name'])
+        serializer.save(owner=self.request.user, slug=slug)
+
+
 class DomainViewSet(viewsets.ModelViewSet):
     queryset = Domain.objects.all()
     serializer_class = DomainSerializer
@@ -156,7 +199,7 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         semantic_class = self.get_object()
         data = {
-            "domain": semantic_class,
+            "semantic_class": semantic_class,
             "senses": semantic_class.senses.all()
         }
         return Response(data, template_name="semantic_class.html")
