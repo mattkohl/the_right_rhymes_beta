@@ -46,6 +46,7 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
             'origin',
             'primary_songs',
             'featured_songs',
+            'annotations',
             'owner'
         )
 
@@ -66,6 +67,7 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
             'artists',
             'contains',
             'within',
+            'annotations',
             'owner'
         )
 

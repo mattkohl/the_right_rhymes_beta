@@ -74,7 +74,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
         artist = self.get_object()
         data = {
             "artist": artist,
-            "origin": artist.origin,
+            "origin": artist.origin.first(),
             "primary_songs": artist.primary_songs.all(),
             "featured_songs": artist.featured_songs.all(),
         }
@@ -91,10 +91,24 @@ class PlaceViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         place = self.get_object()
-        return Response(place.name)
+        annotations = place.annotations.all()
+        artists = place.artists.all()
+        examples = [
+            {
+                "ex": a.example,
+                "song": a.example.from_song.first(),
+                "primary_artist": a.example.from_song.first().primary_artist.first(),
+                "feat_artist": a.example.from_song.first().feat_artist.first(),
+            } for a in annotations]
+        data = {
+            'place': place,
+            'artists': artists,
+            'examples': examples,
+        }
+        return Response(data, template_name="place.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['full_name'])

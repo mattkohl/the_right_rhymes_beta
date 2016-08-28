@@ -1,3 +1,46 @@
 p {
     font-size: 18px !important;
 }
+
+.leftside {
+    background-size: cover;
+    background-position: center;
+    /*height: 100Vh;*/
+}
+
+.leftside .text {
+    position: absolute;
+    top: 60%;
+    left: 20%;
+    font-size: 2em;
+}
+
+.leftside .text a {
+    color: #fff;
+    display: block;
+}
+
+.rightside {
+    padding-top: 2em;
+    background-size: cover;
+    background-position: center;
+    /*height: 100Vh;*/
+}
+
+.row-full > [class*='col-'] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#inject {
+    position: fixed;
+    margin-top: 3em;
+}
+
+@media (max-width: 767px) {
+    .leftside .text {
+        top: 60%;
+        left: 5%;
+        font-size: 16px;
+    }
+}

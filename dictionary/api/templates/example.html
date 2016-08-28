@@ -4,41 +4,60 @@
 
 {% block content %}
     {% load rest_framework %}
-    <div class="example" data-example-id="{{ example.id }}">
-        <div class="h2">{{ example.text }}</div>
-        <div class="h3">{{ song.title }}</div>
-        {% for artist in primary_artists %}
-            <div class="h3 primary-artist" data-artist-id="{{ artist.id }}">
-                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="leftside" data-song-id="{{ song.id }}">
+            <div class="example" data-example-id="{{ example.id }}">
+                <div class="h2">{{ example.text }}</div>
+                <div class="h3">
+                    <a href="{% url 'song-highlight' pk=song.id %}">{{ song.title }}</a>
+                </div>
+                {% for artist in primary_artists %}
+                    <div class="h3 primary-artist" data-artist-id="{{ artist.id }}">
+                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                    </div>
+                {% endfor %}
+                {% if feat_artists %}
+                    <div class="h4">feat.
+                    {% for artist in feat_artists %}
+                        <span class="h3">
+                            <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                        </span>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="h3">{{ song.release_date }}</div>
+                <br/>
             </div>
-        {% endfor %}
-        {% if feat_artists %}
-            <div class="h4">feat.
-            {% for artist in feat_artists %}
-                <span class="h3">
-                    <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-                </span>{% if not forloop.last %}, {% endif %}
+            <button class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
+        </div>
+    </div>
+    <div class="col-sm-1">
+    </div>
+    <div class="col-sm-5">
+        <div class="rightside">
+            <div class="annotations list-group">
+            {% for annotation in annotations %}
+                {% if annotation.sense.id %}
+                    <a href="{% url 'sense-highlight' pk=annotation.sense.id %}" class="list-group-item">{{ annotation.text }}</a>
+                {% endif %}
+                {% if annotation.artist.id %}
+                    <a href="{% url 'artist-highlight' pk=annotation.artist.id %}" class="list-group-item">{{ annotation.text }}</a>
+                {% endif %}
+                {% if annotation.place.id %}
+                    <a href="{% url 'place-highlight' pk=annotation.place.id %}" class="list-group-item">{{ annotation.text }}</a>
+                {% endif %}
             {% endfor %}
             </div>
-        {% endif %}
-        <div class="h3">{{ song.release_date }}</div>
-        <br/>
+            <form action="{% url 'annotation-list' %}" method="POST">
+                {% csrf_token %}
+                {% render_form annotation_serializer %}
+                <input class="btn btn-info btn-sm" type="submit" value="Save">
+            </form>
+        </div>
     </div>
-    <button class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
-    <br/>
-    <br/>
+</div>
 
-    <br/>
-    <div class="annotations list-group">
-    {% for annotation in annotations %}
-        <a href="{% url 'sense-highlight' pk=annotation.sense.id %}" class="list-group-item">{{ annotation.text }}</a>
-    {% endfor %}
-    </div>
-    <form action="{% url 'annotation-list' %}" method="POST">
-        {% csrf_token %}
-        {% render_form annotation_serializer %}
-        <input type="submit" value="Save">
-    </form>
 {% endblock %}
 
 {% block scripts %}
