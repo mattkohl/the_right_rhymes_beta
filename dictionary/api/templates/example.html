@@ -8,7 +8,7 @@
     <div class="col-sm-6">
         <div class="leftside" data-song-id="{{ song.id }}">
             <div class="example" data-example-id="{{ example.id }}">
-                <div class="h2">{{ example.text }}</div>
+                <div class="h2"><a href="{% url 'example-detail' pk=example.id %}">{{ example.text }}</a></div>
                 <div class="h3">
                     <a href="{% url 'song-highlight' pk=song.id %}">{{ song.title }}</a>
                 </div>

@@ -1,14 +1,14 @@
-from rest_framework import permissions, renderers, viewsets, filters
-from rest_framework.response import Response
-from rest_framework.decorators import detail_route
-import django_filters
-from django.contrib.auth.models import User
+from api.filters import ArtistFilter, SongFilter, ExampleFilter, PlaceFilter
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation, Dictionary
-from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
-    DomainSerializer, SemanticClassSerializer, ExampleSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer, \
-    DictionarySerializer
 from api.permissions import IsOwnerOrReadOnly
+from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
+    DomainSerializer, SemanticClassSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer, \
+    DictionarySerializer
 from api.utils import slugify, make_uri
+from django.contrib.auth.models import User
+from rest_framework import permissions, renderers, viewsets, filters
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 
 
 class SenseViewSet(viewsets.ModelViewSet):
@@ -27,6 +27,13 @@ class SenseViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         sense = self.get_object()
         annotations = sense.annotations.all()
+
+        rhymes = set()
+        for a in annotations:
+            for r in a.rhymes.all():
+                rhymes.add(r)
+        rhymes = list(rhymes)
+
         examples = [
             {
                 "ex": a.example,
@@ -37,6 +44,7 @@ class SenseViewSet(viewsets.ModelViewSet):
         data = {
             'sense': sense,
             'examples': examples,
+            'rhymes': rhymes,
             'domains': sense.domains.all(),
             'semantic_classes': sense.semantic_classes.all(),
             'synonyms': sense.synonyms.all(),
@@ -53,14 +61,6 @@ class SenseViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user, headword_slug=headword_slug)
 
 
-class ArtistFilter(filters.FilterSet):
-    name = django_filters.CharFilter(name="name", lookup_expr='contains')
-
-    class Meta:
-        model = Artist
-        fields = []
-
-
 class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
@@ -72,8 +72,12 @@ class ArtistViewSet(viewsets.ModelViewSet):
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         artist = self.get_object()
+        annotations = artist.annotations.all()
+        examples = [a.example for a in annotations]
         data = {
             "artist": artist,
+            "annotations": annotations,
+            "examples": examples,
             "origin": artist.origin.first(),
             "primary_songs": artist.primary_songs.all(),
             "featured_songs": artist.featured_songs.all(),
@@ -88,6 +92,8 @@ class ArtistViewSet(viewsets.ModelViewSet):
 class PlaceViewSet(viewsets.ModelViewSet):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = PlaceFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
@@ -95,6 +101,8 @@ class PlaceViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         place = self.get_object()
         annotations = place.annotations.all()
+        contains = place.contains.all()
+        within = place.within.all()
         artists = place.artists.all()
         examples = [
             {
@@ -105,6 +113,8 @@ class PlaceViewSet(viewsets.ModelViewSet):
             } for a in annotations]
         data = {
             'place': place,
+            'contains': contains,
+            'within': within,
             'artists': artists,
             'examples': examples,
         }
@@ -113,15 +123,6 @@ class PlaceViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['full_name'])
         serializer.save(owner=self.request.user, slug=slug)
-
-
-class SongFilter(filters.FilterSet):
-    lyrics = django_filters.CharFilter(name="lyrics", lookup_expr='contains')
-    primary_artist = django_filters.CharFilter(name="primary_artist__name", lookup_expr='contains', )
-
-    class Meta:
-        model = Song
-        fields = ['album', 'release_date']
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -226,6 +227,8 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
 class ExampleViewSet(viewsets.ModelViewSet):
     queryset = Example.objects.all()
     serializer_class = ExampleHyperlinkedSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ExampleFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 

@@ -3,7 +3,7 @@
 {% block title %} {{ artist.name }}{% endblock %}
 
 {% block content %}
-<div class="h2">{{ artist.name }}</div>
+<div class="h2"><a href="{% url 'artist-detail' pk=artist.id %}">{{ artist.name }}</a></div>
 
 {% if origin %}
     <div class="h4">origin: <a href="{% url 'place-highlight' pk=origin.id %}">{{ origin.name }}</a></div>

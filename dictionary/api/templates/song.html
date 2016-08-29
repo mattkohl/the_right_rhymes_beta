@@ -7,12 +7,13 @@
 <div class="row">
     <div class="col-sm-6">
         <div class="leftside" data-song-id="{{ song.id }}">
-            <div class="h2">{{ song.title }}</div>
+            <div class="h2"><a href="{% url 'song-detail' pk=song.id %}">{{ song.title }}</a></div>
             {% for artist in primary_artists %}
                 <div class="h4 primary-artist" data-artist-id="{{ artist.id }}">
                     <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
                 </div>
             {% endfor %}
+            <div class="h4">{{ song.album }}</div>
             {% if feat_artists %}
                 <div class="h4">feat.
                 {% for artist in feat_artists %}

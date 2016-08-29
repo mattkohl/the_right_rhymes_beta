@@ -3,7 +3,25 @@
 {% block title %} {{ place.name }}{% endblock %}
 
 {% block content %}
-<div class="h2">{{ place.name }}</div>
+<div class="h2"><a href="{% url 'place-detail' pk=place.id %}">{{ place.name }}</a></div>
+
+{% if contains %}
+    <div class="contains">
+        <strong>Contains:</strong>
+        {% for s in contains %}
+            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if within %}
+    <div class="within">
+        <strong>Within:</strong>
+        {% for s in within %}
+            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
 
 {% if artists %}
     <div class="h4">Artists:</div>

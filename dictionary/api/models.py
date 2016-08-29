@@ -186,4 +186,4 @@ class Annotation(models.Model):
         ordering = ["text"]
 
     def __str__(self):
-        return self.text + " [" + str(self.created.strftime("%d %b, %Y %H:%M:%S")) + "]"
+        return self.text + " [" + self.example.text + "]"
