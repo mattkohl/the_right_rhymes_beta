@@ -4,15 +4,22 @@
 
 {% block content %}
 <div class="h2"><a href="{% url 'sense-detail' pk=sense.id %}">{{ sense.headword }}, {{ sense.part_of_speech }}</a></div>
-<div class="h5">{{ sense.definition }}</div>
-<div class="h6">{{ sense.etymology }}</div>
-<div class="h6">{{ sense.notes }}</div>
-<div class="h6"><i>Published: {{ sense.published }}</i></div>
+<div class="definition"><strong>Definition: </strong>{{ sense.definition }}</div>
+
+{% if sense.etymology %}
+<div class="etymology"><strong>Etymology: </strong>{{ sense.etymology }}</div>
+{% endif %}
+
+{% if sense.notes %}
+<div class="notes"><strong>Notes: </strong>{{ sense.notes }}</div>
+{% endif %}
+
+<div class="published"><strong>Published: </strong>{{ sense.published }}</div>
 {% if rhymes %}
     <div class="rhymes">
         <strong>Rhymes:</strong>
-        {% for s in rhymes %}
-            <a href="{% url 'annotation-highlight' pk=s.id%}" class="annotation-link">{{ s.text }}</a>{% if not forloop.last %}, {% endif %}
+        {% for pair in rhymes %}
+            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
         {% endfor %}
     </div>
 {% endif %}

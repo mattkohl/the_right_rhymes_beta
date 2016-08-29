@@ -23,13 +23,22 @@
     </div>
 {% endif %}
 
+{% if rhymes %}
+    <div class="rhymes">
+        <strong>Rhymes:</strong>
+        {% for pair in rhymes %}
+            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
 {% if artists %}
-    <div class="h4">Artists:</div>
-    <div class="h4">
+    <div class="artists">
+        <strong>Artists: </strong>
         {% for artist in artists %}
-            <span class="h4">
+            <div class="artist">
                 <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-            </span>{% if not forloop.last %}, {% endif %}
+            </div>{% if not forloop.last %}, {% endif %}
         {% endfor %}
     </div>
 {% endif %}

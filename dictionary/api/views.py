@@ -4,7 +4,7 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
     DomainSerializer, SemanticClassSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer, \
     DictionarySerializer
-from api.utils import slugify, make_uri
+from api.utils import slugify, make_uri, extract_rhymes
 from django.contrib.auth.models import User
 from rest_framework import permissions, renderers, viewsets, filters
 from rest_framework.decorators import detail_route
@@ -27,13 +27,7 @@ class SenseViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         sense = self.get_object()
         annotations = sense.annotations.all()
-
-        rhymes = set()
-        for a in annotations:
-            for r in a.rhymes.all():
-                rhymes.add(r)
-        rhymes = list(rhymes)
-
+        rhymes = extract_rhymes(annotations)
         examples = [
             {
                 "ex": a.example,
@@ -73,14 +67,35 @@ class ArtistViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         artist = self.get_object()
         annotations = artist.annotations.all()
+        rhymes = extract_rhymes(annotations)
         examples = [a.example for a in annotations]
         data = {
             "artist": artist,
+            "also_known_as": artist.also_known_as.all(),
+            "members": artist.members.all(),
+            "member_of": artist.member_of.all(),
             "annotations": annotations,
+            "rhymes": rhymes,
             "examples": examples,
             "origin": artist.origin.first(),
-            "primary_songs": artist.primary_songs.all(),
-            "featured_songs": artist.featured_songs.all(),
+            "primary_songs": [
+                {
+                    "id": song.id,
+                    "title": song.title,
+                    "release_date": song.release_date_string,
+                    "album": song.album,
+                    "feat_artist": song.feat_artist.all(),
+                } for song in artist.primary_songs.order_by('release_date')
+            ],
+            "featured_songs": [
+                {
+                    "id": song.id,
+                    "title": song.title,
+                    "release_date": song.release_date_string,
+                    "album": song.album,
+                    "feat_artist": song.feat_artist.all(),
+                } for song in artist.featured_songs.order_by('release_date')
+            ],
         }
         return Response(data, template_name="artist.html")
 
@@ -101,6 +116,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
     def highlight(self, request, *args, **kwargs):
         place = self.get_object()
         annotations = place.annotations.all()
+        rhymes = extract_rhymes(annotations)
         contains = place.contains.all()
         within = place.within.all()
         artists = place.artists.all()
@@ -116,6 +132,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
             'contains': contains,
             'within': within,
             'artists': artists,
+            'rhymes': rhymes,
             'examples': examples,
         }
         return Response(data, template_name="place.html")
@@ -237,6 +254,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
         example = self.get_object()
         song = example.from_song.first()
         annotations = example.annotations.all()
+        rhymes = extract_rhymes(annotations)
         host = request.get_host()
         serializer_data = {
             "text": "",
@@ -252,6 +270,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
             'feat_artists': example.feat_artist.all(),
             'song': song,
             'annotations': annotations,
+            'rhymes': rhymes,
             'annotation_serializer': annotation_serializer
         }
         return Response(data, template_name="example.html")

@@ -6,25 +6,79 @@
 <div class="h2"><a href="{% url 'artist-detail' pk=artist.id %}">{{ artist.name }}</a></div>
 
 {% if origin %}
-    <div class="h4">origin: <a href="{% url 'place-highlight' pk=origin.id %}">{{ origin.name }}</a></div>
+    <div class="origin"><strong>Origin:</strong> <a href="{% url 'place-highlight' pk=origin.id %}">{{ origin.name }}</a></div>
+{% endif %}
+
+{% if also_known_as %}
+    <div class="artists">
+        <strong>Also known as: </strong>
+        {% for artist in also_known_as %}
+            <span class="artist">
+                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+            </span>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if members %}
+    <div class="artists">
+        <strong>Members: </strong>
+        {% for artist in members %}
+            <span class="artist">
+                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+            </span>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if member_of %}
+    <div class="artists">
+        <strong>Member of: </strong>
+        {% for artist in member_of %}
+            <span class="artist">
+                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+            </span>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if rhymes %}
+    <div class="rhymes">
+        <strong>Rhymes:</strong>
+        {% for pair in rhymes %}
+            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
 {% endif %}
 
 {% if primary_songs %}
-    <div class="h4">Primary Songs</div>
+    <div class="songs"><strong>Primary Songs:</strong>
     {% for song in primary_songs %}
-        <div>
-            <a href="{% url 'song-highlight' pk=song.id %}">{{ song.release_date_string }} "{{ song.title }}" [{{ song.album }}]</a>
+        <div class="song">
+            {{ song.release_date }}
+            <a href="{% url 'song-highlight' pk=song.id %}">"{{ song.title }}"</a>
+            {% if song.feat_artist %}
+                feat.
+                {% for artist in song.feat_artist %}
+                    <span class="artist">
+                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                    </span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endif %}
+            [{{ song.album }}]
         </div>
     {% endfor %}
+    </div>
 {% endif %}
 
 {% if featured_songs %}
-    <div class="h4">Featured Songs</div>
+    <div class="songs"><strong>Featured Songs:</strong>
     {% for song in featured_songs %}
-        <div>
+        <div class="song">
             <a href="{% url 'song-highlight' pk=song.id %}">{{ song.release_date_string }} "{{ song.title }}" [{{ song.album }}]</a>
         </div>
     {% endfor %}
+    </div>
 {% endif %}
 
 

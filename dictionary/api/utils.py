@@ -1,6 +1,20 @@
 import re
 
 
+def extract_rhymes(annotations):
+    rhyme_set = set()
+    for a in annotations:
+        for r in a.rhymes.all():
+            rhyme_set.add((r, a))
+    rhymes = []
+    for rhyme in rhyme_set:
+        rhymes.append({
+            'left': rhyme[0],
+            'right': rhyme[1]
+        })
+    return rhymes
+
+
 def make_uri(host, object_type, pk):
     return "http://" + host + "/" + object_type + "/" + str(pk) + "/"
 
