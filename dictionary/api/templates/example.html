@@ -9,52 +9,58 @@
         <div class="leftside" data-song-id="{{ song.id }}">
             <div class="example" data-example-id="{{ example.id }}">
                 <div class="h2">{{ example.text }}</div>
-                <div class="h3">
+                <div class="song-title">
+                    <strong>Song title:</strong>
                     <a href="{% url 'song-highlight' pk=song.id %}">{{ song.title }}</a>
                 </div>
-                {% for artist in primary_artists %}
-                    <div class="h3 primary-artist" data-artist-id="{{ artist.id }}">
-                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-                    </div>
-                {% endfor %}
-                {% if feat_artists %}
-                    <div class="h4">feat.
-                    {% for artist in feat_artists %}
-                        <span class="h3">
+                <div class="artists">
+                    <strong>Primary artist:</strong>
+                    {% for artist in primary_artists %}
+                        <span class="primary-artist" data-artist-id="{{ artist.id }}">
                             <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-                        </span>{% if not forloop.last %}, {% endif %}
+                        </span>
                     {% endfor %}
+                </div>
+                {% if feat_artists %}
+                    <div class="artists">
+                        <strong>Featured artist(s):</strong>
+                        {% for artist in feat_artists %}
+                            <span class="artist">
+                                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                            </span>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
                     </div>
                 {% endif %}
-                <div class="h3">{{ song.release_date }}</div>
-                <br/>
+                <div class="release-date"><strong>Release date:</strong> {{ song.release_date_string }}</div>
             </div>
-            <button class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
+            {% if annotations %}
+                <div class="annotations list-group">
+                    <div style="margin-bottom: 1em;"><strong>Annotations: </strong></div>
+                    {% for annotation in annotations %}
+                        {% if annotation.sense.id %}
+                            <a href="{% url 'sense-highlight' pk=annotation.sense.id %}" class="list-group-item">{{ annotation.text }}</a>
+                        {% endif %}
+                        {% if annotation.artist.id %}
+                            <a href="{% url 'artist-highlight' pk=annotation.artist.id %}" class="list-group-item">{{ annotation.text }}</a>
+                        {% endif %}
+                        {% if annotation.place.id %}
+                            <a href="{% url 'place-highlight' pk=annotation.place.id %}" class="list-group-item">{{ annotation.text }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if rhymes %}
+                        {% for pair in rhymes %}
+                            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="list-group-item">{{ pair.left.text }} ({{ pair.right.text}}) </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+        {% endif %}
         </div>
     </div>
     <div class="col-sm-1">
+        <button id="inject" class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
     </div>
     <div class="col-sm-5">
         <div class="rightside">
-            <div class="annotations list-group">
-            {% for annotation in annotations %}
-                {% if annotation.sense.id %}
-                    <a href="{% url 'sense-highlight' pk=annotation.sense.id %}" class="list-group-item">{{ annotation.text }}</a>
-                {% endif %}
-                {% if annotation.artist.id %}
-                    <a href="{% url 'artist-highlight' pk=annotation.artist.id %}" class="list-group-item">{{ annotation.text }}</a>
-                {% endif %}
-                {% if annotation.place.id %}
-                    <a href="{% url 'place-highlight' pk=annotation.place.id %}" class="list-group-item">{{ annotation.text }}</a>
-                {% endif %}
-            {% endfor %}
-            {% if rhymes %}
-                {% for pair in rhymes %}
-                    <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="list-group-item">{{ pair.left.text }} ({{ pair.right.text}}) </a>
-                {% endfor %}
-            {% endif %}
-            </div>
-
             <form action="{% url 'annotation-list' %}" method="POST">
                 {% csrf_token %}
                 {% render_form annotation_serializer %}

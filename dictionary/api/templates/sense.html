@@ -39,7 +39,6 @@
         {% endfor %}
     </div>
 {% endif %}
-<br/>
 {% if synonyms %}
     <div class="synonyms">
         <strong>Synonyms:</strong>
@@ -89,19 +88,21 @@
     </div>
 {% endif %}
 <div class="examples list-group">
-{% for example in examples %}
-    <div class="list-group-item">
-        <span class="date">{{ example.song.release_date_string }}</span>
-        <a href="{% url 'artist-highlight' pk=example.primary_artist.id%}" class="artist">{{ example.primary_artist.name }}</a>
-        <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
-        {% if example.feat_artist %}
-            feat.
-            <a href="{% url 'artist-highlight' pk=example.feat_artist.id%}" class="artist">{{ example.feat_artist.name }}</a>
-        {% endif %}
-        <span class="album">[{{example.song.album}}]</span>
-        <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
-    </div>
-{% endfor %}
+    <div style="margin-bottom: 1em;"><strong>Examples:</strong></div>
+
+    {% for example in examples %}
+        <div class="list-group-item">
+            <span class="date">{{ example.song.release_date_string }}</span>
+            <a href="{% url 'artist-highlight' pk=example.primary_artist.id%}" class="artist">{{ example.primary_artist.name }}</a>
+            <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
+            {% if example.feat_artist %}
+                feat.
+                <a href="{% url 'artist-highlight' pk=example.feat_artist.id%}" class="artist">{{ example.feat_artist.name }}</a>
+            {% endif %}
+            <span class="album">[{{example.song.album}}]</span>
+            <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
+        </div>
+    {% endfor %}
 </div>
 
 {% endblock %}

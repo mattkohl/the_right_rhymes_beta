@@ -2,12 +2,15 @@ from django.db import models
 
 
 PARTS_OF_SPEECH = [
+    ('adjectival_phrase', 'adjectival phrase'),
     ('adjective', 'adjective'),
     ('adverb', 'adverb'),
+    ('adverbial_phrase', 'adverbial_phrase'),
     ('combining_form', 'combining form'),
     ('interjection', 'interjection'),
     ('noun', 'noun'),
     ('phrase', 'phrase'),
+    ('prepositional_phrase', 'prepositional phrase'),
     ('verb', 'verb')
 ]
 
