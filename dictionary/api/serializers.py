@@ -6,12 +6,14 @@ from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Exampl
 class SenseSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='sense-highlight', format='html')
+    # recent = serializers.HyperlinkedIdentityField(view_name='sense-recent')
 
     class Meta:
         model = Sense
         fields = (
             'url',
             'highlight',
+            # 'recent',
             'headword',
             'published',
             'part_of_speech',
@@ -20,6 +22,8 @@ class SenseSerializer(serializers.HyperlinkedModelSerializer):
             'notes',
             'domains',
             'semantic_classes',
+            'derivatives',
+            'derives_from',
             'synonyms',
             'antonyms',
             'hypernyms',

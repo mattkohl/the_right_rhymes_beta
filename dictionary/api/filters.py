@@ -1,5 +1,5 @@
 import django_filters
-from api.models import Artist, Song, Example, Place
+from api.models import Artist, Song, Example, Place, Sense
 from rest_framework import filters
 
 
@@ -27,6 +27,16 @@ class ExampleFilter(filters.FilterSet):
 
     class Meta:
         model = Example
+        fields = []
+
+
+class SenseFilter(filters.FilterSet):
+    headword = django_filters.CharFilter(lookup_expr='icontains')
+    definition = django_filters.CharFilter(lookup_expr='icontains')
+    part_of_speech = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Sense
         fields = []
 
 

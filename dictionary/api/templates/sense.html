@@ -97,7 +97,9 @@
             <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
             {% if example.feat_artist %}
                 feat.
-                <a href="{% url 'artist-highlight' pk=example.feat_artist.id%}" class="artist">{{ example.feat_artist.name }}</a>
+                {% for feat in example.feat_artist %}
+                <a href="{% url 'artist-highlight' pk=feat.id%}" class="artist">{{ feat.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
             {% endif %}
             <span class="album">[{{example.song.album}}]</span>
             <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>

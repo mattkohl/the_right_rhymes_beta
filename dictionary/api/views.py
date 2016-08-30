@@ -1,13 +1,13 @@
-from api.filters import ArtistFilter, SongFilter, ExampleFilter, PlaceFilter
+from api.filters import ArtistFilter, SongFilter, ExampleFilter, PlaceFilter, SenseFilter
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Example, Annotation, Dictionary
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
     DomainSerializer, SemanticClassSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer, \
     DictionarySerializer
-from api.utils import slugify, make_uri, extract_rhymes
+from api.utils import slugify, make_uri, extract_rhymes, extract_examples
 from django.contrib.auth.models import User
 from rest_framework import permissions, renderers, viewsets, filters
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 
@@ -20,8 +20,21 @@ class SenseViewSet(viewsets.ModelViewSet):
     """
     queryset = Sense.objects.all()
     serializer_class = SenseSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = SenseFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = Sense.objects.all().order_by('-created')
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(definition__icontains=q)
+        data = {
+            "senses": queryset
+        }
+        return Response(data, template_name="sense_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -33,7 +46,7 @@ class SenseViewSet(viewsets.ModelViewSet):
                 "ex": a.example,
                 "song": a.example.from_song.first(),
                 "primary_artist": a.example.from_song.first().primary_artist.first(),
-                "feat_artist": a.example.from_song.first().feat_artist.first(),
+                "feat_artist": a.example.from_song.first().feat_artist.all(),
             } for a in annotations]
         data = {
             'sense': sense,
@@ -149,6 +162,23 @@ class SongViewSet(viewsets.ModelViewSet):
     filter_class = SongFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        q = self.request.query_params.get('q', None)
+        data = dict()
+        if q is not None:
+            queryset = Song.objects.filter(release_date_verified=True).filter(lyrics__icontains=q).order_by('release_date')
+            data['results'] = [
+                {
+                    "song": song,
+                    "primary_artist": song.primary_artist.first(),
+                    "feat_artist": song.feat_artist.all(),
+                    "examples": extract_examples(song.lyrics, q)
+                } for song in queryset]
+        else:
+            data["results"] = []
+        return Response(data, template_name="song_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):

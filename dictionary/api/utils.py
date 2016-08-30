@@ -19,6 +19,11 @@ def make_uri(host, object_type, pk):
     return "http://" + host + "/" + object_type + "/" + str(pk) + "/"
 
 
+def extract_examples(lyrics, q):
+    lines = lyrics.split('\n')
+    return [line for line in lines if q in line]
+
+
 def slugify(text):
     slug = text.strip().lower()
     if slug[0] == "'" or slug[0] == "-":

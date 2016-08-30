@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %} Sense Search {% endblock %}
+
+{% block content %}
+
+{% if senses %}
+    {% for sense in senses %}
+        <div><a href="{% url 'sense-highlight' pk=sense.id %}">{{ sense.headword }}</a></div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}}

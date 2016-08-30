@@ -11,7 +11,11 @@ PARTS_OF_SPEECH = [
     ('noun', 'noun'),
     ('phrase', 'phrase'),
     ('prepositional_phrase', 'prepositional phrase'),
-    ('verb', 'verb')
+    ('intransitive_verb', 'intransitive verb'),
+    ('intransitive_phrasal_verb', 'intransitive phrasal verb'),
+    ('transitive verb', 'transitive verb'),
+    ('transitive phrasal verb', 'transitive phrasal verb'),
+    ('verb', 'verb'),
 ]
 
 
@@ -26,6 +30,7 @@ class Sense(models.Model):
     definition = models.CharField(max_length=2000, default="__stub_definition__")
     etymology = models.CharField(max_length=2000, null=True, blank=True)
     notes = models.CharField(max_length=2000, null=True, blank=True)
+    derivatives = models.ManyToManyField("self", related_name="derives_from", blank=True, symmetrical=False)
     synonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     antonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     hypernyms = models.ManyToManyField("self", related_name="hyponyms", blank=True, symmetrical=False)
