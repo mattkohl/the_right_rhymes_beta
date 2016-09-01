@@ -4,9 +4,10 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
     DomainSerializer, SemanticClassSerializer, ExampleHyperlinkedSerializer, AnnotationSerializer, \
     DictionarySerializer
-from api.utils import slugify, make_uri, extract_rhymes, extract_examples
+from api.utils import slugify, make_uri, extract_rhymes, build_example_serializer
 from django.contrib.auth.models import User
-from rest_framework import permissions, renderers, viewsets, filters
+from django.shortcuts import redirect
+from rest_framework import permissions, renderers, viewsets, filters, reverse
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
@@ -174,7 +175,7 @@ class SongViewSet(viewsets.ModelViewSet):
                     "song": song,
                     "primary_artist": song.primary_artist.first(),
                     "feat_artist": song.feat_artist.all(),
-                    "examples": extract_examples(song.lyrics, q)
+                    "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
                 } for song in queryset]
         else:
             data["results"] = []
@@ -186,15 +187,7 @@ class SongViewSet(viewsets.ModelViewSet):
         primary_artists = song.primary_artist.all()
         feat_artists = song.feat_artist.all()
         examples = song.examples.all()
-        host = request.get_host()
-        serializer_data = {
-            "text": "",
-            "artist": [make_uri(host, 'artists', artist.id) for artist in primary_artists],
-            "feat_artist": [make_uri(host, 'artists', artist.id) for artist in feat_artists],
-            "from_song": [make_uri(host, 'songs', song.id)]
-        }
-        example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data, partial=True)
-        example_serializer.is_valid()
+        example_serializer = build_example_serializer(request, song, "")
         data = {
             "song": song,
             "primary_artists": primary_artists,
@@ -306,8 +299,15 @@ class ExampleViewSet(viewsets.ModelViewSet):
         return Response(data, template_name="example.html")
 
     def perform_create(self, serializer):
-        slug = slugify(serializer.validated_data['text'])
-        serializer.save(owner=self.request.user, slug=slug)
+        text = serializer.validated_data['text']
+        song = serializer.validated_data['from_song']
+        slug = slugify(text)
+        check = Example.objects.filter(text=text, from_song__in=song)
+        if check is None:
+            serializer.save(owner=self.request.user, slug=slug)
+        else:
+            return redirect('/')
+
 
 
 class AnnotationViewSet(viewsets.ModelViewSet):

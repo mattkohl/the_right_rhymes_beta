@@ -3,10 +3,11 @@
 {% block title %} Sense Search {% endblock %}
 
 {% block content %}
-
+{% load rest_framework %}
 {% if results %}
+    <div class="container">
     {% for result in results %}
-        <div class="result">
+        <div class="result container" style="display: block">
             <div>
                 <span class="date">{{ result.song.release_date_string }}</span>
                 <a href="{% url 'artist-highlight' pk=result.primary_artist.id%}" class="artist">{{ result.primary_artist.name }}</a>
@@ -20,12 +21,52 @@
                 <span class="album">[{{result.song.album}}]</span>
             </div>
             <ul>
-            {% for example in result.examples %}
-                <li>{{ example }}</li>
-            {% endfor %}
+                {% for example in result.examples %}
+                <form action="{% url 'example-list' %}" method="POST">
+                    {% csrf_token %}
+                      <div class="col-lg-4">
+                        <div class="input-group">
+                            <input name="text" type="text" class="form-control" value="{{ example.initial_data.text }}"/>
+                            <span class="input-group-btn">
+                                <input class="btn btn-info" type="submit" value="Save">
+                            </span>
+                        </div>
+                      </div>
+                    <input name="from_song" value="{{ example.initial_data.from_song.0 }}" class="hidden"/>
+                    {% for artist in example.initial_data.artist %}
+                    <input name="artist" value="{{ artist }}" class="hidden"/>
+                    {% endfor %}
+                    {% for feat_artist in example.initial_data.feat_artist %}
+                    <input name="feat_artist" value="{{ feat_artist }}" class="hidden"/>
+                    {% endfor %}
+                </form>
+                {% endfor %}
             </ul>
         </div>
     {% endfor %}
+    </div>
 {% endif %}
 
-{% endblock %}}
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#form_id').submit(function() { // catch the form's submit event
+        $.ajax({ // create an AJAX call...
+            data: $(this).serialize(), // get the form data
+            type: $(this).attr('method'), // GET or POST
+            url: $(this).attr('action'), // the file to call
+            success: function(response) { // on success..
+                $('#success_div).html(response); // update the DIV
+            },
+            error: function(e, x, r) { // on error..
+                $('#error_div).html(e); // update the DIV
+            }
+        });
+        return false;
+    });
+});
+</script>
+{% endblock %}
+
