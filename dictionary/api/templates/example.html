@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-sm-6">
         <div class="leftside" data-song-id="{{ song.id }}">
-            <div class="example" data-example-id="{{ example.id }}">
+            <div class="example" data-example-id="1234">
                 <div class="h2">{{ example.text }}</div>
                 <div class="song-title">
                     <strong>Song title:</strong>
@@ -49,7 +49,7 @@
                     {% endfor %}
                     {% if rhymes %}
                         {% for pair in rhymes %}
-                            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="list-group-item">{{ pair.left.text }} ({{ pair.right.text}}) </a>
+                            <a href="/" class="list-group-item">{{ pair.left.text }} ({{ pair.right.text}}) </a>
                         {% endfor %}
                     {% endif %}
                 </div>

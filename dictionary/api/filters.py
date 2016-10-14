@@ -1,5 +1,5 @@
 import django_filters
-from api.models import Artist, Song, Example, Place, Sense
+from api.models import Artist, Song, Place, Sense#, Example
 from rest_framework import filters
 
 
@@ -21,13 +21,13 @@ class PlaceFilter(filters.FilterSet):
         fields = []
 
 
-class ExampleFilter(filters.FilterSet):
-    text = django_filters.CharFilter(lookup_expr='icontains')
-    primary_artist_name = django_filters.CharFilter(name="primary_artist__name", lookup_expr='icontains', )
-
-    class Meta:
-        model = Example
-        fields = []
+# class ExampleFilter(filters.FilterSet):
+#     text = django_filters.CharFilter(lookup_expr='icontains')
+#     primary_artist_name = django_filters.CharFilter(name="primary_artist__name", lookup_expr='icontains', )
+#
+#     class Meta:
+#         model = Example
+#         fields = []
 
 
 class SenseFilter(filters.FilterSet):

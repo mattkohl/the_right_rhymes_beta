@@ -37,15 +37,14 @@
     </div>
     <div class="col-sm-5">
         <div class="rightside">
-            <form action="{% url 'example-list' %}" method="POST">
+            <form action="{% url 'annotation-list' %}" method="POST">
                 {% csrf_token %}
-                {% render_form example_serializer %}
                 <input class="btn btn-info btn-sm" type="submit" value="Save">
             </form>
             <br/>
             <div class="examples list-group">
             {% for example in examples %}
-                <a href="{% url 'example-highlight' pk=example.id %}" class="list-group-item">{{ example.text }}</a>
+                <a href="{% url 'annotation-highlight' pk=example.id %}" class="list-group-item">{{ example.text }}</a>
             {% endfor %}
             </div>
         </div>

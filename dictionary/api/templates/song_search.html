@@ -21,22 +21,22 @@
                 <span class="album">[{{result.song.album}}]</span>
             </div>
             <ul>
-                {% for example in result.examples %}
-                <form action="{% url 'example-list' %}" method="POST">
+                {% for annotation in result.annotations %}
+                <form id="{{annotation.id}}" action="{% url 'annotation-list' %}" method="POST">
                     {% csrf_token %}
                       <div class="col-lg-4">
                         <div class="input-group">
-                            <input name="text" type="text" class="form-control" value="{{ example.initial_data.text }}"/>
+                            <input name="text" type="text" class="form-control" value="{{ annotation.serializer.initial_data.text }}"/>
                             <span class="input-group-btn">
-                                <input class="btn btn-info" type="submit" value="Save">
+                                <input class="btn btn-info" value="Save" onclick="submitForm('{{ annotation.id }}')"/>
                             </span>
                         </div>
                       </div>
-                    <input name="from_song" value="{{ example.initial_data.from_song.0 }}" class="hidden"/>
-                    {% for artist in example.initial_data.artist %}
+                    <input name="from_song" value="{{ annotation.serializer.initial_data.from_song.0 }}" class="hidden"/>
+                    {% for artist in annotation.serializer.initial_data.artist %}
                     <input name="artist" value="{{ artist }}" class="hidden"/>
                     {% endfor %}
-                    {% for feat_artist in example.initial_data.feat_artist %}
+                    {% for feat_artist in annotation.serializer.initial_data.feat_artist %}
                     <input name="feat_artist" value="{{ feat_artist }}" class="hidden"/>
                     {% endfor %}
                 </form>
@@ -46,27 +46,32 @@
     {% endfor %}
     </div>
 {% endif %}
-
+<div id="success_div"></div>
+<div id="error_div"></div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-$(document).ready(function() {
-    $('#form_id').submit(function() { // catch the form's submit event
-        $.ajax({ // create an AJAX call...
-            data: $(this).serialize(), // get the form data
-            type: $(this).attr('method'), // GET or POST
-            url: $(this).attr('action'), // the file to call
-            success: function(response) { // on success..
-                $('#success_div).html(response); // update the DIV
+function submitForm(formId) {
+    var formAnchor = '#' + formId;
+    var form = $(formAnchor)[0];
+    console.log(form);
+    form.submit(function() {
+        console.log($(this).serialize());
+        $.ajax({
+            data: $(this).serialize(),
+            type: 'POST',
+            url: '/annotations/',
+            success: function() {
+                alert("Success!")
             },
-            error: function(e, x, r) { // on error..
-                $('#error_div).html(e); // update the DIV
+            error: function() {
+                alert("Failure!")
             }
         });
         return false;
     });
-});
+}
 </script>
 {% endblock %}
 
