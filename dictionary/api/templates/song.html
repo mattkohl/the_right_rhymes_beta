@@ -39,12 +39,13 @@
         <div class="rightside">
             <form action="{% url 'annotation-list' %}" method="POST">
                 {% csrf_token %}
+                {% render_form annotation_serializer %}
                 <input class="btn btn-info btn-sm" type="submit" value="Save">
             </form>
             <br/>
-            <div class="examples list-group">
-            {% for example in examples %}
-                <a href="{% url 'annotation-highlight' pk=example.id %}" class="list-group-item">{{ example.text }}</a>
+            <div class="annotations list-group">
+            {% for annotation in annotations %}
+                <a href="{% url 'annotation-highlight' pk=annotation.id %}" class="list-group-item">{{ annotation.text }}</a>
             {% endfor %}
             </div>
         </div>
@@ -55,10 +56,27 @@
 {% block scripts %}
 <script>
 
-function getSelectionText() {
-    var textSelection = window.getSelection();
-    var text = $("[name='text']");
-    text.val(textSelection.toString());
-}
+    function getSelectionText() {
+        var textSelection = window.getSelection();
+        var text = $("[name='text']");
+        text.val(textSelection.toString());
+
+        var startPosition = $("[name='start_position']");
+        startPosition.val(textSelection.anchorOffset);
+        startPosition.attr("value", textSelection.anchorOffset);
+
+        var endPosition = $("[name='end_position']");
+        endPosition.val(textSelection.focusOffset);
+        endPosition.attr("value", textSelection.focusOffset);
+    }
+
 </script>
+<!--<script>-->
+
+<!--function getSelectionText() {-->
+    <!--var textSelection = window.getSelection();-->
+    <!--var text = $("[name='text']");-->
+    <!--text.val(textSelection.toString());-->
+<!--}-->
+<!--</script>-->
 {% endblock %}

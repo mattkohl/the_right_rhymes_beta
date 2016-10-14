@@ -5,7 +5,7 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
     DomainSerializer, SemanticClassSerializer, AnnotationSerializer, \
     DictionarySerializer#, ExampleHyperlinkedSerializer
-from api.utils import slugify, make_uri, extract_rhymes#, build_example_serializer
+from api.utils import slugify, make_uri, extract_rhymes, build_annotation_serializer#, build_example_serializer
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from rest_framework import permissions, renderers, viewsets, filters, reverse, status
@@ -174,7 +174,7 @@ class SongViewSet(viewsets.ModelViewSet):
                     "song": song,
                     "primary_artist": song.primary_artist.first(),
                     "feat_artist": song.feat_artist.all(),
-                    "examples": [line for line in song.lyrics.split('\n') if q.lower() in line.lower()]
+                    "annotations": [build_annotation_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
                 } for song in queryset]
         else:
             data["results"] = []
@@ -186,11 +186,13 @@ class SongViewSet(viewsets.ModelViewSet):
         primary_artists = song.primary_artist.all()
         feat_artists = song.feat_artist.all()
         annotations = song.annotations.all()
+        annotation_serializer = build_annotation_serializer(request, song, "")
         data = {
             "song": song,
             "primary_artists": primary_artists,
             "feat_artists": feat_artists,
-            "annotations": annotations
+            "annotations": annotations,
+            "annotation_serializer": annotation_serializer
         }
         return Response(data, template_name="song.html")
 

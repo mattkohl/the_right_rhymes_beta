@@ -179,6 +179,26 @@ class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
 #             'owner'
 #         )
 
+class AnnotationHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='annotation-highlight', format='html')
+
+    class Meta:
+        model = Annotation
+        fields = (
+            'url',
+            'text',
+            'highlight',
+            'start_position',
+            'end_position',
+            'rhymes',
+            'sense',
+            'artist',
+            'place',
+            'song',
+            'owner'
+        )
+
 
 class AnnotationSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
