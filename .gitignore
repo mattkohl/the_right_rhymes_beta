@@ -42,5 +42,6 @@ settings.py
 .idea/
 
 /dictionary/api/migrations
+/dictionary/website/migrations
 /venv
 

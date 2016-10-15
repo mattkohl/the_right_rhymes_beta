@@ -22,12 +22,13 @@ def make_uri(host, object_type, pk):
 
 def build_annotation_serializer(request, song, text="", context="", start_position=None, end_position=None):
     host = request.get_host()
+    print(song)
     serializer_data = {
         "text": text,
         "context": context,
         "start_position": start_position,
         "end_position": end_position,
-        "song": [make_uri(host, 'songs', song.id)]
+        "song": make_uri(host, 'songs', song.id)
     }
     annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
     annotation_serializer.is_valid()

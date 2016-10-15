@@ -19,7 +19,7 @@
     <div class="rhymes">
         <strong>Rhymes:</strong>
         {% for pair in rhymes %}
-            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
+            <a href="{% url 'annotation-highlight' pk=pair.left.annotation.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
         {% endfor %}
     </div>
 {% endif %}
@@ -87,22 +87,22 @@
         {% endfor %}
     </div>
 {% endif %}
-<div class="examples list-group">
-    <div style="margin-bottom: 1em;"><strong>Examples:</strong></div>
+<div class="annotations list-group">
+    <div style="margin-bottom: 1em;"><strong>Annotations:</strong></div>
 
-    {% for example in examples %}
+    {% for a in annotations %}
         <div class="list-group-item">
-            <span class="date">{{ example.song.release_date_string }}</span>
-            <a href="{% url 'artist-highlight' pk=example.primary_artist.id%}" class="artist">{{ example.primary_artist.name }}</a>
-            <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
-            {% if example.feat_artist %}
+            <span class="date">{{ a.song.release_date_string }}</span>
+            <a href="{% url 'artist-highlight' pk=a.primary_artist.id%}" class="artist">{{ a.primary_artist.name }}</a>
+            <a href="{% url 'song-highlight' pk=a.song.id %}" class="title">"{{ a.song.title }}"</a>
+            {% if a.feat_artist %}
                 feat.
-                {% for feat in example.feat_artist %}
+                {% for feat in a.feat_artist %}
                 <a href="{% url 'artist-highlight' pk=feat.id%}" class="artist">{{ feat.name }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             {% endif %}
-            <span class="album">[{{example.song.album}}]</span>
-            <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
+            <span class="album">[{{a.song.album}}]</span>
+            <div class="lyric"><a href="{% url 'annotation-highlight' pk=a.annotation.id %}">{{ a.annotation.context }}</a></div>
         </div>
     {% endfor %}
 </div>

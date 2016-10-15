@@ -10,6 +10,7 @@ PARTS_OF_SPEECH = [
     ('interjection', 'interjection'),
     ('noun', 'noun'),
     ('phrase', 'phrase'),
+    ('preposition', 'preposition'),
     ('prepositional_phrase', 'prepositional phrase'),
     ('intransitive_verb', 'intransitive verb'),
     ('intransitive_phrasal_verb', 'intransitive phrasal verb'),
@@ -44,7 +45,7 @@ class Sense(models.Model):
         ordering = ('headword', 'created',)
 
     def __str__(self):
-        return self.headword + ' - ' + self.definition + ' [Published: ' + str(self.published) + ']'
+        return self.headword + ', ' + self.part_of_speech + ' - ' + self.definition + ' [Published: ' + str(self.published) + ']'
 
 
 class Dictionary(models.Model):

@@ -41,16 +41,16 @@ class SenseViewSet(viewsets.ModelViewSet):
         sense = self.get_object()
         annotations = sense.annotations.all()
         rhymes = extract_rhymes(annotations)
-        examples = [
+        annotations = [
             {
-                "ex": a,
-                "song": a.song.first(),
-                "primary_artist": a.song.first().primary_artist.first(),
-                "feat_artist": a.song.first().feat_artist.all(),
+                "annotation": a,
+                "song": a.song,
+                "primary_artist": a.song.primary_artist.first(),
+                "feat_artist": a.song.feat_artist.all(),
             } for a in annotations]
         data = {
             'sense': sense,
-            'examples': examples,
+            'annotations': annotations,
             'rhymes': rhymes,
             'domains': sense.domains.all(),
             'semantic_classes': sense.semantic_classes.all(),
