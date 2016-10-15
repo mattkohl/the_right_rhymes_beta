@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Sense Search {% endblock %}
+{% block title %} Song Search {% endblock %}
 
 {% block content %}
 {% load rest_framework %}
@@ -26,13 +26,16 @@
                     {% csrf_token %}
                       <div class="col-lg-4">
                         <div class="input-group">
-                            <input name="text" type="text" class="form-control" value="{{ annotation.serializer.initial_data.text }}"/>
+                            <input name="text" type="text" class="form-control" value="{{ annotation.initial_data.text }}"/>
+                            <input name="context" type="text" class="form-control" value="{{ annotation.initial_data.context }}"/>
+                            <input name="start_position" type="text" class="form-control" value="{{ annotation.initial_data.start_position }}"/>
+                            <input name="end_position" type="text" class="form-control" value="{{ annotation.initial_data.end_position }}"/>
                             <span class="input-group-btn">
                                 <input class="btn btn-info" value="Save" onclick="submitForm('{{ annotation.id }}')"/>
                             </span>
                         </div>
                       </div>
-                    <input name="from_song" value="{{ annotation.serializer.initial_data.from_song.0 }}" class="hidden"/>
+                    <input name="song" value="{{ annotation.serializer.initial_data.song.0 }}" class="hidden"/>
                     {% for artist in annotation.serializer.initial_data.artist %}
                     <input name="artist" value="{{ artist }}" class="hidden"/>
                     {% endfor %}

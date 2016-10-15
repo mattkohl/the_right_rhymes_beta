@@ -1,14 +1,12 @@
-import uuid
-from api.filters import ArtistFilter, SongFilter, PlaceFilter, SenseFilter#, ExampleFilter
-from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary#, Example
+from api.filters import ArtistFilter, SongFilter, PlaceFilter, SenseFilter
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, SongSerializer, \
     DomainSerializer, SemanticClassSerializer, AnnotationSerializer, \
-    DictionarySerializer#, ExampleHyperlinkedSerializer
-from api.utils import slugify, make_uri, extract_rhymes, build_annotation_serializer#, build_example_serializer
+    DictionarySerializer
+from api.utils import slugify, extract_rhymes, build_annotation_serializer, serialize_annotations
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
-from rest_framework import permissions, renderers, viewsets, filters, reverse, status
+from rest_framework import permissions, renderers, viewsets, filters
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
@@ -174,7 +172,7 @@ class SongViewSet(viewsets.ModelViewSet):
                     "song": song,
                     "primary_artist": song.primary_artist.first(),
                     "feat_artist": song.feat_artist.all(),
-                    "annotations": [build_annotation_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
+                    "annotations": serialize_annotations(request, song, q)
                 } for song in queryset]
         else:
             data["results"] = []
@@ -186,7 +184,7 @@ class SongViewSet(viewsets.ModelViewSet):
         primary_artists = song.primary_artist.all()
         feat_artists = song.feat_artist.all()
         annotations = song.annotations.all()
-        annotation_serializer = build_annotation_serializer(request, song, "")
+        annotation_serializer = build_annotation_serializer(request, song)
         data = {
             "song": song,
             "primary_artists": primary_artists,
@@ -261,56 +259,6 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])
         serializer.save(owner=self.request.user, slug=slug)
-
-
-# class ExampleViewSet(viewsets.ModelViewSet):
-#     queryset = Example.objects.all()
-#     serializer_class = ExampleHyperlinkedSerializer
-#     filter_backends = (filters.DjangoFilterBackend,)
-#     filter_class = ExampleFilter
-#     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-#                           IsOwnerOrReadOnly,)
-#
-#     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
-#     def highlight(self, request, *args, **kwargs):
-#         example = self.get_object()
-#         song = example.from_song.first()
-#         annotations = example.annotations.all()
-#         rhymes = extract_rhymes(annotations)
-#         host = request.get_host()
-#         serializer_data = {
-#             "text": "",
-#             "start_position": "0",
-#             "end_position": len(example.text),
-#             "example": make_uri(host, 'examples', example.id)
-#         }
-#         annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
-#         annotation_serializer.is_valid()
-#         data = {
-#             'example': example,
-#             'primary_artists': example.artist.all(),
-#             'feat_artists': example.feat_artist.all(),
-#             'song': song,
-#             'annotations': annotations,
-#             'rhymes': rhymes,
-#             'annotation_serializer': annotation_serializer
-#         }
-#         return Response(data, template_name="example.html")
-#
-#     def perform_create(self, serializer):
-#         text = serializer.validated_data['text']
-#         song = serializer.validated_data['from_song']
-#         slug = slugify(text)
-#         check = Example.objects.filter(text=text, from_song__in=song)
-#         print(check)
-#         if len(check) == 0:
-#             serializer.save(owner=self.request.user, slug=slug)
-#             data = serializer.data
-#             headers = self.get_success_headers(serializer.data)
-#             return Response(data, status=status.HTTP_201_CREATED, headers=headers)
-#         else:
-#             serialized = ExampleHyperlinkedSerializer(check.first(), context={'request': request})
-#             return Response(serialized.data, status=status.HTTP_303_SEE_OTHER)
 
 
 class AnnotationViewSet(viewsets.ModelViewSet):
