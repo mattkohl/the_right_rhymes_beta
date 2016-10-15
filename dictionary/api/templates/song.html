@@ -59,7 +59,9 @@
     function getSelectionText() {
         var textSelection = window.getSelection();
         var text = $("[name='text']");
+        var context = $("[name='context']");
         text.val(textSelection.toString());
+        context.val(textSelection.anchorNode.textContent);
 
         var startPosition = $("[name='start_position']");
         startPosition.val(textSelection.anchorOffset);

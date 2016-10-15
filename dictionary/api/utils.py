@@ -1,5 +1,5 @@
 import re
-from api.serializers import AnnotationHyperlinkedSerializer
+from api.serializers import AnnotationSerializer
 
 
 def extract_rhymes(annotations):
@@ -26,7 +26,7 @@ def build_annotation_serializer(request, song, text):
         "text": text,
         "song": [make_uri(host, 'songs', song.id)]
     }
-    annotation_serializer = AnnotationHyperlinkedSerializer(context={'request': request}, data=serializer_data,
+    annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data,
                                                             partial=True)
     annotation_serializer.is_valid()
     return annotation_serializer

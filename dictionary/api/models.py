@@ -116,7 +116,6 @@ class Song(models.Model):
     album = models.CharField(max_length=1000)
     lyrics = models.TextField(null=True, blank=True)
     release_date_verified = models.BooleanField(default=False)
-    # examples = models.ManyToManyField('Example', related_name="+", blank=True)
     owner = models.ForeignKey("auth.User", related_name="songs")
 
     class Meta:
@@ -124,23 +123,6 @@ class Song(models.Model):
 
     def __str__(self):
         return '"' + str(self.title) + '" (' + str(self.album) + ') '
-
-
-# class Example(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     created = models.DateTimeField(auto_now_add=True)
-#     slug = models.CharField(max_length=1000)
-#     from_song = models.ManyToManyField(Song, through=Song.examples.through, related_name="+")
-#     artist = models.ManyToManyField(Artist, through=Artist.primary_examples.through, related_name="+")
-#     feat_artist = models.ManyToManyField(Artist, through=Artist.featured_examples.through, related_name="+", blank=True)
-#     text = models.CharField(max_length=1000)
-#     owner = models.ForeignKey("auth.User", related_name="examples")
-#
-#     class Meta:
-#         ordering = ["text"]
-#
-#     def __str__(self):
-#         return str(self.text)
 
 
 class Domain(models.Model):
@@ -180,11 +162,11 @@ class Annotation(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=1000)
+    context = models.CharField(max_length=1000)
     slug = models.SlugField(max_length=1000)
     start_position = models.IntegerField()
     end_position = models.IntegerField()
     song = models.ForeignKey("Song", related_name="annotations")
-    # example = models.ForeignKey("Example", related_name="annotations")
     sense = models.ForeignKey("Sense", related_name="annotations", blank=True, null=True)
     artist = models.ForeignKey("Artist", related_name="annotations", blank=True, null=True)
     place = models.ForeignKey("Place", related_name="annotations", blank=True, null=True)
@@ -195,4 +177,4 @@ class Annotation(models.Model):
         ordering = ["text"]
 
     def __str__(self):
-        return self.text + " [" + self.example.text + "]"
+        return self.text + " [" + self.context + "]"

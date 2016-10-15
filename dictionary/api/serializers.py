@@ -1,19 +1,17 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary#, Example
+from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary
 
 
 class SenseSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='sense-highlight', format='html')
-    # recent = serializers.HyperlinkedIdentityField(view_name='sense-recent')
 
     class Meta:
         model = Sense
         fields = (
             'url',
             'highlight',
-            # 'recent',
             'headword',
             'published',
             'part_of_speech',
@@ -148,58 +146,6 @@ class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-# class ExampleSerializer(serializers.ModelSerializer):
-#     owner = serializers.ReadOnlyField(source='owner.username')
-#
-#     class Meta:
-#         model = Example
-#         fields = (
-#             'id',
-#             'text',
-#             'from_song',
-#             'artist',
-#             'feat_artist',
-#             'owner'
-#         )
-
-
-# class ExampleHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
-#     owner = serializers.ReadOnlyField(source='owner.username')
-#     highlight = serializers.HyperlinkedIdentityField(view_name='example-highlight', format='html')
-#
-#     class Meta:
-#         model = Example
-#         fields = (
-#             'url',
-#             'text',
-#             'highlight',
-#             'from_song',
-#             'artist',
-#             'feat_artist',
-#             'owner'
-#         )
-
-class AnnotationHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(view_name='annotation-highlight', format='html')
-
-    class Meta:
-        model = Annotation
-        fields = (
-            'url',
-            'text',
-            'highlight',
-            'start_position',
-            'end_position',
-            'rhymes',
-            'sense',
-            'artist',
-            'place',
-            'song',
-            'owner'
-        )
-
-
 class AnnotationSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='annotation-highlight', format='html')
@@ -209,9 +155,9 @@ class AnnotationSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'text',
+            'context',
             'highlight',
             'song',
-            # 'example',
             'start_position',
             'end_position',
             'rhymes',
