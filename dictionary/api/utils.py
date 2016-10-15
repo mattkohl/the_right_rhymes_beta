@@ -29,8 +29,7 @@ def build_annotation_serializer(request, song, text="", context="", start_positi
         "end_position": end_position,
         "song": [make_uri(host, 'songs', song.id)]
     }
-    annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data,
-                                                            partial=True)
+    annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
     annotation_serializer.is_valid()
     return annotation_serializer
 
