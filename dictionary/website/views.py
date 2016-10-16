@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_control
 
-from website.utils import check_for_image
+from website.utils import check_for_image, build_annotation
 from api.models import Sense, Artist, Domain, Place, Song, SemanticClass, Annotation
 from api.utils import slugify
 
@@ -35,7 +35,12 @@ def artist(request, artist_slug):
         long = ''
         lat = ''
 
-    annotations = artist.annotations.all()
+    primary_songs = artist.primary_songs.all()
+    featured_songs = artist.featured_songs.all()
+
+    print(list(primary_songs))
+    print(list(featured_songs))
+    artist_annotations = [build_annotation(a, 'artist') for a in artist.annotations.all()]
     image = check_for_image(artist.slug, 'artists', 'full')
     thumb = check_for_image(artist.slug, 'artists', 'thumb')
 
@@ -48,7 +53,8 @@ def artist(request, artist_slug):
         'origin_slug': origin_slug,
         'longitude': long,
         'latitude': lat,
-        'annotations': annotations,
+        'artist_annotations': artist_annotations,
+        'artist_annotation_count': len(artist_annotations),
         'entity_examples': [],
         'entity_example_count': 0,
         'image': image,

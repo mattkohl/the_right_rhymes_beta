@@ -34,7 +34,7 @@ class SenseViewSet(viewsets.ModelViewSet):
         data = {
             "senses": queryset
         }
-        return Response(data, template_name="sense_search.html")
+        return Response(data, template_name="api/sense_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -61,7 +61,7 @@ class SenseViewSet(viewsets.ModelViewSet):
             'holonyms': sense.holonyms.all(),
             'meronyms': sense.meronyms.all()
         }
-        return Response(data, template_name="sense.html")
+        return Response(data, template_name="api/sense.html")
 
     def perform_create(self, serializer):
         headword_slug = slugify(serializer.validated_data['headword'])
@@ -108,7 +108,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
                 } for song in artist.featured_songs.order_by('release_date')
             ],
         }
-        return Response(data, template_name="artist.html")
+        return Response(data, template_name="api/artist.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])
@@ -146,7 +146,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
             'rhymes': rhymes,
             'examples': examples,
         }
-        return Response(data, template_name="place.html")
+        return Response(data, template_name="api/place.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['full_name'])
@@ -176,7 +176,7 @@ class SongViewSet(viewsets.ModelViewSet):
                 } for song in queryset]
         else:
             data["results"] = []
-        return Response(data, template_name="song_search.html")
+        return Response(data, template_name="api/song_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -192,7 +192,7 @@ class SongViewSet(viewsets.ModelViewSet):
             "annotations": annotations,
             "annotation_serializer": annotation_serializer
         }
-        return Response(data, template_name="song.html")
+        return Response(data, template_name="api/song.html")
 
     def perform_create(self, serializer):
         artist_names = [a.name for a in serializer.validated_data['primary_artist']]
@@ -214,7 +214,7 @@ class DictionaryViewSet(viewsets.ModelViewSet):
             "dictionary": dictionary,
             "senses": dictionary.senses.all()
         }
-        return Response(data, template_name="dictionary.html")
+        return Response(data, template_name="api/dictionary.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])
@@ -234,7 +234,7 @@ class DomainViewSet(viewsets.ModelViewSet):
             "domain": domain,
             "senses": domain.senses.all()
         }
-        return Response(data, template_name="domain.html")
+        return Response(data, template_name="api/domain.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])
@@ -254,7 +254,7 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
             "semantic_class": semantic_class,
             "senses": semantic_class.senses.all()
         }
-        return Response(data, template_name="semantic_class.html")
+        return Response(data, template_name="api/semantic_class.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['name'])

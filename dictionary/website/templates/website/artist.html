@@ -44,6 +44,38 @@
                     {% endif %}
                 </div>
 
+                {% if artist_annotations %}
+                    {% if artist_annotation_count > 1 %}
+                    <h3 class="trr-list-header">{{ artist_annotation_count }} citations, including:</h3>
+                    {% elif artist_annotations|length == 1 %}
+                    <h3 class="trr-list-header">{{ artist_annotation_count }} citation</h3>
+                    {% endif %}
+
+                    {% for annotation in artist_annotations %}
+                        <div>
+                            <span class="date">{{ annotation.song.release_date_string }}</span>
+
+                            {% for artist in annotation.primary_artists %}
+                            <span class="artist"><a href="{% url 'artist' artist.slug %}">{{artist.name}}</a>{% if not forloop.last %}, {% endif %}</span>
+                            {% endfor %}
+                            <span class="songTitle">"<a href="/">{{annotation.song_title}}</a>"</span>
+                            {% if annotation.featured_artists %}
+                            <span> feat. </span>
+                            {% for artist in annotation.featured_artists %}
+                            <span class="artist"><a href="{% url 'artist' artist.slug %}">{{artist.name}}</a>{% if not forloop.last %}, {% endif %}</span>
+                            {% endfor %}
+
+                            {% endif %}
+                            <span class="album">[{{annotation.album }}]</span>
+
+                            <div class="lyric">
+                                {{ annotation.annotation.context|safe }}
+                                <a class="tweet" href="http://www.therightrhymes.com/artists/" title="{{ annotation.annotation.context }}" target="_blank"><i class="fa fa-share-alt" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 {% if primary_senses %}
 
                     {% if primary_sense_count > 1 %}
