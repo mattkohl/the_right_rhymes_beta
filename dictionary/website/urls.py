@@ -13,6 +13,9 @@ from . import views
 
 urlpatterns = [
 
+    # /annotations/<annotation-slug>/
+    url(r"^annotations/(?P<annotation_slug>[a-zA-Z0-9\-_'’,\(\)\+\!\*ōé½@áó]+)/$", views.annotation, name='annotation'),
+
     # /artists/<artist-slug>/
     url(r"^artists/(?P<artist_slug>[a-zA-Z0-9\-_'’,\(\)\+\!\*ōé½@áó]+)/$", views.artist, name='artist'),
 

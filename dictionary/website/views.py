@@ -20,6 +20,16 @@ NUM_QUOTS_TO_SHOW = 3
 NUM_ARTISTS_TO_SHOW = 6
 
 
+def annotation(request, annotation_slug):
+    annotation_results = get_list_or_404(Annotation, slug=annotation_slug)
+
+    template = loader.get_template('website/annotation.html')
+    context = {
+        "annotations": [annotation for annotation in annotation_results]
+    }
+    return HttpResponse(template.render(context, request))
+
+
 def artist(request, artist_slug):
     artist_results = get_list_or_404(Artist, slug=artist_slug)
     artist = artist_results[0]
