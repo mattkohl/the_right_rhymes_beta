@@ -17,12 +17,13 @@ def extract_rhymes(annotations):
 
 
 def make_uri(host, object_type, pk):
-    return "http://" + host + "/" + object_type + "/" + str(pk) + "/"
+    uri = "http://" + host + "/data/" + object_type + "/" + str(pk) + "/"
+    print(uri)
+    return uri
 
 
 def build_annotation_serializer(request, song, text="", context="", start_position=None, end_position=None):
     host = request.get_host()
-    print(song)
     serializer_data = {
         "text": text,
         "context": context,
