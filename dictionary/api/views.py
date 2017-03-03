@@ -265,6 +265,8 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
 
 
 class ExampleViewSet(viewsets.ModelViewSet):
+    # TODO: Why does example even need an artist / feat_artist -- shouldn't this come from the song?
+
     queryset = Example.objects.all()
     serializer_class = ExampleHyperlinkedSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -302,11 +304,12 @@ class ExampleViewSet(viewsets.ModelViewSet):
         text = serializer.validated_data['text']
         song = serializer.validated_data['from_song']
         slug = slugify(text)
-        check = Example.objects.filter(text=text, from_song__in=song)
-        if check is None:
-            serializer.save(owner=self.request.user, slug=slug)
-        else:
-            return redirect('/')
+        # check = Example.objects.filter(text=text, from_song__in=song)
+        # if check is None:
+        #     serializer.save(owner=self.request.user, slug=slug)
+        # else:
+        #     return redirect('/')
+        serializer.save(owner=self.request.user, slug=slug)
 
 
 class AnnotationViewSet(viewsets.ModelViewSet):
