@@ -145,21 +145,6 @@ class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ExampleSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-
-    class Meta:
-        model = Example
-        fields = (
-            'id',
-            'text',
-            'from_song',
-            'artist',
-            'feat_artist',
-            'owner'
-        )
-
-
 class ExampleHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='example-highlight', format='html')
