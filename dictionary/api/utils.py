@@ -1,5 +1,5 @@
 import re
-from api.serializers import AnnotationSerializer
+from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
 
 
 def extract_rhymes(annotations):
@@ -39,6 +39,38 @@ def build_annotation_serializer(request, song, text="", context="", start_positi
 def serialize_annotations(request, song, q):
     lines = list(set([line for line in song.lyrics.split('\n') if q.lower() in line.lower()]))
     return [build_annotation_serializer(request, song, line, q, line.index(q), line.index(q) + len(q)) for line in lines]
+
+
+def build_example_serializer(request, song, text):
+    host = request.get_host()
+    serializer_data = {
+        "text": text,
+        "artist": [make_uri(host, 'artists', artist.id) for artist in song.primary_artist.all()],
+        "feat_artist": [make_uri(host, 'artists', artist.id) for artist in song.feat_artist.all()],
+        "from_song": [make_uri(host, 'songs', song.id)]
+    }
+    example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data,
+                                                      partial=True)
+    example_serializer.is_valid()
+    return example_serializer
+
+
+def serialize_examples(request, song, q):
+    host = request.get_host()
+    serializers = []
+    lines = [line for line in song.lyrics.split('\n') if q in line]
+    for line in lines:
+        serializer_data = {
+            "text": line,
+            "artist": [make_uri(host, 'artists', artist.id) for artist in song.primary_artist.all()],
+            "feat_artist": [make_uri(host, 'artists', artist.id) for artist in song.feat_artist.all()],
+            "from_song": [make_uri(host, 'songs', song.id)]
+        }
+        example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data, partial=True)
+        example_serializer.is_valid()
+        serializers.append(example_serializer)
+
+    return serializers
 
 
 def slugify(text):

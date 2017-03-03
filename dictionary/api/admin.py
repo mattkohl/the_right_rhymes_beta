@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from api.models import Sense, Artist, Song, Place, \
-    Domain, SemanticClass, Annotation#, Example
+from api.models import Sense, Artist, Song, Place, Domain, SemanticClass, Annotation, Example
 
 
 @admin.register(Annotation)
@@ -19,9 +18,9 @@ class DomainAdmin(admin.ModelAdmin):
     list_display = ['name']
 
 
-# @admin.register(Example)
-# class ExampleAdmin(admin.ModelAdmin):
-#     list_display = ['text']
+@admin.register(Example)
+class ExampleAdmin(admin.ModelAdmin):
+    list_display = ['text']
 
 
 @admin.register(Place)
