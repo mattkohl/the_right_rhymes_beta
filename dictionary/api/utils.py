@@ -27,7 +27,7 @@ def build_annotation_serializer(request, example, text="", start_position=None, 
         "text": text,
         "start_position": start_position,
         "end_position": end_position,
-        "example": make_uri(host, 'example', example.id)
+        "example": make_uri(host, 'examples', example.id)
     }
     annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
     annotation_serializer.is_valid()
