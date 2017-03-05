@@ -34,18 +34,13 @@ def build_annotation_serializer(request, example, text="", start_position=None, 
     return annotation_serializer
 
 
-def serialize_annotations(request, song, q):
-    lines = list(set([line for line in song.lyrics.split('\n') if q.lower() in line.lower()]))
-    return [build_annotation_serializer(request, song, line, q, line.index(q), line.index(q) + len(q)) for line in lines]
-
-
 def build_example_serializer(request, song, text):
     host = request.get_host()
     serializer_data = {
         "text": text,
         "artist": [make_uri(host, 'artists', artist.id) for artist in song.primary_artist.all()],
         "feat_artist": [make_uri(host, 'artists', artist.id) for artist in song.feat_artist.all()],
-        "from_song": [make_uri(host, 'songs', song.id)]
+        "from_song": make_uri(host, 'songs', song.id)
     }
     example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data,
                                                       partial=True)
@@ -62,7 +57,7 @@ def serialize_examples(request, song, q):
             "text": line,
             "artist": [make_uri(host, 'artists', artist.id) for artist in song.primary_artist.all()],
             "feat_artist": [make_uri(host, 'artists', artist.id) for artist in song.feat_artist.all()],
-            "from_song": [make_uri(host, 'songs', song.id)]
+            "from_song": make_uri(host, 'songs', song.id)
         }
         example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data, partial=True)
         example_serializer.is_valid()
