@@ -87,22 +87,24 @@
         {% endfor %}
     </div>
 {% endif %}
-<div class="annotations list-group">
-    <div style="margin-bottom: 1em;"><strong>Annotations:</strong></div>
+<div class="examples list-group">
+    <div style="margin-bottom: 1em;"><strong>Examples:</strong></div>
 
-    {% for a in annotations %}
+    {% for e in examples %}
         <div class="list-group-item">
-            <span class="date">{{ a.song.release_date_string }}</span>
-            <a href="{% url 'artist-highlight' pk=a.primary_artist.id%}" class="artist">{{ a.primary_artist.name }}</a>
-            <a href="{% url 'song-highlight' pk=a.song.id %}" class="title">"{{ a.song.title }}"</a>
-            {% if a.feat_artist %}
+            <span class="date">{{ e.song.release_date_string }}</span>
+            {% for artist in e.primary_artist %}
+                <a href="{% url 'artist-highlight' pk=artist.id%}" class="artist">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            <a href="{% url 'song-highlight' pk=e.song.id %}" class="title">"{{ e.song.title }}"</a>
+            {% if e.feat_artist %}
                 feat.
-                {% for feat in a.feat_artist %}
+                {% for feat in e.feat_artist %}
                 <a href="{% url 'artist-highlight' pk=feat.id%}" class="artist">{{ feat.name }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             {% endif %}
-            <span class="album">[{{a.song.album}}]</span>
-            <div class="lyric"><a href="{% url 'annotation-highlight' pk=a.annotation.id %}">{{ a.annotation.context }}</a></div>
+            <span class="album">[{{e.song.album}}]</span>
+            <div class="lyric">{{ e.ex.text }}</div>
         </div>
     {% endfor %}
 </div>

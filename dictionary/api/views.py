@@ -4,7 +4,7 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer,\
     SongSerializer, DomainSerializer, SemanticClassSerializer, AnnotationSerializer, DictionarySerializer,\
     ExampleHyperlinkedSerializer
-from api.utils import slugify, extract_rhymes, make_uri, build_example_serializer
+from api.utils import slugify, extract_rhymes, make_uri, build_example_serializer, build_annotation_serializer
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from rest_framework import permissions, renderers, viewsets, filters
@@ -45,9 +45,9 @@ class SenseViewSet(viewsets.ModelViewSet):
         examples = [
             {
                 "ex": a.example,
-                "song": a.example.from_song.first(),
-                "primary_artist": a.example.from_song.first().primary_artist.first(),
-                "feat_artist": a.example.from_song.first().feat_artist.all(),
+                "song": a.example.from_song,
+                "primary_artist": a.example.from_song.primary_artist.all(),
+                "feat_artist": a.example.from_song.feat_artist.all(),
             } for a in annotations]
         data = {
             'sense': sense,
@@ -137,9 +137,9 @@ class PlaceViewSet(viewsets.ModelViewSet):
         examples = [
             {
                 "ex": a.example,
-                "song": a.example.from_song.first(),
-                "primary_artist": a.example.from_song.first().primary_artist.first(),
-                "feat_artist": a.example.from_song.first().feat_artist.first(),
+                "song": a.example.from_song,
+                "primary_artist": a.example.from_song.primary_artist.all(),
+                "feat_artist": a.example.from_song.feat_artist.first(),
             } for a in annotations]
         data = {
             'place': place,
@@ -173,7 +173,7 @@ class SongViewSet(viewsets.ModelViewSet):
             data['results'] = [
                 {
                     "song": song,
-                    "primary_artist": song.primary_artist.first(),
+                    "primary_artist": song.primary_artist.all(),
                     "feat_artist": song.feat_artist.all(),
                     "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
                 } for song in queryset]
@@ -277,17 +277,10 @@ class ExampleViewSet(viewsets.ModelViewSet):
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         example = self.get_object()
-        song = example.from_song.first()
+        song = example.from_song
         annotations = example.annotations.all()
         rhymes = extract_rhymes(annotations)
-        host = request.get_host()
-        serializer_data = {
-            "text": "",
-            "start_position": "0",
-            "end_position": len(example.text),
-            "example": make_uri(host, 'examples', example.id)
-        }
-        annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
+        annotation_serializer = build_annotation_serializer(request, example)
         annotation_serializer.is_valid()
         data = {
             'example': example,
@@ -298,7 +291,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
             'rhymes': rhymes,
             'annotation_serializer': annotation_serializer
         }
-        return Response(data, template_name="example.html")
+        return Response(data, template_name="api/example.html")
 
     def perform_create(self, serializer):
         text = serializer.validated_data['text']

@@ -158,6 +158,7 @@ class ExampleHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
             'from_song',
             'artist',
             'feat_artist',
+            'annotations',
             'owner'
         )
 
@@ -171,7 +172,6 @@ class AnnotationSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'text',
-            'context',
             'highlight',
             'example',
             'start_position',

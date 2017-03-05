@@ -117,7 +117,6 @@ class Song(models.Model):
     album = models.CharField(max_length=1000)
     lyrics = models.TextField(null=True, blank=True)
     release_date_verified = models.BooleanField(default=False)
-    examples = models.ManyToManyField('Example', related_name="+", blank=True)
     owner = models.ForeignKey("auth.User", related_name="songs")
 
     class Meta:
@@ -131,7 +130,7 @@ class Example(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     slug = models.CharField(max_length=1000)
-    from_song = models.ManyToManyField(Song, through=Song.examples.through, related_name="+")
+    from_song = models.ForeignKey("Song", related_name="examples")
     artist = models.ManyToManyField(Artist, through=Artist.primary_examples.through, related_name="+")
     feat_artist = models.ManyToManyField(Artist, through=Artist.featured_examples.through, related_name="+", blank=True)
     text = models.CharField(max_length=1000)
@@ -181,7 +180,6 @@ class Annotation(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=1000)
-    context = models.CharField(max_length=1000)
     slug = models.SlugField(max_length=1000)
     start_position = models.IntegerField()
     end_position = models.IntegerField()

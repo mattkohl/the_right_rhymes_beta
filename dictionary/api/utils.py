@@ -18,18 +18,16 @@ def extract_rhymes(annotations):
 
 def make_uri(host, object_type, pk):
     uri = "http://" + host + "/data/" + object_type + "/" + str(pk) + "/"
-    print(uri)
     return uri
 
 
-def build_annotation_serializer(request, song, text="", context="", start_position=None, end_position=None):
+def build_annotation_serializer(request, example, text="", start_position=None, end_position=None):
     host = request.get_host()
     serializer_data = {
         "text": text,
-        "context": context,
         "start_position": start_position,
         "end_position": end_position,
-        "song": make_uri(host, 'songs', song.id)
+        "example": make_uri(host, 'example', example.id)
     }
     annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)
     annotation_serializer.is_valid()
