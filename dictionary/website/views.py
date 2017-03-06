@@ -75,3 +75,27 @@ def artist(request, artist_slug):
         } for aka in artist.also_known_as.all()]
     }
     return HttpResponse(template.render(context, request))
+
+
+def entry(request, headword_slug):
+    if '#' in headword_slug:
+        slug = headword_slug.split('#')[0]
+    else:
+        slug = headword_slug
+    template = loader.get_template('website/entry.html')
+
+    senses = Sense.objects.filter(headword=headword_slug, published=True)
+    if senses:
+        headword = senses.first().headword
+        context = {
+            'headword': headword,
+            'slug': headword_slug,
+            'title': headword[0].upper() + headword[1:],
+            'image': "",
+            'pub_date': "",
+            'last_updated': "",
+            'senses': senses,
+            'published_entries': []
+        }
+
+        return HttpResponse(template.render(context, request))

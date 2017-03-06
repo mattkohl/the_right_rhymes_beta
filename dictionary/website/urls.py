@@ -19,4 +19,7 @@ urlpatterns = [
     # /artists/<artist-slug>/
     url(r"^artists/(?P<artist_slug>[a-zA-Z0-9\-_'’,\(\)\+\!\*ōé½@áó]+)/$", views.artist, name='artist'),
 
+    # /<headword-slug>/
+    url(r"^(?P<headword_slug>[a-zA-Z0-9\-_#’']+)/?$", views.entry, name='entry'),
+
 ]
