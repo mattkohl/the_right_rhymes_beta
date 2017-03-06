@@ -265,8 +265,6 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
 
 
 class ExampleViewSet(viewsets.ModelViewSet):
-    # TODO: Why does example even need an artist / feat_artist -- shouldn't this come from the song?
-
     queryset = Example.objects.all()
     serializer_class = ExampleHyperlinkedSerializer
     filter_backends = (filters.DjangoFilterBackend,)
