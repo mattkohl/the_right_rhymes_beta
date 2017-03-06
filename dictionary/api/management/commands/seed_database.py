@@ -12,12 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         owner = User.objects.first()
         if owner:
-            sense_json = get_random()
-            if sense_json:
-                data_dict = dict((k, sense_json[k]) for k in ('headword', 'part_of_speech', 'definition'))
-                data_dict.update({"owner": owner})
-                persisted = persist("sense", data_dict)
-                print(persisted)
+            r = random_sense_pipeline(owner)
             self.stdout.write(self.style.SUCCESS('Done!'))
         else:
             self.stdout.write(self.style.SUCCESS('Add a superuser first!'))
@@ -36,6 +31,12 @@ def get_random(what="sense"):
         return json.loads(r.text)
 
 
+def json_extract(result, owner):
+    s = dict((k, result[k]) for k in ('headword', 'part_of_speech', 'definition'))
+    s.update({"owner": owner})
+    return s
+
+
 def persist(what, data_dict):
     if what == 'sense':
         obj, created = Sense.objects.get_or_create(**data_dict)
@@ -49,5 +50,14 @@ def persist(what, data_dict):
         obj = None
         print("Failed to persist", what, ": ", str(data_dict))
     return obj
+
+
+def random_sense_pipeline(owner):
+    random_sense_json = get_random()
+    if random_sense_json:
+        data_dict = json_extract(random_sense_json, owner)
+        persisted = persist("sense", data_dict)
+        return persisted
+    return None
 
 
