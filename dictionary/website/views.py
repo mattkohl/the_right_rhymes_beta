@@ -84,7 +84,7 @@ def entry(request, headword_slug):
         slug = headword_slug
     template = loader.get_template('website/entry.html')
 
-    senses = Sense.objects.filter(headword=headword_slug, published=True)
+    senses = Sense.objects.filter(headword=slug)
     if senses:
         headword = senses.first().headword
         context = {
@@ -94,8 +94,9 @@ def entry(request, headword_slug):
             'image': "",
             'pub_date': "",
             'last_updated': "",
-            'senses': senses,
+            'senses': [s.to_dict() for s in senses],
             'published_entries': []
         }
-
+        import pprint
+        pprint.pprint(context)
         return HttpResponse(template.render(context, request))

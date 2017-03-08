@@ -47,6 +47,31 @@ class Sense(models.Model):
     def __str__(self):
         return self.headword + ', ' + self.part_of_speech + ' - ' + self.definition + ' [Published: ' + str(self.published) + ']'
 
+    def to_dict(self):
+        return {
+            "pub_date": self.created,
+            "headword": self.headword,
+            "slug": self.headword_slug,
+            "part_of_speech": self.part_of_speech,
+            "definition": self.definition,
+            "etymology": self.etymology,
+            "notes": self.notes,
+            "derivatives": [s.to_xref() for s in self.derivatives.all()],
+            "synonyms": [s.to_xref() for s in self.synonyms.all()],
+            "antonyms": [s.to_xref() for s in self.antonyms.all()],
+            "hypernyms": [s.to_xref() for s in self.hypernyms.all()],
+            "meronyms": [s.to_xref() for s in self.meronyms.all()],
+            "domains": [],
+            "semantic_classes": [],
+            "annotations": self.annotations
+        }
+
+    def to_xref(self):
+        return {
+            "headword": self.headword,
+            "slug": self.headword_slug,
+        }
+
 
 class Dictionary(models.Model):
     id = models.AutoField(primary_key=True)
@@ -84,6 +109,25 @@ class Artist(models.Model):
     def __str__(self):
         return self.name
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "slug": self.slug,
+            "also_known_as": [a.to_xref() for a in self.also_known_as.all()],
+            "members": [a.to_xref() for a in self.members.all()],
+            "origin": self.origin.first().to_xref(),
+            "primary_songs": [s.to_xref() for s in self.primary_songs.all()],
+            "featured_songs": [s.to_xref() for s in self.featured_songs.all()],
+            "primary_examples": [s.to_xref() for s in self.primary_examples.all()],
+            "featured_examples": [s.to_xref() for s in self.featured_examples.all()],
+        }
+
+    def to_xref(self):
+        return {
+            "name": self.name,
+            "slug": self.slug,
+        }
+
 
 class Place(models.Model):
 
@@ -103,6 +147,24 @@ class Place(models.Model):
 
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "slug": self.slug,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "artists": [a.to_xref() for a in self.artists.all()],
+            "contains": [p.to_xref() for p in self.contains.all()]
+        }
+
+    def to_xref(self):
+        return {
+            "name": self.name,
+            "slug": self.slug,
+            "latitude": self.latitude,
+            "longitude": self.longitude
+        }
 
 
 class Song(models.Model):
@@ -125,6 +187,29 @@ class Song(models.Model):
     def __str__(self):
         return '"' + str(self.title) + '" (' + str(self.album) + ') '
 
+    def to_dict(self):
+        return {
+            "title": self.title,
+            "slug": self.slug,
+            "release_date": self.release_date,
+            "release_date_string": self.release_date_string,
+            "album": self.album,
+            "primary_artists": [a.to_xref() for a in self.primary_artist.all()],
+            "feat_artists": [a.to_xref() for a in self.feat_artist.all()],
+            "lyrics": self.lyrics,
+        }
+
+    def to_xref(self):
+        return {
+            "title": self.title,
+            "slug": self.slug,
+            "release_date": self.release_date,
+            "release_date_string": self.release_date_string,
+            "album": self.album,
+            "primary_artists": [a.to_xef() for a in self.primary_artist.all()],
+            "feat_artists": [a.to_xref() for a in self.feat_artist.all()]
+        }
+
 
 class Example(models.Model):
     id = models.AutoField(primary_key=True)
@@ -142,6 +227,25 @@ class Example(models.Model):
     def __str__(self):
         return str(self.text)
 
+    def to_dict(self):
+        return {
+            "slug": self.slug,
+            "song": self.from_song.title,
+            "primary_artists": [a.to_xref() for a in self.artist.all()],
+            "feat_artists": [a.to_xref() for a in self.feat_artist.all()],
+            "text": self.text
+        }
+
+    def to_xref(self):
+        return {
+            "slug": self.slug,
+            "song": self.from_song.title,
+            "primary_artists": [a.to_xref() for a in self.artist.all()],
+            "feat_artists": [a.to_xref() for a in self.feat_artist.all()],
+            "text": self.text,
+            "annotations": [a.to_xref() for a in self.annotations.all()]
+        }
+
 
 class Domain(models.Model):
     id = models.AutoField(primary_key=True)
@@ -157,6 +261,18 @@ class Domain(models.Model):
 
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "slug": self.slug
+        }
+
+    def to_xref(self):
+        return {
+            "name": self.name,
+            "slug": self.slug
+        }
 
 
 class SemanticClass(models.Model):
@@ -174,6 +290,18 @@ class SemanticClass(models.Model):
 
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "slug": self.slug
+        }
+
+    def to_xref(self):
+        return {
+            "name": self.name,
+            "slug": self.slug
+        }
 
 
 class Annotation(models.Model):
@@ -195,3 +323,29 @@ class Annotation(models.Model):
 
     def __str__(self):
         return self.text + " [" + self.example.text + "]"
+
+    def to_dict(self):
+        return {
+            "text": self.text,
+            "slug": self.slug,
+            "start_position": self.start_position,
+            "end_position": self.end_position,
+            "example": self.example.to_xref(),
+            "sense": self.sense.to_xref(),
+            "artist": self.artist.to_xref(),
+            "place": self.place.to_xref(),
+            "rhymes": [r.to_xref() for r in self.rhymes.all()]
+        }
+
+    def to_xref(self):
+        return {
+            "text": self.text,
+            "slug": self.slug,
+            "start_position": self.start_position,
+            "end_position": self.end_position,
+            "sense": self.sense.to_xref(),
+            "artist": self.artist.to_xref(),
+            "place": self.place.to_xref(),
+            "rhymes": [r.to_xref() for r in self.rhymes.all()]
+        }
+

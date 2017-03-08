@@ -1,4 +1,4 @@
-{% extends "dictionary/base.html" %}
+{% extends "website/base.html" %}
 {% block title %}{{ headword }} ⋅ {% endblock %}
 {% block meta %}
     <meta name="description" content="'{{ title }}' in The Right Rhymes Hip-Hop Dictionary">
@@ -41,7 +41,7 @@
                             {% endif %}
                             <div class="pos">{{ sense.part_of_speech }}</div>
                             <div class="name-date">
-                                <span>Published on <time>{{ pub_date }}</time></span>
+                                <span>Published on <time>{{ sense.pub_date }}</time></span>
                             </div>
                             <div id="{{ sense.xml_id }}" class="anchor"></div>
                             <div class="definition">{{ sense.definition }}</div>
