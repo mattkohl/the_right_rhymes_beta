@@ -31,6 +31,7 @@ class Sense(models.Model):
     definition = models.CharField(max_length=2000, default="__stub_definition__")
     etymology = models.CharField(max_length=2000, null=True, blank=True)
     notes = models.CharField(max_length=2000, null=True, blank=True)
+    mentioned_in = models.ManyToManyField("Example", related_name="mentions_sense", blank=True, symmetrical=False)
     derivatives = models.ManyToManyField("self", related_name="derives_from", blank=True, symmetrical=False)
     synonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     antonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
@@ -56,14 +57,14 @@ class Sense(models.Model):
             "definition": self.definition,
             "etymology": self.etymology,
             "notes": self.notes,
+            "mentioned_in": [e.to_xref() for e in self.mentioned_in.all()],
             "derivatives": [s.to_xref() for s in self.derivatives.all()],
             "synonyms": [s.to_xref() for s in self.synonyms.all()],
             "antonyms": [s.to_xref() for s in self.antonyms.all()],
             "hypernyms": [s.to_xref() for s in self.hypernyms.all()],
             "meronyms": [s.to_xref() for s in self.meronyms.all()],
             "domains": [],
-            "semantic_classes": [],
-            "annotations": self.annotations
+            "semantic_classes": []
         }
 
     def to_xref(self):
@@ -96,11 +97,12 @@ class Artist(models.Model):
     slug = models.SlugField(max_length=1000)
     also_known_as = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     members = models.ManyToManyField("self", related_name="member_of", blank=True, symmetrical=False)
-    origin = models.ManyToManyField('Place', related_name="+", blank=True)
+    origin = models.ForeignKey('Place', related_name="+", blank=True, null=True)
     primary_songs = models.ManyToManyField('Song', related_name="+", blank=True)
     featured_songs = models.ManyToManyField('Song', related_name="+", blank=True)
     primary_examples = models.ManyToManyField('Example', related_name="+", blank=True)
     featured_examples = models.ManyToManyField('Example', related_name="+", blank=True)
+    mentioned_in = models.ManyToManyField("Example", related_name="mentions_artist", blank=True, symmetrical=False)
     owner = models.ForeignKey("auth.User", related_name="artists")
 
     class Meta:
@@ -115,11 +117,13 @@ class Artist(models.Model):
             "slug": self.slug,
             "also_known_as": [a.to_xref() for a in self.also_known_as.all()],
             "members": [a.to_xref() for a in self.members.all()],
-            "origin": self.origin.first().to_xref(),
+            "origin": self.origin.to_xref(),
             "primary_songs": [s.to_xref() for s in self.primary_songs.all()],
             "featured_songs": [s.to_xref() for s in self.featured_songs.all()],
             "primary_examples": [s.to_xref() for s in self.primary_examples.all()],
             "featured_examples": [s.to_xref() for s in self.featured_examples.all()],
+            "mentioned_in": [e.to_xref() for e in self.mentioned_in.all()]
+
         }
 
     def to_xref(self):
@@ -138,8 +142,8 @@ class Place(models.Model):
     slug = models.CharField(max_length=1000)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    artists = models.ManyToManyField(Artist, through=Artist.origin.through, related_name="+", blank=True)
     contains = models.ManyToManyField("self", related_name="within", blank=True, symmetrical=False)
+    mentioned_in = models.ManyToManyField("Example", related_name="mentions_place", blank=True, symmetrical=False)
     owner = models.ForeignKey("auth.User", related_name="places")
 
     class Meta:
@@ -155,7 +159,8 @@ class Place(models.Model):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "artists": [a.to_xref() for a in self.artists.all()],
-            "contains": [p.to_xref() for p in self.contains.all()]
+            "contains": [p.to_xref() for p in self.contains.all()],
+            "mentioned_in": [e.to_xref() for e in self.mentioned_in.all()]
         }
 
     def to_xref(self):
