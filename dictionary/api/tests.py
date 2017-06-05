@@ -7,14 +7,18 @@ from rest_framework.test import APIClient
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary, Example
 
 
-class SenseAPITest(APITestCase):
+class BaseApiTest(APITestCase):
 
     def setUp(self):
-        self.url = reverse('sense-list')
-        self.instance_url = self.url + "{}/"
         self.user = User.objects.create(username="test", email="ad@min.com", password="admin", is_superuser=True)
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
+
+
+class SenseApiTest(BaseApiTest):
+
+    url = reverse('sense-list')
+    instance_url = url + "{}/"
 
     def test_sense_endpoint(self):
 
@@ -31,3 +35,9 @@ class SenseAPITest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Sense.objects.count(), 1)
         self.assertEqual(Sense.objects.get().headword, 'test sense')
+
+
+class ArtistApiTest(BaseApiTest):
+
+    def setUp(self):
+        pass
