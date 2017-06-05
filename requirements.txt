@@ -18,6 +18,7 @@ psycopg2==2.7.1
 pyparsing==2.2.0
 pytz==2017.2
 requests==2.17.3
+selenium==3.4.3
 simplejson==3.10.0
 six==1.10.0
 uritemplate==3.0.0
