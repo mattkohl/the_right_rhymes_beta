@@ -25,6 +25,8 @@
 *.log
 *.sql
 *.sqlite
+*.sqlite3
+
 
 # OS generated files #
 ######################
@@ -41,7 +43,4 @@ settings.py
 .idea/*
 .idea/
 
-/dictionary/api/migrations
-/dictionary/website/migrations
 /venv
-
