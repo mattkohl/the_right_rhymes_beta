@@ -11,6 +11,7 @@ gunicorn==19.7.1
 idna==2.5
 itypes==1.1.0
 Jinja2==2.9.6
+Markdown==2.6.8
 MarkupSafe==1.0
 packaging==16.8
 psycopg2==2.7.1

@@ -329,6 +329,17 @@ class Annotation(models.Model):
     def __str__(self):
         return self.text + " [" + self.example.text + "]"
 
+    def __iter__(self):
+        yield "text", self.text
+        yield "slug", self.slug
+        yield "start_position", self.start_position
+        yield "end_position", self.end_position
+        # yield "example", self.example.to_xref()
+        # yield "sense", self.sense.to_xref()
+        # yield "artist", self.artist.to_xref()
+        # yield "place", self.place.to_xref()
+        # yield "rhymes", [r.to_xref() for r in self.rhymes.all()]
+
     def to_dict(self):
         return {
             "text": self.text,
