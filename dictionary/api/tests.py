@@ -50,7 +50,27 @@ class ArtistApiTest(BaseApiTest):
             "annotations": [],
         }
         response = self.client.post(self.url, data, format='json')
-        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Artist.objects.count(), 1)
-        self.assertEqual(Artist.objects.get().name, 'test name')
+        self.assertEqual(Artist.objects.get().name, 'test artist')
+
+
+class PlaceApiTest(BaseApiTest):
+
+    url = reverse('place-list')
+    instance_url = url + "{}/"
+
+    def test_POST_place(self):
+
+        data = {
+            "owner": self.user.id,
+            "full_name": "test city, test state, test country",
+            "annotations": [],
+            "within": [],
+            "artists": [],
+        }
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Place.objects.count(), 1)
+        self.assertEqual(Place.objects.get().full_name, "test city, test state, test country")
+        self.assertEqual(Place.objects.get().name, "test city")

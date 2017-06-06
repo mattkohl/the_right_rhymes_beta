@@ -97,7 +97,7 @@ class Artist(models.Model):
     slug = models.SlugField(max_length=1000)
     also_known_as = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     members = models.ManyToManyField("self", related_name="member_of", blank=True, symmetrical=False)
-    origin = models.ForeignKey('Place', related_name="+", blank=True, null=True)
+    origin = models.ForeignKey('Place', related_name="artists", blank=True, null=True)
     primary_songs = models.ManyToManyField('Song', related_name="+", blank=True)
     featured_songs = models.ManyToManyField('Song', related_name="+", blank=True)
     primary_examples = models.ManyToManyField('Example', related_name="+", blank=True)
@@ -131,6 +131,10 @@ class Artist(models.Model):
             "name": self.name,
             "slug": self.slug,
         }
+
+    def __iter__(self):
+        yield "name", self.name
+        yield "slug", self.slug
 
 
 class Place(models.Model):

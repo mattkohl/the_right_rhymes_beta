@@ -152,8 +152,10 @@ class PlaceViewSet(viewsets.ModelViewSet):
         return Response(data, template_name="api/place.html")
 
     def perform_create(self, serializer):
-        slug = slugify(serializer.validated_data['full_name'])
-        serializer.save(owner=self.request.user, slug=slug)
+        full_name = serializer.validated_data['full_name']
+        name = full_name.split(", ")[0]
+        slug = slugify(full_name)
+        serializer.save(owner=self.request.user, slug=slug, name=name)
 
 
 class SongViewSet(viewsets.ModelViewSet):

@@ -62,7 +62,6 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'highlight',
-            'name',
             'full_name',
             'latitude',
             'longitude',
