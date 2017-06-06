@@ -6,7 +6,6 @@ from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, P
     ExampleHyperlinkedSerializer
 from api.utils import slugify, extract_rhymes, clean_up_date, build_example_serializer, build_annotation_serializer
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
 from rest_framework import permissions, renderers, viewsets, filters
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response

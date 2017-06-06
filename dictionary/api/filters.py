@@ -23,7 +23,7 @@ class PlaceFilter(filters.FilterSet):
 
 class ExampleFilter(filters.FilterSet):
     text = django_filters.CharFilter(lookup_expr='icontains')
-    primary_artist_name = django_filters.CharFilter(name="primary_artist__name", lookup_expr='icontains', )
+    primary_artists_name = django_filters.CharFilter(name="primary_artists__name", lookup_expr='icontains', )
 
     class Meta:
         model = Example
@@ -43,8 +43,8 @@ class SenseFilter(filters.FilterSet):
 class SongFilter(filters.FilterSet):
     lyrics = django_filters.CharFilter(lookup_expr='icontains')
     release_date_string = django_filters.CharFilter(lookup_expr='icontains')
-    primary_artist_name = django_filters.CharFilter(name="primary_artist__name", lookup_expr='icontains', )
-    featured_artist_name = django_filters.CharFilter(name="feat_artist__name", lookup_expr='icontains', )
+    primary_artists_name = django_filters.CharFilter(name="primary_artists__name", lookup_expr='icontains', )
+    featured_artists_name = django_filters.CharFilter(name="featured_artists__name", lookup_expr='icontains', )
 
     class Meta:
         model = Song
