@@ -87,8 +87,8 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
             'title',
             'album',
             'lyrics',
-            'primary_artist',
-            'feat_artist',
+            'primary_artists',
+            'featured_artists',
             'examples',
             'release_date_verified',
             'owner'
@@ -155,8 +155,8 @@ class ExampleHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
             'text',
             'highlight',
             'from_song',
-            'artist',
-            'feat_artist',
+            'primary_artists',
+            'featured_artists',
             'annotations',
             'owner'
         )

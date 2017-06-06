@@ -181,8 +181,8 @@ class Song(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     slug = models.CharField(max_length=1000)
     title = models.CharField(max_length=1000)
-    primary_artist = models.ManyToManyField(Artist, through=Artist.primary_songs.through, related_name="+")
-    feat_artist = models.ManyToManyField(Artist, through=Artist.featured_songs.through, related_name="+", blank=True)
+    primary_artists = models.ManyToManyField(Artist, through=Artist.primary_songs.through, related_name="+")
+    featured_artists = models.ManyToManyField(Artist, through=Artist.featured_songs.through, related_name="+", blank=True)
     release_date = models.DateField()
     release_date_string = models.CharField(max_length=10)
     album = models.CharField(max_length=1000)
@@ -203,8 +203,8 @@ class Song(models.Model):
             "release_date": self.release_date,
             "release_date_string": self.release_date_string,
             "album": self.album,
-            "primary_artists": [a.to_xref() for a in self.primary_artist.all()],
-            "feat_artists": [a.to_xref() for a in self.feat_artist.all()],
+            "primary_artists": [a.to_xref() for a in self.primary_artists.all()],
+            "featured_artists": [a.to_xref() for a in self.featured_artists.all()],
             "lyrics": self.lyrics,
         }
 
@@ -215,8 +215,8 @@ class Song(models.Model):
             "release_date": self.release_date,
             "release_date_string": self.release_date_string,
             "album": self.album,
-            "primary_artists": [a.to_xef() for a in self.primary_artist.all()],
-            "feat_artists": [a.to_xref() for a in self.feat_artist.all()]
+            "primary_artists": [a.to_xef() for a in self.primary_artists.all()],
+            "featured_artists": [a.to_xref() for a in self.featured_artists.all()]
         }
 
 
@@ -225,8 +225,8 @@ class Example(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     slug = models.CharField(max_length=1000)
     from_song = models.ForeignKey("Song", related_name="examples")
-    artist = models.ManyToManyField(Artist, through=Artist.primary_examples.through, related_name="+")
-    feat_artist = models.ManyToManyField(Artist, through=Artist.featured_examples.through, related_name="+", blank=True)
+    primary_artists = models.ManyToManyField(Artist, through=Artist.primary_examples.through, related_name="+")
+    featured_artists = models.ManyToManyField(Artist, through=Artist.featured_examples.through, related_name="+", blank=True)
     text = models.CharField(max_length=1000)
     owner = models.ForeignKey("auth.User", related_name="examples")
 
@@ -240,8 +240,8 @@ class Example(models.Model):
         return {
             "slug": self.slug,
             "song": self.from_song.title,
-            "primary_artists": [a.to_xref() for a in self.artist.all()],
-            "feat_artists": [a.to_xref() for a in self.feat_artist.all()],
+            "primary_artists": [a.to_xref() for a in self.primary_artists.all()],
+            "featured_artists": [a.to_xref() for a in self.featured_artists.all()],
             "text": self.text
         }
 
@@ -249,8 +249,8 @@ class Example(models.Model):
         return {
             "slug": self.slug,
             "song": self.from_song.title,
-            "primary_artists": [a.to_xref() for a in self.artist.all()],
-            "feat_artists": [a.to_xref() for a in self.feat_artist.all()],
+            "primary_artists": [a.to_xref() for a in self.primary_artists.all()],
+            "featured_artists": [a.to_xref() for a in self.featured_artists.all()],
             "text": self.text,
             "annotations": [a.to_xref() for a in self.annotations.all()]
         }
