@@ -94,3 +94,17 @@ def slugify(text):
     slug = re.sub("\?", "", slug)
     slug = re.sub("[\(\)]", "", slug)
     return slug
+
+
+def clean_up_date(unformatted_date):
+    new_date = unformatted_date
+    month = new_date[-2:]
+    if len(new_date) == 7 and month == '02':
+        return new_date + '-28'
+    if len(new_date) == 7 and month in ['04', '06', '11', '09']:
+        return new_date + '-30'
+    if len(new_date) == 7:
+        return new_date + '-31'
+    if len(new_date) == 4:
+        return new_date + '-12-31'
+    return new_date

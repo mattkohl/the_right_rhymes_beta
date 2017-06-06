@@ -1,10 +1,13 @@
+from datetime import date
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
+from django.test.client import RequestFactory
 
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary, Example
+from api.utils import make_uri
 
 
 class BaseApiTest(APITestCase):
@@ -13,6 +16,7 @@ class BaseApiTest(APITestCase):
         self.user = User.objects.create(username="test", email="ad@min.com", password="admin", is_superuser=True)
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
+        self.factory = RequestFactory()
 
 
 class SenseApiTest(BaseApiTest):
@@ -74,3 +78,40 @@ class PlaceApiTest(BaseApiTest):
         self.assertEqual(Place.objects.count(), 1)
         self.assertEqual(Place.objects.get().full_name, "test city, test state, test country")
         self.assertEqual(Place.objects.get().name, "test city")
+
+
+class SongApiTest(BaseApiTest):
+
+    url = reverse('song-list')
+    artist_url = reverse('artist-list')
+    instance_url = url + "{}/"
+
+    def test_POST_song(self):
+        request = self.factory.get('/data/')
+        host = request.get_host()
+        artist_data = {
+            "owner": self.user.id,
+            "name": "test artist",
+            "annotations": [],
+        }
+        response = self.client.post(self.artist_url, artist_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Artist.objects.count(), 1)
+        test_artist = Artist.objects.get()
+        test_artist_uri = make_uri(host, 'artists', test_artist.id)
+
+        song_data = {
+            "owner": self.user.id,
+            "title": "test song",
+            "release_date_string": "2001",
+            "album": "test album",
+            "annotations": [],
+            "primary_artist": [test_artist_uri],
+            "feat_artists": [],
+            "examples": []
+        }
+        response = self.client.post(self.url, song_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Song.objects.count(), 1)
+        self.assertEqual(Song.objects.get().title, "test song")
+        self.assertEqual(Song.objects.get().release_date, date(2001, 12, 31))

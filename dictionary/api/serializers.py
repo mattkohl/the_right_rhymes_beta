@@ -83,7 +83,7 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'highlight',
             'release_date_string',
-            'release_date',
+            # 'release_date',
             'title',
             'album',
             'lyrics',

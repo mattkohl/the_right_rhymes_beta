@@ -4,7 +4,7 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer,\
     SongSerializer, DomainSerializer, SemanticClassSerializer, AnnotationSerializer, DictionarySerializer,\
     ExampleHyperlinkedSerializer
-from api.utils import slugify, extract_rhymes, make_uri, build_example_serializer, build_annotation_serializer
+from api.utils import slugify, extract_rhymes, clean_up_date, build_example_serializer, build_annotation_serializer
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from rest_framework import permissions, renderers, viewsets, filters
@@ -200,10 +200,12 @@ class SongViewSet(viewsets.ModelViewSet):
         return Response(data, template_name="api/song.html")
 
     def perform_create(self, serializer):
+        release_date_string = serializer.validated_data['release_date_string']
+        release_date = clean_up_date(release_date_string)
         artist_names = [a.name for a in serializer.validated_data['primary_artist']]
         slug_text = " ".join(artist_names) + " " + serializer.validated_data['title']
         slug = slugify(slug_text)
-        serializer.save(owner=self.request.user, slug=slug)
+        serializer.save(owner=self.request.user, slug=slug, release_date=release_date)
 
 
 class DictionaryViewSet(viewsets.ModelViewSet):
