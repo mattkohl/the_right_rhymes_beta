@@ -46,8 +46,8 @@ class SenseViewSet(viewsets.ModelViewSet):
             {
                 "ex": a.example,
                 "song": a.example.from_song,
-                "primary_artist": a.example.from_song.primary_artist.all(),
-                "feat_artist": a.example.from_song.feat_artist.all(),
+                "primary_artists": a.example.from_song.primary_artists.all(),
+                "featured_artists": a.example.from_song.featured_artist.all(),
             } for a in annotations]
         data = {
             'sense': sense,
@@ -98,7 +98,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
                     "title": song.title,
                     "release_date": song.release_date_string,
                     "album": song.album,
-                    "feat_artist": song.feat_artist.all(),
+                    "featured_artists": song.featured_artists.all(),
                 } for song in artist.primary_songs.order_by('release_date')
             ],
             "featured_songs": [
@@ -107,7 +107,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
                     "title": song.title,
                     "release_date": song.release_date_string,
                     "album": song.album,
-                    "feat_artist": song.feat_artist.all(),
+                    "featured_artists": song.featured_artists.all(),
                 } for song in artist.featured_songs.order_by('release_date')
             ],
         }
@@ -138,8 +138,8 @@ class PlaceViewSet(viewsets.ModelViewSet):
             {
                 "ex": a.example,
                 "song": a.example.from_song,
-                "primary_artist": a.example.from_song.primary_artist.all(),
-                "feat_artist": a.example.from_song.feat_artist.first(),
+                "primary_artists": a.example.from_song.primary_artists.all(),
+                "featured_artists": a.example.from_song.featured_artists.first(),
             } for a in annotations]
         data = {
             'place': place,
@@ -175,8 +175,8 @@ class SongViewSet(viewsets.ModelViewSet):
             data['results'] = [
                 {
                     "song": song,
-                    "primary_artist": song.primary_artist.all(),
-                    "feat_artist": song.feat_artist.all(),
+                    "primary_artists": song.primary_artists.all(),
+                    "featured_artists": song.featured_artistss.all(),
                     "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
                 } for song in queryset]
         else:
@@ -186,14 +186,14 @@ class SongViewSet(viewsets.ModelViewSet):
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         song = self.get_object()
-        primary_artists = song.primary_artist.all()
-        feat_artists = song.feat_artist.all()
+        primary_artists = song.primary_artists.all()
+        featured_artists = song.featured_artists.all()
         examples = song.examples.all()
         example_serializer = build_example_serializer(request, song, "")
         data = {
             "song": song,
             "primary_artists": primary_artists,
-            "feat_artists": feat_artists,
+            "featured_artists": featured_artists,
             "examples": examples,
             "example_serializer": example_serializer
         }
@@ -202,7 +202,7 @@ class SongViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         release_date_string = serializer.validated_data['release_date_string']
         release_date = clean_up_date(release_date_string)
-        artist_names = [a.name for a in serializer.validated_data['primary_artist']]
+        artist_names = [a.name for a in serializer.validated_data['primary_artists']]
         slug_text = " ".join(artist_names) + " " + serializer.validated_data['title']
         slug = slugify(slug_text)
         serializer.save(owner=self.request.user, slug=slug, release_date=release_date)
@@ -286,8 +286,8 @@ class ExampleViewSet(viewsets.ModelViewSet):
         annotation_serializer.is_valid()
         data = {
             'example': example,
-            'primary_artists': example.artist.all(),
-            'feat_artists': example.feat_artist.all(),
+            'primary_artists': example.primary_artists.all(),
+            'featured_artists': example.featured_artists.all(),
             'song': song,
             'annotations': annotations,
             'rhymes': rhymes,

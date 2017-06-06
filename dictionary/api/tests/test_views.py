@@ -106,8 +106,8 @@ class SongApiTest(BaseApiTest):
             "release_date_string": "2001",
             "album": "test album",
             "annotations": [],
-            "primary_artist": [test_artist_uri],
-            "feat_artists": [],
+            "primary_artists": [test_artist_uri],
+            "featured_artists": [],
             "examples": []
         }
         response = self.client.post(self.url, song_data, format='json')
