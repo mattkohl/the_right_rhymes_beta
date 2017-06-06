@@ -44,3 +44,5 @@ settings.py
 .idea/
 
 /venv
+
+.coverage

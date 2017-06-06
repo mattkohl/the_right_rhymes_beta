@@ -59,6 +59,9 @@ class SenseApiTest(BaseApiTest):
         self.client.post(self.url, self.data, format='json')
         response = self.client.get(self.url, format="json")
         self.assertEqual(response.data['count'], 1)
+        sense_ = response.data['results'][0]
+        self.assertEqual(sense_['headword'], self.data['headword'])
+        self.assertEqual(sense_['part_of_speech'], self.data['part_of_speech'])
 
 
 class ArtistApiTest(BaseApiTest):
@@ -75,6 +78,14 @@ class ArtistApiTest(BaseApiTest):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Artist.objects.count(), 1)
         self.assertEqual(Artist.objects.get().name, 'test artist')
+
+    def test_GET_artist(self):
+        self.data['owner'] = self.user.id
+        self.client.post(self.url, self.data, format='json')
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.data['count'], 1)
+        artist_ = response.data['results'][0]
+        self.assertEqual(artist_['name'], self.data['name'])
 
 
 class PlaceApiTest(BaseApiTest):
@@ -94,6 +105,14 @@ class PlaceApiTest(BaseApiTest):
         self.assertEqual(Place.objects.count(), 1)
         self.assertEqual(Place.objects.get().full_name, "test city, test state, test country")
         self.assertEqual(Place.objects.get().name, "test city")
+
+    def test_GET_place(self):
+        self.data['owner'] = self.user.id
+        self.client.post(self.url, self.data, format='json')
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.data['count'], 1)
+        place_ = response.data['results'][0]
+        self.assertEqual(place_['full_name'], self.data['full_name'])
 
 
 class SongApiTest(BaseApiTest):
@@ -126,11 +145,26 @@ class SongApiTest(BaseApiTest):
         test_artist_uri = make_uri(host, 'artists', test_artist.id)
         self.song_data.update({"primary_artists": [test_artist_uri], "owner": self.user.id})
 
-        self.song_data['owner'] = self.user.id
         response = self.client.post(self.url, self.song_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Song.objects.count(), 1)
         self.assertEqual(Song.objects.get().title, "test song")
         self.assertEqual(Song.objects.get().release_date, date(2001, 12, 31))
+
+    def test_GET_song(self):
+        response = self.client.post(self.artist_url, self.artist_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Artist.objects.count(), 1)
+        test_artist = Artist.objects.get()
+        request = self.factory.get('/data/')
+        host = request.get_host()
+        test_artist_uri = make_uri(host, 'artists', test_artist.id)
+        self.song_data.update({"primary_artists": [test_artist_uri], "owner": self.user.id})
+        self.client.post(self.url, self.song_data, format='json')
+
+        response = self.client.get(self.url, format="json")
+        self.assertEqual(response.data['count'], 1)
+        song_ = response.data['results'][0]
+        self.assertEqual(song_['title'], self.song_data['title'])
 
 
