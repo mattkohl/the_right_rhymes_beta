@@ -20,10 +20,10 @@ class SenseApiTest(BaseApiTest):
     url = reverse('sense-list')
     instance_url = url + "{}/"
 
-    def test_sense_endpoint(self):
+    def test_POST_sense(self):
 
         data = {
-            'owner': self.user.id,
+            "owner": self.user.id,
             "headword": "test sense",
             "part_of_speech": "noun",
             "derives_from": [],
@@ -39,5 +39,18 @@ class SenseApiTest(BaseApiTest):
 
 class ArtistApiTest(BaseApiTest):
 
-    def setUp(self):
-        pass
+    url = reverse('artist-list')
+    instance_url = url + "{}/"
+
+    def test_POST_artist(self):
+
+        data = {
+            "owner": self.user.id,
+            "name": "test artist",
+            "annotations": [],
+        }
+        response = self.client.post(self.url, data, format='json')
+        print(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Artist.objects.count(), 1)
+        self.assertEqual(Artist.objects.get().name, 'test name')
