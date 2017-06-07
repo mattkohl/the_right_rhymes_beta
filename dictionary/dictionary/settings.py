@@ -4,9 +4,11 @@ Django settings for dictionary project.
 
 import os
 import sys
-from dictionary.settings_secret import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+env = os.environ
+
 
 if 'TRAVIS' in os.environ:
     DATABASES = {
@@ -20,7 +22,18 @@ if 'TRAVIS' in os.environ:
         }
     }
     SECRET_KEY = '1234567890'
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.postgresql_psycopg2',
+            'NAME':     env['DATABASE_NAME'],
+            'USER':     env['DATABASE_USER'],
+            'PASSWORD': env['DATABASE_PASSWORD'],
+            'HOST':     env['DATABASE_HOST'],
+            'PORT':     env['DATABASE_PORT'],
+        }
+    }
+    SECRET_KEY = env['SECRET_KEY']
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
