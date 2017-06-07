@@ -62,6 +62,7 @@ class SenseApiTest(BaseApiTest):
         self.data['owner'] = self.user.id
         self.client.post(self.url, self.data, format='json')
         response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         sense_ = response.data['results'][0]
         self.assertEqual(sense_['headword'], self.data['headword'])
@@ -87,6 +88,7 @@ class ArtistApiTest(BaseApiTest):
         self.data['owner'] = self.user.id
         self.client.post(self.url, self.data, format='json')
         response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         artist_ = response.data['results'][0]
         self.assertEqual(artist_['name'], self.data['name'])
@@ -114,6 +116,7 @@ class PlaceApiTest(BaseApiTest):
         self.data['owner'] = self.user.id
         self.client.post(self.url, self.data, format='json')
         response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         place_ = response.data['results'][0]
         self.assertEqual(place_['full_name'], self.data['full_name'])
@@ -167,6 +170,7 @@ class SongApiTest(BaseApiTest):
         self.client.post(self.url, self.song_data, format='json')
 
         response = self.client.get(self.url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         song_ = response.data['results'][0]
         self.assertEqual(song_['title'], self.song_data['title'])
