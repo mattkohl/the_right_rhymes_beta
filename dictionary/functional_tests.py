@@ -32,6 +32,10 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.get('http://localhost:8000/data/')
         self.assertIn("Api Root", self.browser.title)
 
+    def test_list_endpoints(self):
+        self.browser.get("http://localhost:8000/data/")
+        pres = self.browser.find_elements_by_tag_name('pre')
+
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
