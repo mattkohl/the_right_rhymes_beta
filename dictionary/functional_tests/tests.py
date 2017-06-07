@@ -36,5 +36,6 @@ class NewVisitorTest(LiveServerTestCase):
 
     def test_list_endpoints(self):
         self.browser.get(self.api_url)
-        pres = self.browser.find_elements_by_tag_name('pre')
+        links = self.browser.find_elements_by_xpath('//div/pre/a')
+        [self.assertRegex(element.text, "/data/[\w\-]+/") for element in links]
 
