@@ -9,6 +9,10 @@ from django.test.client import RequestFactory
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary, Example
 from api.utils import make_uri
 
+###
+# coverage run --source='.' manage.py test api
+###
+
 
 class BaseApiTest(APITestCase):
 
