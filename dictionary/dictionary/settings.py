@@ -13,9 +13,9 @@ env = os.environ
 if 'TRAVIS' in os.environ:
     DATABASES = {
         'default': {
-            'ENGINE':   'django.db.backends.postgresql_psycopg2',
+            'ENGINE':   'django.db.backends.sqlite3',
             'NAME':     'travisci',
-            'USER':     'postgres',
+            'USER':     '',
             'PASSWORD': '',
             'HOST':     'localhost',
             'PORT':     '',
