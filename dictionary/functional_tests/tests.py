@@ -1,6 +1,7 @@
 import time
-import unittest
+from django.test import LiveServerTestCase
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 
 
@@ -20,22 +21,20 @@ def wait(fn):
     return modified_fn
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
+        self.api_url = self.live_server_url + "/data/"
 
     def tearDown(self):
         self.browser.quit()
 
     def test_open_api_root_page(self):
-        self.browser.get('http://localhost:8000/data/')
+        self.browser.get(self.api_url)
         self.assertIn("Api Root", self.browser.title)
 
     def test_list_endpoints(self):
-        self.browser.get("http://localhost:8000/data/")
+        self.browser.get(self.api_url)
         pres = self.browser.find_elements_by_tag_name('pre')
 
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
