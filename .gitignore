@@ -38,7 +38,7 @@
 ehthumbs.db
 Thumbs.db
 
-settings.py
+settings_secret.py
 *.pyc
 .idea/*
 .idea/
