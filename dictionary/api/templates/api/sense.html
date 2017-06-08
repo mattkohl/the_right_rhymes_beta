@@ -3,13 +3,11 @@
 {% block title %} {{ sense.headword }}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <h2><a href="{% url 'sense-detail' pk=sense.id %}">{{ sense.headword }}</a></h2>
-</div>
+<h2><a href="{% url 'sense-detail' pk=sense.id %}">{{ sense.headword }}</a></h2>
 
+<div class="col s12"><strong>Part of speech: </strong> {{ sense.part_of_speech }}</div>
 
-    <div class="col s12"><strong>Part of speech: </strong> {{ sense.part_of_speech }}</div>
-    <div class="col s12"><strong>Definition: </strong>{{ sense.definition }}</div>
+<div class="col s12"><strong>Definition: </strong>{{ sense.definition }}</div>
 
 {% if sense.etymology %}
     <div class="col s12"><strong>Etymology: </strong>{{ sense.etymology }}</div>
@@ -19,7 +17,7 @@
     <div class="col s12"><strong>Notes: </strong>{{ sense.notes }}</div>
 {% endif %}
 
-    <div class="col s12"><strong>Published: </strong>{{ sense.published }}</div>
+<div class="col s12"><strong>Published: </strong>{{ sense.published }}</div>
 
 {% if rhymes %}
     {% include 'api/_rhyme_list.html' with rhymes=rhymes label="Rhymes" %}

@@ -1,8 +1,6 @@
-<div class="row">
-    <div class="col s12">
+<div class="col s12">
     <strong>{{ label }}</strong>:
     {% for pair in rhymes %}
         <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
     {% endfor %}
-    </div>
 </div>

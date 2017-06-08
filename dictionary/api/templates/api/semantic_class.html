@@ -1,14 +1,12 @@
 {% extends "api/base.html" %}
 
-{% block title %} {{ semantic_cass.name }}{% endblock %}
+{% block title %} {{ semantic_class.name }}{% endblock %}
 
 {% block content %}
-<div class="h2">{{ semantic_class.name }}</div>
+<h2><a href="{% url 'semanticclass-detail' pk=semantic_class.id %}">{{ semantic_class.name }}</a></h2>
 
 {% if senses %}
-    {% for sense in senses %}
-        <div><a href="{% url 'sense-highlight' pk=sense.id %}">{{ sense.headword }}</a></div>
-    {% endfor %}
+    {% include 'api/_sense_list.html' with senses=senses label="Senses" %}
 {% endif %}
 
 {% endblock %}}

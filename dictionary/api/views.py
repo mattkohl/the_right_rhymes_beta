@@ -97,6 +97,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
                     "title": song.title,
                     "release_date": song.release_date_string,
                     "album": song.album,
+                    "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
                 } for song in artist.primary_songs.order_by('release_date')
             ],
@@ -106,6 +107,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
                     "title": song.title,
                     "release_date": song.release_date_string,
                     "album": song.album,
+                    "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
                 } for song in artist.featured_songs.order_by('release_date')
             ],
