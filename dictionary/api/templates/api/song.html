@@ -5,40 +5,44 @@
 {% block content %}
 {% load rest_framework %}
 <div class="row">
-    <h2>"<a href="{% url 'song-detail' pk=song.id %}">{{ song.title }}</a>"</h2>
-    <div><strong>Release date: </strong>{{ song.release_date_string }}</div>
-    {% if primary_artists %}
-        {% include 'api/_artist_list.html' with artists=primary_artists label="Primary artists" %}
-    {% endif %}
-
-    {% if featured_artists %}
-        {% include 'api/_artist_list.html' with artists=featured_artists label="Featured artists" %}
-    {% endif %}
-    <div><strong>Album: </strong>{{ song.album }}</div>
-    <div class="divider"></div>
-</div>
-<div class="row">
+<div class="col s12">
     <div class="col s6" data-song-id="{{ song.id }}">
+        <h2>"<a href="{% url 'song-detail' pk=song.id %}">{{ song.title }}</a>"</h2>
+        <div><strong>Release date: </strong>{{ song.release_date_string }}</div>
+        {% if primary_artists %}
+            {% include 'api/_artist_list.html' with artists=primary_artists label="Primary artists" %}
+        {% endif %}
+
+        {% if featured_artists %}
+            {% include 'api/_artist_list.html' with artists=featured_artists label="Featured artists" %}
+        {% endif %}
+        <div><strong>Album: </strong>{{ song.album }}</div>
+        <div class="divider"></div>
         <div>{{ song.lyrics|linebreaks }}</div>
     </div>
-    <div class="col s2">
-        <button id="inject" class="btn" onclick="getSelectionText();">Inject text</button>
-    </div>
-    <div class="col s4">
-        <div class="rightside">
-            <form action="{% url 'example-list' %}" method="POST">
-                {% csrf_token %}
-                {% render_form example_serializer %}
-                <input class="btn" type="submit" value="Save">
-            </form>
-            <br/>
-            <div class="examples list-group">
-            {% for example in examples %}
-                <a href="{% url 'example-highlight' pk=example.id %}" class="list-group-item">{{ example.text }}</a>
-            {% endfor %}
+    <div class="col s6">
+        <div id="example-form">
+            <div class="row">
+                <form class="col s12" action="{% url 'example-list' %}" method="POST">
+                    {% csrf_token %}
+                    {% render_form example_serializer %}
+                    <input class="btn" type="submit" value="Save" id="example-submit-button">
+                </form>
+                <button id="inject" class="btn" onclick="getSelectionText();">Inject text</button>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <strong>Examples</strong>:
+                    <div class="collection">
+                    {% for example in examples %}
+                        <a href="{% url 'example-highlight' pk=example.id %}" class="collection-item">{{ example.text }}</a>
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 

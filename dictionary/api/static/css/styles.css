@@ -5,3 +5,12 @@
     font-family: "Rock Salt";
     font-size: 1.5rem !important;
 }
+
+#example-form {
+    position: fixed;
+}
+
+#example-submit-button, #annotation-submit-button {
+    margin-left: 10rem;
+    margin-bottom: -3.7em;
+}

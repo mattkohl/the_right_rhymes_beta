@@ -46,7 +46,7 @@ class SenseViewSet(viewsets.ModelViewSet):
                 "ex": a.example,
                 "song": a.example.from_song,
                 "primary_artists": a.example.from_song.primary_artists.all(),
-                "featured_artists": a.example.from_song.featured_artist.all(),
+                "featured_artists": a.example.from_song.featured_artists.all(),
             } for a in annotations]
         data = {
             'sense': sense,
