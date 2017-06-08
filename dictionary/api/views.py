@@ -27,14 +27,15 @@ class SenseViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Sense.objects.all().order_by('-created')
+        queryset = Sense.objects.all().order_by('headword')
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(definition__icontains=q)
         data = {
+            "label": "Senses",
             "senses": queryset
         }
-        return Response(data, template_name="api/sense_search.html")
+        return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -75,6 +76,18 @@ class ArtistViewSet(viewsets.ModelViewSet):
     filter_class = ArtistFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = Artist.objects.all().order_by('name')
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(name__icontains=q)
+        data = {
+            "label": "Artists",
+            "artists": queryset
+        }
+        return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -127,6 +140,18 @@ class PlaceViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = Place.objects.all().order_by('name')
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(full_name__icontains=q)
+        data = {
+            "label": "Places",
+            "places": queryset
+        }
+        return Response(data, template_name="api/_search.html")
+
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         place = self.get_object()
@@ -169,11 +194,12 @@ class SongViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
+        queryset = Song.objects.all().order_by('title')
         q = self.request.query_params.get('q', None)
         data = dict()
         if q is not None:
             queryset = Song.objects.filter(release_date_verified=True).filter(lyrics__icontains=q).order_by('release_date')
-            data['results'] = [
+            data['songs'] = [
                 {
                     "song": song,
                     "primary_artists": song.primary_artists.all(),
@@ -181,8 +207,17 @@ class SongViewSet(viewsets.ModelViewSet):
                     "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
                 } for song in queryset]
         else:
-            data["results"] = []
-        return Response(data, template_name="api/song_search.html")
+            data["songs"] = [
+                {
+                    "id": song.id,
+                    "title": song.title,
+                    "release_date": song.release_date_string,
+                    "album": song.album,
+                    "primary_artists": song.primary_artists.all(),
+                    "featured_artists": song.featured_artists.all(),
+                } for song in queryset
+            ]
+        return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):

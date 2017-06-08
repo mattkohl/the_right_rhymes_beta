@@ -1,0 +1,31 @@
+{% extends "api/base.html" %}
+
+{% block title %} {{ label }} Search {% endblock %}
+
+{% block content %}
+
+<h4>{{ label }}</h4>
+
+{% if artists %}
+    {% for artist in artists %}
+        <div><a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a></div>
+    {% endfor %}
+{% endif %}
+
+{% if places %}
+    {% for place in places %}
+        <div><a href="{% url 'place-highlight' pk=place.id %}">{{ place.name }}</a></div>
+    {% endfor %}
+{% endif %}
+
+{% if senses %}
+    {% for sense in senses %}
+        <div><a href="{% url 'sense-highlight' pk=sense.id %}">{{ sense.headword }}</a></div>
+    {% endfor %}
+{% endif %}
+
+{% if songs %}
+    {% include 'api/_song_list.html' with songs=songs label="Songs" %}
+{% endif %}
+
+{% endblock %}

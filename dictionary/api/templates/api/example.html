@@ -46,18 +46,20 @@
                 </div>
                 <div class="row">
                     <div class="col s12">
-                        <strong>Annotations</strong>:
                         {% if annotations %}
+                            <strong>Annotations</strong>:
                             <div class="annotations collection">
                                 {% for annotation in annotations %}
                                     {% if annotation.sense.id %}
                                         <a href="{% url 'sense-highlight' pk=annotation.sense.id %}" class="collection-item">{{ annotation.text }}</a>
-                                    {% endif %}
-                                    {% if annotation.artist.id %}
+
+                                    {% elif annotation.artist.id %}
                                         <a href="{% url 'artist-highlight' pk=annotation.artist.id %}" class="collection-item">{{ annotation.text }}</a>
-                                    {% endif %}
-                                    {% if annotation.place.id %}
+
+                                    {% elif annotation.place.id %}
                                         <a href="{% url 'place-highlight' pk=annotation.place.id %}" class="collection-item">{{ annotation.text }}</a>
+                                    {% else %}
+                                        <div class="collection-item">{{ annotation.text }}</div>
                                     {% endif %}
                                 {% endfor %}
                                 {% if rhymes %}
