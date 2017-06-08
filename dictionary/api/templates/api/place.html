@@ -3,63 +3,28 @@
 {% block title %} {{ place.name }}{% endblock %}
 
 {% block content %}
-<div class="h2"><a href="{% url 'place-detail' pk=place.id %}">{{ place.name }}</a></div>
+<div class="row">
+    <h2><a href="{% url 'place-detail' pk=place.id %}">{{ place.name }}</a></h2>
+</div>
 
 {% if contains %}
-    <div class="contains">
-        <strong>Contains:</strong>
-        {% for s in contains %}
-            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% include 'api/_place_list.html' with places=contains label="Contains" %}
 {% endif %}
 
 {% if within %}
-    <div class="within">
-        <strong>Within:</strong>
-        {% for s in within %}
-            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% include 'api/_place_list.html' with places=within label="Within" %}
 {% endif %}
 
 {% if rhymes %}
-    <div class="rhymes">
-        <strong>Rhymes:</strong>
-        {% for pair in rhymes %}
-            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% include 'api/_rhyme_list.html' with rhymes=rhymes label="Rhymes" %}
 {% endif %}
 
 {% if artists %}
-    <div class="artists">
-        <strong>Artists: </strong>
-        {% for artist in artists %}
-            <div class="artist">
-                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-            </div>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% include 'api/_artist_list.html' with artists=artists label="Artists" %}
 {% endif %}
 
 {% if examples %}
-    <div class="h4">Examples:</div>
-    <div class="examples list-group">
-    {% for example in examples %}
-        <div class="list-group-item">
-            <span class="date">{{ example.song.release_date_string }}</span>
-            <a href="{% url 'artist-highlight' pk=example.primary_artist.id%}" class="artist">{{ example.primary_artist.name }}</a>
-            <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
-            {% if example.feat_artist %}
-                feat.
-                <a href="{% url 'artist-highlight' pk=example.feat_artist.id%}" class="artist">{{ example.feat_artist.name }}</a>
-            {% endif %}
-            <span class="album">[{{example.song.album}}]</span>
-            <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
-        </div>
-    {% endfor %}
-    </div>
+    {% include 'api/_example_list.html' with examples=examples label="Examples" %}
 {% endif %}
 
 {% endblock %}}

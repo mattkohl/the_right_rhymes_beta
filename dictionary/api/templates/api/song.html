@@ -5,42 +5,31 @@
 {% block content %}
 {% load rest_framework %}
 <div class="row">
-    <div class="col-sm-6">
-        <div class="leftside" data-song-id="{{ song.id }}">
-            <div class="h2 song">"<a href="{% url 'song-detail' pk=song.id %}">{{ song.title }}</a>"</div>
-            <div class="release-date"><strong>Release date: </strong>{{ song.release_date_string }}</div>
-            <div class="artists">
-                <strong>Primary artists:</strong>
-                {% for artist in primary_artists %}
-                    <span class="primary-artist" data-artist-id="{{ artist.id }}">
-                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-                    </span>
-                {% endfor %}
-            </div>
-            {% if feat_artists %}
-                <div class="artist">
-                    <strong>Featured artists:</strong>
-                    {% for artist in feat_artists %}
-                        <span class="artist">
-                            <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-                        </span>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            <div class="album"><strong>Album: </strong>{{ song.album }}</div>
-            <br/>
-            <div class="lyrics">{{ song.lyrics|linebreaks }}</div>
-        </div>
+    <h2>"<a href="{% url 'song-detail' pk=song.id %}">{{ song.title }}</a>"</h2>
+    <div><strong>Release date: </strong>{{ song.release_date_string }}</div>
+    {% if primary_artists %}
+        {% include 'api/_artist_list.html' with artists=primary_artists label="Primary artists" %}
+    {% endif %}
+
+    {% if featured_artists %}
+        {% include 'api/_artist_list.html' with artists=featured_artists label="Featured artists" %}
+    {% endif %}
+    <div><strong>Album: </strong>{{ song.album }}</div>
+    <div class="divider"></div>
+</div>
+<div class="row">
+    <div class="col s6" data-song-id="{{ song.id }}">
+        <div>{{ song.lyrics|linebreaks }}</div>
     </div>
-    <div class="col-sm-1">
-        <button id="inject" class="btn btn-info btn-sm" onclick="getSelectionText();">Inject text</button>
+    <div class="col s2">
+        <button id="inject" class="btn" onclick="getSelectionText();">Inject text</button>
     </div>
-    <div class="col-sm-5">
+    <div class="col s4">
         <div class="rightside">
             <form action="{% url 'example-list' %}" method="POST">
                 {% csrf_token %}
                 {% render_form example_serializer %}
-                <input class="btn btn-info btn-sm" type="submit" value="Save">
+                <input class="btn" type="submit" value="Save">
             </form>
             <br/>
             <div class="examples list-group">
@@ -73,12 +62,5 @@
     }
 
 </script>
-<!--<script>-->
 
-<!--function getSelectionText() {-->
-    <!--var textSelection = window.getSelection();-->
-    <!--var text = $("[name='text']");-->
-    <!--text.val(textSelection.toString());-->
-<!--}-->
-<!--</script>-->
 {% endblock %}

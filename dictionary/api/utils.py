@@ -38,8 +38,8 @@ def build_example_serializer(request, song, text):
     host = request.get_host()
     serializer_data = {
         "text": text,
-        "artist": [make_uri(host, 'artists', artist.id) for artist in song.primary_artist.all()],
-        "feat_artist": [make_uri(host, 'artists', artist.id) for artist in song.feat_artist.all()],
+        "primary_artists": [make_uri(host, 'artists', artist.id) for artist in song.primary_artists.all()],
+        "featured_artists": [make_uri(host, 'artists', artist.id) for artist in song.featured_artists.all()],
         "from_song": make_uri(host, 'songs', song.id)
     }
     example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data,
@@ -55,8 +55,8 @@ def serialize_examples(request, song, q):
     for line in lines:
         serializer_data = {
             "text": line,
-            "artist": [make_uri(host, 'artists', artist.id) for artist in song.primary_artist.all()],
-            "feat_artist": [make_uri(host, 'artists', artist.id) for artist in song.feat_artist.all()],
+            "primary_artists": [make_uri(host, 'artists', artist.id) for artist in song.primary_artists.all()],
+            "featured_artists": [make_uri(host, 'artists', artist.id) for artist in song.featured_artists.all()],
             "from_song": make_uri(host, 'songs', song.id)
         }
         example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data, partial=True)

@@ -16,89 +16,27 @@
 {% endif %}
 
 {% if also_known_as %}
-    <div class="row">
-        <div class="col s12">
-        <strong>Also known as: </strong>
-        {% for artist in also_known_as %}
-            <span class="artist">
-                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-            </span>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        </div>
-    </div>
+    {% include 'api/_artist_list.html' with artists=also_known_as label="Also known as" %}
 {% endif %}
 
 {% if members %}
-    <div class="row">
-        <div class="col s12">
-        <strong>Members: </strong>
-        {% for artist in members %}
-            <span class="artist">
-                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-            </span>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        </div>
-    </div>
+    {% include 'api/_artist_list.html' with artists=members label="Members" %}
 {% endif %}
 
 {% if member_of %}
-    <div class="row">
-        <div class="col s12">
-        <strong>Member of: </strong>
-        {% for artist in member_of %}
-            <span class="artist">
-                <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-            </span>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        </div>
-    </div>
+    {% include 'api/_artist_list.html' with artists=member_of label="Member of" %}
 {% endif %}
 
 {% if rhymes %}
-    <div class="row">
-        <div class="col s12">
-        <strong>Rhymes:</strong>
-        {% for pair in rhymes %}
-            <a href="{% url 'example-highlight' pk=pair.left.example.id%}" class="annotation-link">{{ pair.left.text }}</a> ({{ pair.right.text}}){% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        </div>
-    </div>
+    {% include 'api/_rhyme_list.html' with rhymes=rhymes label="Rhymes" %}
 {% endif %}
 
 {% if primary_songs %}
-    <div class="row">
-        <div class="col s12">
-        <strong>Primary Songs:</strong>
-        {% for song in primary_songs %}
-            <div class="song">
-                {{ song.release_date }}
-                <a href="{% url 'song-highlight' pk=song.id %}">"{{ song.title }}"</a>
-                {% if song.feat_artist %}
-                    feat.
-                    {% for artist in song.feat_artist %}
-                        <span class="artist">
-                            <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-                        </span>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                {% endif %}
-                [{{ song.album }}]
-            </div>
-        {% endfor %}
-        </div>
-    </div>
+    {% include 'api/_song_list.html' with songs=primary_songs label="Primary songs" %}
 {% endif %}
 
 {% if featured_songs %}
-    <div class="row">
-        <div class="col s12">
-        <strong>Featured Songs:</strong>
-        {% for song in featured_songs %}
-            <div class="song">
-                <a href="{% url 'song-highlight' pk=song.id %}">{{ song.release_date_string }} "{{ song.title }}" [{{ song.album }}]</a>
-            </div>
-        {% endfor %}
-        </div>
-    </div>
+    {% include 'api/_song_list.html' with songs=featured_songs label="Featured songs" %}
 {% endif %}
 
 

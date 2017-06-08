@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+<div class="row">
+    <div class="col s12">
+        <strong>{{ label }}</strong>:
+        <ul class="collection">
+            {% for example in examples %}
+                <li class="collection-item">
+                    <span class="date">{{ example.song.release_date_string }}</span>
+                    <a href="{% url 'artist-highlight' pk=example.primary_artist.id%}" class="artist">{{ example.primary_artist.name }}</a>
+                    <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
+                    {% if example.feat_artist %}
+                        feat.
+                        <a href="{% url 'artist-highlight' pk=example.feat_artist.id%}" class="artist">{{ example.feat_artist.name }}</a>
+                    {% endif %}
+                    <span class="album">[{{example.song.album}}]</span>
+                    <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
