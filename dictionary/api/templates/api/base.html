@@ -1,33 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TRR API - {% block title %}{% endblock %}</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
-    <!--<link href="/static/css/slate.css" rel="stylesheet"/>-->
-    <link href="/static/css/api.css" rel="stylesheet"/>
-    <link rel="stylesheet"
-          href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-          crossorigin="anonymous">
-</head>
-<body>
-    {% include "api/_navbar.html" %}
-    <div class="jumbotron" style="margin-top: 50px; padding-top: 1em;">
-        <div class="container-fluid">
-        {% block content %}{% endblock %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>TRR API - {% block title %}{% endblock %}</title>
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="/static/css/materialize.min.css" rel="stylesheet"/>
+        <link href="/static/css/styles.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <nav class="light-blue" role="navigation">
+            <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">The Right Rhymes</a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="{% url 'sense-list' %}">Senses</a></li>
+                    <li><a href="{% url 'artist-list' %}">Artists</a></li>
+                    <li><a href="{% url 'song-list' %}">Songs</a></li>
+                    <li><a href="{% url 'place-list' %}">Places</a></li>
+                    <li><a href="{% url 'example-list' %}">Examples</a></li>
+                    <li><a href="{% url 'domain-list' %}">Domains</a></li>
+                    <li><a href="{% url 'semanticclass-list' %}">Semantic Classes</a></li>
+                    <li><a href="{% url 'annotation-list' %}">Annotations</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav">
+                    <li><a href="{% url 'sense-list' %}">Senses</a></li>
+                    <li><a href="{% url 'artist-list' %}">Artists</a></li>
+                    <li><a href="{% url 'song-list' %}">Songs</a></li>
+                    <li><a href="{% url 'place-list' %}">Places</a></li>
+                    <li><a href="{% url 'example-list' %}">Examples</a></li>
+                    <li><a href="{% url 'domain-list' %}">Domains</a></li>
+                    <li><a href="{% url 'semanticclass-list' %}">Semantic Classes</a></li>
+                    <li><a href="{% url 'annotation-list' %}">Annotations</a></li>
+                </ul>
+                <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+            </div>
+        </nav>
+        <div class="section">
+            <div class="container">
+            {% block content %}{% endblock %}
+            </div>
         </div>
-    </div>
-</body>
-<script src="https://code.jquery.com/jquery-3.1.0.min.js"
-        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-        crossorigin="anonymous"></script>
-{% block scripts %}{% endblock %}
+        <script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="/static/js/materialize.min.js"></script>
+        {% block scripts %}{% endblock %}
+    </body>
 </html>

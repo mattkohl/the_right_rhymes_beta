@@ -1,0 +1,7 @@
+/* 'Rock Salt' */
+@import url(https://fonts.googleapis.com/css?family=Rock+Salt);
+
+.brand-logo {
+    font-family: "Rock Salt";
+    font-size: 1.5rem !important;
+}
