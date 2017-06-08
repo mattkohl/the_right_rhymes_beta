@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from api.models import Sense
+from api.models import Sense, Artist, Song, Example, Place
 
 
 class BaseTest(TestCase):
@@ -38,3 +38,34 @@ class SenseModelTest(BaseTest):
         self.assertEqual(first_saved_sense.definition, 'The first (ever) sense')
         self.assertEqual(second_saved_sense.definition, 'Sense the second')
         self.assertEqual(first_saved_sense.headword, second_saved_sense.headword)
+
+
+class ArtistModelTest(BaseTest):
+
+    data = {
+        "name": "Test artist"
+    }
+
+    def test_saving_and_retrieving_artists(self):
+        artist_ = Artist(owner=self.user, **self.data)
+        artist_.save()
+        self.assertEqual(Artist.objects.count(), 1)
+        self.assertEqual(artist_, Artist.objects.first())
+
+
+class PlaceModelTest(BaseTest):
+
+    data = {
+        "full_name": "City, State, Country",
+    }
+
+    lat_lng = {
+        "latitude": 1,
+        "longitude": 2,
+    }
+
+    def test_saving_and_retrieving_places(self):
+        place_ = Place(owner=self.user, **self.data)
+        place_.save()
+        self.assertEqual(Place.objects.count(), 1)
+        self.assertEqual(place_, Place.objects.first())

@@ -25,7 +25,7 @@ class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
-        self.api_url = self.live_server_url + "/data/"
+        self.api_url = self.live_server_url + "/"
 
     def tearDown(self):
         self.browser.quit()
@@ -37,5 +37,5 @@ class NewVisitorTest(LiveServerTestCase):
     def test_list_endpoints(self):
         self.browser.get(self.api_url)
         links = self.browser.find_elements_by_xpath('//div/pre/a')
-        [self.assertRegex(element.text, "/data/[\w\-]+/") for element in links]
+        [self.assertRegex(element.text, "/[\w\-]+/") for element in links]
 

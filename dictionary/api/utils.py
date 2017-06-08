@@ -17,7 +17,7 @@ def extract_rhymes(annotations):
 
 
 def make_uri(host, object_type, pk):
-    uri = "http://" + host + "/data/" + object_type + "/" + str(pk) + "/"
+    uri = "http://" + host + "/" + object_type + "/" + str(pk) + "/"
     return uri
 
 

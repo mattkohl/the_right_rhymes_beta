@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'django_filters',
     'crispy_forms',
     'api.apps.ApiConfig',
-    'website.apps.WebsiteConfig',
 ]
 
 MIDDLEWARE = [

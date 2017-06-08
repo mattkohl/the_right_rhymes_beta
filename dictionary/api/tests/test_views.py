@@ -21,7 +21,7 @@ class BaseApiTest(APITestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         self.factory = RequestFactory()
-        self.request = self.factory.get('/data/')
+        self.request = self.factory.get('/')
         self.host = self.request.get_host()
 
 
