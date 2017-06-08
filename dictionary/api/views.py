@@ -90,7 +90,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
             "annotations": annotations,
             "rhymes": rhymes,
             "examples": examples,
-            "origin": artist.origin.first(),
+            "origin": artist.origin,
             "primary_songs": [
                 {
                     "id": song.id,
