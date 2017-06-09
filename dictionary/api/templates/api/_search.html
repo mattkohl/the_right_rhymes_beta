@@ -24,6 +24,36 @@
     {% endfor %}
 {% endif %}
 
+{% if examples %}
+    <div class="row">
+    {% for example in examples %}
+        <div>
+            {% ifchanged example.song %}
+                <span class="date">{{ example.song.release_date_string }}</span>
+                {% if example.primary_artists %}
+                    {% for artist in example.primary_artists %}
+                        <span class="artist">
+                            <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                        </span>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <a href="{% url 'song-highlight' pk=example.song.id %}" class="title">"{{ example.song.title }}"</a>
+                {% if example.featured_artists %}
+                    feat.
+                    {% for artist in example.featured_artists %}
+                        <span class="artist">
+                            <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                        </span>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <span class="album">[{{example.song.album}}]</span>
+            {% endifchanged %}
+            <div><a href="{% url 'example-highlight' pk=example.id %}">{{ example.text }}</a></div>
+        </div>
+    {% endfor %}
+    </div>
+{% endif %}
+
 {% if semantic_classes %}
     {% for semantic_class in semantic_classes %}
         <div><a href="{% url 'semanticclass-highlight' pk=semantic_class.id %}">{{ semantic_class.name }}</a></div>

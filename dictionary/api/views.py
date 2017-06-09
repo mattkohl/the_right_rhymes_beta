@@ -195,7 +195,6 @@ class SongViewSet(viewsets.ModelViewSet):
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
         queryset = Song.objects.all().order_by('title')
-        lyrics, titles = [], []
         q = self.request.query_params.get('q', None)
         data = {"label": "Songs"}
         if q is not None:
@@ -204,7 +203,10 @@ class SongViewSet(viewsets.ModelViewSet):
 
             data['song_titles'] = [
                 {
-                    "song": song,
+                    "id": song.id,
+                    "release_date": song.release_date,
+                    "title": song.title,
+                    "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
                     "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if
@@ -213,7 +215,10 @@ class SongViewSet(viewsets.ModelViewSet):
             ]
             data['song_lyrics'] = [
                 {
-                    "song": song,
+                    "id": song.id,
+                    "release_date": song.release_date,
+                    "title": song.title,
+                    "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
                     "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if
@@ -223,7 +228,10 @@ class SongViewSet(viewsets.ModelViewSet):
         else:
             data['song_titles'] = [
                 {
-                    "song": song,
+                    "id": song.id,
+                    "release_date": song.release_date,
+                    "title": song.title,
+                    "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all()
                 } for song in queryset
@@ -356,7 +364,15 @@ class ExampleViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(text__icontains=q)
         data = {
             "label": "Examples",
-            "examples": queryset
+            "examples": [
+                {
+                    'id': example.id,
+                    'text': example.text,
+                    'song': example.from_song,
+                    'annotations': example.annotations.all(),
+                    'primary_artists': example.primary_artists.all(),
+                    'featured_artists': example.featured_artists.all(),
+                } for example in queryset]
         }
         return Response(data, template_name="api/_search.html")
 
