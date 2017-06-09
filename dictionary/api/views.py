@@ -425,10 +425,13 @@ class AnnotationViewSet(viewsets.ModelViewSet):
         }
         return Response(data, template_name="api/_search.html")
 
-    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         annotation = self.get_object()
-        return Response(annotation.text)
+        data = {
+            "annotation": annotation
+        }
+        return Response(data, template_name="api/annotation.html")
 
     def perform_create(self, serializer):
         slug = slugify(serializer.validated_data['text'])

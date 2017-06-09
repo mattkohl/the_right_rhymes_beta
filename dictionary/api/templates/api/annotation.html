@@ -1,0 +1,12 @@
+{% extends "api/base.html" %}
+
+{% block title %} {{ annotation.text }}{% endblock %}
+
+{% block content %}
+<h2><a href="{% url 'annotation-detail' pk=annotation.id %}">{{ annotation.text }}</a></h2>
+
+{% if senses %}
+    {% include 'api/_sense_list.html' with senses=senses label="Senses" %}
+{% endif %}
+
+{% endblock %}}
