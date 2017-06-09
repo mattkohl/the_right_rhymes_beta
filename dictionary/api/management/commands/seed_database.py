@@ -13,6 +13,7 @@ class Command(BaseCommand):
         owner = User.objects.first()
         if owner:
             r = random_sense_pipeline(owner)
+            print(r)
             self.stdout.write(self.style.SUCCESS('Done!'))
         else:
             self.stdout.write(self.style.SUCCESS('Add a superuser first!'))
