@@ -18,14 +18,72 @@
     {% endfor %}
 {% endif %}
 
+{% if domains %}
+    {% for domain in domains %}
+        <div><a href="{% url 'domain-highlight' pk=domain.id %}">{{ domain.name }}</a></div>
+    {% endfor %}
+{% endif %}
+
+{% if semantic_classes %}
+    {% for semantic_class in semantic_classes %}
+        <div><a href="{% url 'semanticclass-highlight' pk=semantic_class.id %}">{{ semantic_class.name }}</a></div>
+    {% endfor %}
+{% endif %}
+
 {% if senses %}
     {% for sense in senses %}
         <div><a href="{% url 'sense-highlight' pk=sense.id %}">{{ sense.headword }}</a></div>
     {% endfor %}
 {% endif %}
 
-{% if songs %}
-    {% include 'api/_song_list.html' with songs=songs label="Songs" %}
+{% if song_titles %}
+    {% for song in song_titles %}
+        <div class="song">
+            {{ song.release_date }}
+            {% if song.primary_artists %}
+                {% for artist in song.primary_artists %}
+                    <span class="artist">
+                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                    </span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endif %}
+            <a href="{% url 'song-highlight' pk=song.id %}">"{{ song.title }}"</a>
+            {% if song.featured_artists %}
+                feat.
+                {% for artist in song.featured_artists %}
+                    <span class="artist">
+                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                    </span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endif %}
+            [{{ song.album }}]
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if song_lyrics %}
+    {% for song in song_lyrics %}
+        <div class="song">
+            {{ song.release_date }}
+            {% if song.primary_artists %}
+                {% for artist in song.primary_artists %}
+                    <span class="artist">
+                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                    </span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endif %}
+            <a href="{% url 'song-highlight' pk=song.id %}">"{{ song.title }}"</a>
+            {% if song.featured_artists %}
+                feat.
+                {% for artist in song.featured_artists %}
+                    <span class="artist">
+                        <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
+                    </span>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endif %}
+            [{{ song.album }}]
+        </div>
+    {% endfor %}
 {% endif %}
 
 {% endblock %}

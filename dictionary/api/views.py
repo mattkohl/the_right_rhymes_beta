@@ -195,28 +195,40 @@ class SongViewSet(viewsets.ModelViewSet):
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
         queryset = Song.objects.all().order_by('title')
+        lyrics, titles = [], []
         q = self.request.query_params.get('q', None)
-        data = dict()
+        data = {"label": "Songs"}
         if q is not None:
-            queryset = Song.objects.filter(release_date_verified=True).filter(lyrics__icontains=q).order_by('release_date')
-            data['songs'] = [
+            titles = queryset.filter(title__icontains=q)
+            lyrics = queryset.filter(lyrics__icontains=q).order_by('release_date')
+
+            data['song_titles'] = [
                 {
                     "song": song,
                     "primary_artists": song.primary_artists.all(),
-                    "featured_artists": song.featured_artistss.all(),
-                    "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if q.lower() in line.lower()]
-                } for song in queryset]
-        else:
-            data["songs"] = [
+                    "featured_artists": song.featured_artists.all(),
+                    "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if
+                                 q.lower() in line.lower()]
+                } for song in titles
+            ]
+            data['song_lyrics'] = [
                 {
-                    "id": song.id,
-                    "title": song.title,
-                    "release_date": song.release_date_string,
-                    "album": song.album,
+                    "song": song,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
+                    "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if
+                                 q.lower() in line.lower()]
+                } for song in lyrics
+            ]
+        else:
+            data['song_titles'] = [
+                {
+                    "song": song,
+                    "primary_artists": song.primary_artists.all(),
+                    "featured_artists": song.featured_artists.all()
                 } for song in queryset
             ]
+
         return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
@@ -278,7 +290,7 @@ class DomainViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(name__icontains=q)
         data = {
             "label": "Domains",
-            "artists": queryset
+            "domains": queryset
         }
         return Response(data, template_name="api/_search.html")
 
@@ -310,7 +322,7 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(name__icontains=q)
         data = {
             "label": "Semantic Classes",
-            "artists": queryset
+            "semantic_classes": queryset
         }
         return Response(data, template_name="api/_search.html")
 
@@ -344,7 +356,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(text__icontains=q)
         data = {
             "label": "Examples",
-            "artists": queryset
+            "examples": queryset
         }
         return Response(data, template_name="api/_search.html")
 
@@ -393,7 +405,7 @@ class AnnotationViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(text__icontains=q)
         data = {
             "label": "Annotations",
-            "artists": queryset
+            "annotations": queryset
         }
         return Response(data, template_name="api/_search.html")
 
