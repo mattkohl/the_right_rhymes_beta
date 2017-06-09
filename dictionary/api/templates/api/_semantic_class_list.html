@@ -1,0 +1,6 @@
+<div class="col s12">
+    <strong>{{ label }}</strong>:
+    {% for s in semantic_classes %}
+        <div><a href="{% url 'semanticclass-highlight' pk=s.id%}" class="sense-link">{{ s.name }}</a></div>
+    {% endfor %}
+</div>

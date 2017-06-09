@@ -1,0 +1,6 @@
+<div class="col s12">
+    <strong>{{ label }}</strong>:
+    {% for s in domains %}
+        <div><a href="{% url 'domain-highlight' pk=s.id%}" class="sense-link">{{ s.name }}</a></div>
+    {% endfor %}
+</div>

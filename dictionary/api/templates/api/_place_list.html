@@ -1,6 +1,8 @@
 <div class="col s12">
     <strong>{{ label }}</strong>:
     {% for s in places %}
-        <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+        <div>
+            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>
+        </div>
     {% endfor %}
 </div>

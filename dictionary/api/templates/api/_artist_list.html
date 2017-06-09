@@ -1,8 +1,8 @@
 <div class="col s12">
     <strong>{{ label }}</strong>:
     {% for artist in artists %}
-        <span class="artist">
+        <div class="artist">
             <a href="{% url 'artist-highlight' pk=artist.id %}">{{ artist.name }}</a>
-        </span>{% if not forloop.last %}, {% endif %}
+        </div>
     {% endfor %}
 </div>

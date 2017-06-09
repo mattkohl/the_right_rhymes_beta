@@ -27,7 +27,7 @@ class SenseViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Sense.objects.all().order_by('headword')
+        queryset = self.queryset.order_by('headword')
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(definition__icontains=q)
@@ -79,7 +79,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Artist.objects.all().order_by('name')
+        queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(name__icontains=q)
@@ -142,7 +142,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Place.objects.all().order_by('name')
+        queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(full_name__icontains=q)
@@ -194,7 +194,7 @@ class SongViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Song.objects.all().order_by('title')
+        queryset = self.queryset.order_by('title')
         q = self.request.query_params.get('q', None)
         data = {"label": "Songs"}
         if q is not None:
@@ -292,7 +292,7 @@ class DomainViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Domain.objects.all().order_by('name')
+        queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(name__icontains=q)
@@ -324,7 +324,7 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = SemanticClass.objects.all().order_by('name')
+        queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(name__icontains=q)
@@ -358,7 +358,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Example.objects.all()
+        queryset = self.queryset
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(text__icontains=q)
@@ -415,7 +415,7 @@ class AnnotationViewSet(viewsets.ModelViewSet):
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
-        queryset = Annotation.objects.all()
+        queryset = self.queryset
         q = self.request.query_params.get('q', None)
         if q is not None:
             queryset = queryset.filter(text__icontains=q)

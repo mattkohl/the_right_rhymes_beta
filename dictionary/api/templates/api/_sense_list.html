@@ -1,6 +1,8 @@
 <div class="col s12">
     <strong>{{ label }}</strong>:
     {% for s in senses %}
-        <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>{% if not forloop.last %}, {% endif %}
+        <div>
+            <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">{{ s.headword }}</a>
+        </div>
     {% endfor %}
 </div>

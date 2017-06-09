@@ -1,9 +1,9 @@
 
 <div class="col s12">
     <strong>{{ label }}</strong>:
-    <ul class="collection">
+    <div>
         {% for example in examples %}
-            <li class="collection-item">
+            {% ifchanged example.song %}
                 <span class="date">{{ example.song.release_date_string }}</span>
                 {% if example.primary_artists %}
                     {% for artist in example.primary_artists %}
@@ -22,8 +22,8 @@
                     {% endfor %}
                 {% endif %}
                 <span class="album">[{{example.song.album}}]</span>
-                <div class="lyric"><a href="{% url 'example-highlight' pk=example.ex.id %}">{{ example.ex.text }}</a></div>
-            </li>
+            {% endifchanged %}
+            <div class="lyric"><a href="{% url 'example-highlight' pk=example.id %}">{{ example.text }}</a></div>
         {% endfor %}
-    </ul>
+    </div>
 </div>

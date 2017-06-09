@@ -24,20 +24,11 @@
 {% endif %}
 
 {% if domains %}
-    <div class="col s12">
-        <strong>Domains:</strong>
-        {% for s in domains %}
-            <a href="{% url 'domain-highlight' pk=s.id%}" class="sense-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% include 'api/_domain_list.html' with domains=domains label="Domains" %}
 {% endif %}
+
 {% if semantic_classes %}
-    <div class="col s12">
-        <strong>Semantic Classes:</strong>
-        {% for s in semantic_classes %}
-            <a href="{% url 'semanticclass-highlight' pk=s.id%}" class="sense-link">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% include 'api/_semantic_class_list.html' with semantic_classes=semantic_classes label="Semantic Classes" %}
 {% endif %}
 
 {% if synonyms %}

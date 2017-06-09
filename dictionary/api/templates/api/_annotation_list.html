@@ -1,0 +1,6 @@
+<div class="col s12">
+    <strong>{{ label }}</strong>:
+    {% for s in annotations %}
+        <div><a href="{% url 'annotation-highlight' pk=s.id%}" class="sense-link">{{ s.text }}</a></div>
+    {% endfor %}
+</div>
