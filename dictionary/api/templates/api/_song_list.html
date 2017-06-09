@@ -2,7 +2,7 @@
     <strong>{{ label }}</strong>:
     {% for song in songs %}
         <div class="song">
-            {{ song.release_date }}
+            {{ song.release_date | date:"Y-m-d"}}
             {% if song.primary_artists %}
                 {% for artist in song.primary_artists %}
                     <span class="artist">

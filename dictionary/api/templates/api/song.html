@@ -8,7 +8,7 @@
 <div class="col s12">
     <div class="col s6" data-song-id="{{ song.id }}">
         <h2>"<a href="{% url 'song-detail' pk=song.id %}">{{ song.title }}</a>"</h2>
-        <div><strong>Release date: </strong>{{ song.release_date_string }}</div>
+        <div><strong>Release date: </strong>{{ song.release_date | date:"Y-m-d" }}</div>
         {% if primary_artists %}
             {% include 'api/_artist_list.html' with artists=primary_artists label="Primary artists" %}
         {% endif %}

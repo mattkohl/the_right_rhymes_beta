@@ -4,7 +4,7 @@
     <div>
         {% for example in examples %}
             {% ifchanged example.song %}
-                <span class="date">{{ example.song.release_date_string }}</span>
+                <span class="date">{{ example.song.release_date | date:"Y-m-d" }}</span>
                 {% if example.primary_artists %}
                     {% for artist in example.primary_artists %}
                         <span class="artist">

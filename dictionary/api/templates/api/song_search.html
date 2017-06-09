@@ -9,7 +9,7 @@
     {% for result in results %}
         <div class="result container" style="display: block">
             <div>
-                <span class="date">{{ result.song.release_date_string }}</span>
+                <span class="date">{{ result.song.release_date | date:"Y-m-d"}}</span>
                 <a href="{% url 'artist-highlight' pk=result.primary_artist.id%}" class="artist">{{ result.primary_artist.name }}</a>
                 <a href="{% url 'song-highlight' pk=result.song.id %}" class="title">"{{ result.song.title }}"</a>
                 {% if result.feat_artist %}
