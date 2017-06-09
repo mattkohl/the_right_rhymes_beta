@@ -270,6 +270,18 @@ class DomainViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = Domain.objects.all().order_by('name')
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(name__icontains=q)
+        data = {
+            "label": "Domains",
+            "artists": queryset
+        }
+        return Response(data, template_name="api/_search.html")
+
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         domain = self.get_object()
@@ -289,6 +301,18 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
     serializer_class = SemanticClassSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = SemanticClass.objects.all().order_by('name')
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(name__icontains=q)
+        data = {
+            "label": "Semantic Classes",
+            "artists": queryset
+        }
+        return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -311,6 +335,18 @@ class ExampleViewSet(viewsets.ModelViewSet):
     filter_class = ExampleFilter
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = Example.objects.all()
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(text__icontains=q)
+        data = {
+            "label": "Examples",
+            "artists": queryset
+        }
+        return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -348,6 +384,18 @@ class AnnotationViewSet(viewsets.ModelViewSet):
     serializer_class = AnnotationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+
+    @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
+    def search(self, request, *args, **kwargs):
+        queryset = Annotation.objects.all()
+        q = self.request.query_params.get('q', None)
+        if q is not None:
+            queryset = queryset.filter(text__icontains=q)
+        data = {
+            "label": "Annotations",
+            "artists": queryset
+        }
+        return Response(data, template_name="api/_search.html")
 
     @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
