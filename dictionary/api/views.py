@@ -44,7 +44,8 @@ class SenseViewSet(viewsets.ModelViewSet):
         rhymes = extract_rhymes(annotations)
         examples = [
             {
-                "ex": a.example,
+                "id": a.example.id,
+                "text": a.example.text,
                 "song": a.example.from_song,
                 "primary_artists": a.example.from_song.primary_artists.all(),
                 "featured_artists": a.example.from_song.featured_artists.all(),
@@ -94,7 +95,14 @@ class ArtistViewSet(viewsets.ModelViewSet):
         artist = self.get_object()
         annotations = artist.annotations.all()
         rhymes = extract_rhymes(annotations)
-        examples = [a.example for a in annotations]
+        examples = [
+            {
+                "id": a.example.id,
+                "text": a.example.text,
+                "song": a.example.from_song,
+                "primary_artists": a.example.from_song.primary_artists.all(),
+                "featured_artists": a.example.from_song.featured_artists.first(),
+            } for a in annotations]
         data = {
             "artist": artist,
             "also_known_as": artist.also_known_as.all(),
@@ -162,7 +170,8 @@ class PlaceViewSet(viewsets.ModelViewSet):
         artists = place.artists.all()
         examples = [
             {
-                "ex": a.example,
+                "id": a.example.id,
+                "text": a.example.text,
                 "song": a.example.from_song,
                 "primary_artists": a.example.from_song.primary_artists.all(),
                 "featured_artists": a.example.from_song.featured_artists.first(),

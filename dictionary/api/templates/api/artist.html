@@ -8,10 +8,9 @@
 </div>
 
 {% if origin %}
-    <div class="row">
-        <div class="col s12">
-            <strong>Origin:</strong> <a href="{% url 'place-highlight' pk=origin.id %}">{{ origin.name }}</a>
-        </div>
+    <div class="col s12">
+        <strong>Origin:</strong>
+        <div><a href="{% url 'place-highlight' pk=origin.id %}">{{ origin.name }}</a></div>
     </div>
 {% endif %}
 
@@ -29,6 +28,10 @@
 
 {% if rhymes %}
     {% include 'api/_rhyme_list.html' with rhymes=rhymes label="Rhymes" %}
+{% endif %}
+
+{% if examples %}
+    {% include 'api/_example_list.html' with examples=examples label="Mentioned in" %}
 {% endif %}
 
 {% if primary_songs %}
