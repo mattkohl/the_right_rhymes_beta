@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <h2><a href="{% url 'place-detail' pk=place.id %}">{{ place.name }}</a></h2>
+    <h4><a href="{% url 'place-detail' pk=place.id %}">{{ place.name }}</a></h4>
 </div>
 
 {% if contains %}

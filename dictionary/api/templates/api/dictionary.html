@@ -3,18 +3,10 @@
 {% block title %} {{ dictionary.name }}{% endblock %}
 
 {% block content %}
-<h2><a href="{% url 'dictionary-detail' pk=dictionary.id %}">{{ dictionary.name }}</a></h2>
+<h4><a href="{% url 'dictionary-detail' pk=dictionary.id %}">{{ dictionary.name }}</a></h4>
 
 {% if senses %}
-<div class="col s12">
-    <ul class="collection">
-    {% for s in senses %}
-        <a href="{% url 'sense-highlight' pk=s.id%}" class="sense-link">
-            <li class="collection-item">{{ s.headword }}</li>
-        </a>
-    {% endfor %}
-    </ul>
-</div>
+    {% include 'api/_sense_list.html' with senses=senses label="Results" %}
 {% endif %}
 
 {% endblock %}}

@@ -3,7 +3,7 @@
 {% block title %} {{ semantic_class.name }}{% endblock %}
 
 {% block content %}
-<h2><a href="{% url 'semanticclass-detail' pk=semantic_class.id %}">{{ semantic_class.name }}</a></h2>
+<h4><a href="{% url 'semanticclass-detail' pk=semantic_class.id %}">{{ semantic_class.name }}</a></h4>
 
 {% if senses %}
     {% include 'api/_sense_list.html' with senses=senses label="Senses" %}
