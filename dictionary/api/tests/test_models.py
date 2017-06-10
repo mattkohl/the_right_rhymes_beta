@@ -69,3 +69,12 @@ class PlaceModelTest(BaseTest):
         place_.save()
         self.assertEqual(Place.objects.count(), 1)
         self.assertEqual(place_, Place.objects.first())
+
+    def test_add_artist(self):
+        artist_ = Artist(owner=self.user, name="test artist")
+        artist_.save()
+        place_ = Place(owner=self.user, **self.data)
+        place_.save()
+        place_.artists.add(artist_)
+        self.assertEqual(place_.artists.count(), 1)
+        self.assertEqual(place_.artists.first().name, "test artist")
