@@ -14,7 +14,7 @@ class Command(BaseCommand):
         owner = User.objects.first()
         if owner:
             # r = random_sense_pipeline(owner)
-            r = random_pipeline(owner, "artist")
+            r = random_pipeline(owner, "song")
             print(r)
             self.stdout.write(self.style.SUCCESS('Done!'))
         else:
@@ -54,7 +54,6 @@ def json_extract(result, owner, what="sense"):
         add_keys = ("primary_artists", "featured_artists",)
         for key in add_keys:
             if key in result:
-                # TODO: still doesn't work!
                 s[key] = [persist("artist", {"name": o["name"], "owner": owner}) for o in result[key]]
 
     if what == "artist":
@@ -75,22 +74,23 @@ def persist(what, data_dict):
     elif what == 'place':
         obj, created = Place.objects.get_or_create(**data_dict)
     elif what == 'song':
+        PA = "primary_artists"
+        FA = "featured_artists"
+        data_dict["release_date"] = data_dict.pop("release_date_string")
+        primary_artists, featured_artists = [], []
+        if PA in data_dict:
+            primary_artists = data_dict.pop(PA)
+        if FA in data_dict:
+            featured_artists = data_dict.pop(FA)
         obj, created = Song.objects.get_or_create(**data_dict)
+        obj.primary_artists.add(*primary_artists)
+        obj.featured_artists.add(*featured_artists)
     elif what == 'example':
         obj, created = Example.objects.get_or_create(**data_dict)
     else:
         obj = None
         print("Failed to persist", what, ": ", str(data_dict))
     return obj
-
-
-def random_sense_pipeline(owner):
-    random_sense_json = get_random()
-    if random_sense_json:
-        data_dict = json_extract(random_sense_json, owner)
-        persisted = persist("sense", data_dict)
-        return persisted
-    return None
 
 
 def random_pipeline(owner, what):
@@ -100,10 +100,3 @@ def random_pipeline(owner, what):
         persisted = persist(what, data_dict)
         return persisted
     return None
-
-
-def one_of_everything(owner):
-    sense = get_random("sense")
-    place = get_random("place")
-    artist = get_random("artist")
-    song = get_random("song")
