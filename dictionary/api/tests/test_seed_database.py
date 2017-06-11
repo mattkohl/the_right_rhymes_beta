@@ -2,10 +2,21 @@ import copy
 
 from api.tests.test_models import BaseTest
 from api.models import Sense, Artist, Song, Example, Place
-from api.management.commands.seed_database import json_extract, persist
+from api.management.commands.seed_database import json_extract, persist, get_random, random_pipeline
 
 
 null = None
+
+
+class TestSeedDatabase(BaseTest):
+
+    def test_get_random(self):
+        r = get_random()
+        self.assertTrue("definition" in r)
+
+    def test_random_pipeline(self):
+        r = random_pipeline(self.user, "song")
+        self.assertTrue(isinstance(r, Song))
 
 
 class TestSeedDatabaseSense(BaseTest):
@@ -137,4 +148,39 @@ class TestSeedDatabaseArtist(BaseTest):
         self.assertEqual(Artist.objects.first().name, "Kurtis Blow")
 
 
+class TestSeedDatabaseSong(BaseTest):
+
+    result = {
+        "release_date_string": "1994-09-27",
+        "album": "Shade Business",
+        "primary_artists": [
+            {
+                "slug": "pmd",
+                "image": "/static/dictionary/img/artists/thumb/pmd.jpg",
+                "name": "PMD",
+                "origin": {
+                    "longitude": -73.179329,
+                    "slug": "smithtown-long-island-new-york-usa",
+                    "latitude": 40.807337,
+                    "name": "Smithtown"
+                }
+            }
+        ],
+        "featured_artists": [
+            {
+                "slug": "zone-7",
+                "image": "/static/dictionary/img/artists/thumb/__none.png",
+                "name": "Zone 7"
+            }
+        ],
+        "release_date": "1994-09-27",
+        "slug": "pmd-ill-wait",
+        "title": "I'll Wait"
+    }
+
+    def test_song_json_extract(self):
+
+        extracted = json_extract(self.result, self.user, "song")
+        self.assertTrue("owner" in extracted)
+        self.assertEqual(extracted['owner'], self.user)
 
