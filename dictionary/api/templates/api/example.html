@@ -86,13 +86,13 @@
         var text = $("[name='text']");
         text.val(textSelection.toString());
 
-        var startPosition = $("[name='start_position']");
-        startPosition.val(textSelection.anchorOffset);
-        startPosition.attr("value", textSelection.anchorOffset);
+        var offset = $("[name='offset']");
+        offset.val(textSelection.anchorOffset);
+        offset.attr("value", textSelection.anchorOffset);
 
-        var endPosition = $("[name='end_position']");
-        endPosition.val(textSelection.focusOffset);
-        endPosition.attr("value", textSelection.focusOffset);
+//        var endPosition = $("[name='end_position']");
+//        endPosition.val(textSelection.focusOffset);
+//        endPosition.attr("value", textSelection.focusOffset);
     }
 
 </script>

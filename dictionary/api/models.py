@@ -318,8 +318,7 @@ class Annotation(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     text = models.CharField(max_length=1000)
     slug = models.SlugField(max_length=1000)
-    start_position = models.IntegerField()
-    end_position = models.IntegerField()
+    offset = models.IntegerField()
     example = models.ForeignKey("Example", related_name="annotations")
     sense = models.ForeignKey("Sense", related_name="annotations", blank=True, null=True)
     artist = models.ForeignKey("Artist", related_name="annotations", blank=True, null=True)
@@ -336,8 +335,7 @@ class Annotation(models.Model):
     def __iter__(self):
         yield "text", self.text
         yield "slug", self.slug
-        yield "start_position", self.start_position
-        yield "end_position", self.end_position
+        yield "start_position", self.offset
         # yield "example", self.example.to_xref()
         # yield "sense", self.sense.to_xref()
         # yield "artist", self.artist.to_xref()
@@ -348,8 +346,7 @@ class Annotation(models.Model):
         return {
             "text": self.text,
             "slug": self.slug,
-            "start_position": self.start_position,
-            "end_position": self.end_position,
+            "start_position": self.offset,
             "example": self.example.to_xref(),
             "sense": self.sense.to_xref(),
             "artist": self.artist.to_xref(),
@@ -361,8 +358,7 @@ class Annotation(models.Model):
         return {
             "text": self.text,
             "slug": self.slug,
-            "start_position": self.start_position,
-            "end_position": self.end_position,
+            "start_position": self.offset,
             "sense": self.sense.to_xref(),
             "artist": self.artist.to_xref(),
             "place": self.place.to_xref(),

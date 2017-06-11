@@ -128,10 +128,10 @@ class TestSeedDatabaseArtist(BaseTest):
         without_origin.pop("origin")
         self.assertTrue("origin" not in without_origin)
         without_extracted = json_extract(self.result, self.user, "artist")
-        without_persisted = persist("artist", without_extracted)
+        persist("artist", without_extracted)
 
         with_extracted = json_extract(self.result, self.user, "artist")
-        with_persisted = persist("artist", with_extracted)
+        persist("artist", with_extracted)
 
         self.assertTrue(Artist.objects.count(), 1)
         self.assertEqual(Artist.objects.first().name, "Kurtis Blow")
