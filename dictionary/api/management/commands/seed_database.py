@@ -43,7 +43,7 @@ def get_random(what="sense"):
 
 def json_extract(result, owner, what="sense"):
     keys = {
-        "sense": ('headword', 'part_of_speech', 'definition'),
+        "sense": ('headword', 'part_of_speech', 'definition', 'notes', 'etymology'),
         "song": ('title', 'release_date', 'release_date_string', 'album'),
         "place": ('full_name', "longitude", "latitude"),
         "artist": ("name",)
