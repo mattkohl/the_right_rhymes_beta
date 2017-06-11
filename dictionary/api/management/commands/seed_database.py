@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand, CommandError
 import django.conf.global_settings as settings
 from django.contrib.auth.models import User
 from api.models import Sense, Artist, Song, Example, Place
-from api.utils import make_uri
 
 
 class Command(BaseCommand):
@@ -13,8 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         owner = User.objects.first()
         if owner:
-            # r = random_sense_pipeline(owner)
-            r = random_pipeline(owner, "song")
+            r = random_pipeline(owner, "sense")
             print(r)
             self.stdout.write(self.style.SUCCESS('Done!'))
         else:

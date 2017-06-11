@@ -1,3 +1,5 @@
+import copy
+
 from api.tests.test_models import BaseTest
 from api.models import Sense, Artist, Song, Example, Place
 from api.management.commands.seed_database import json_extract, persist
@@ -6,9 +8,9 @@ from api.management.commands.seed_database import json_extract, persist
 null = None
 
 
-class TestSeedDatabase(BaseTest):
+class TestSeedDatabaseSense(BaseTest):
 
-    sense_result = {
+    result = {
         "form": null,
         "antonyms": [],
         "holonyms": [],
@@ -82,32 +84,57 @@ class TestSeedDatabase(BaseTest):
 
     def test_sense_json_extract(self):
 
-        extracted = json_extract(self.sense_result, self.user, "sense")
+        extracted = json_extract(self.result, self.user, "sense")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
 
     def test_sense_persist(self):
 
-        extracted = json_extract(self.sense_result, self.user, "sense")
+        extracted = json_extract(self.result, self.user, "sense")
         persisted = persist("sense", extracted)
         self.assertTrue(isinstance(persisted, Sense))
 
+
+class TestSeedDatabaseArtist(BaseTest):
+
+    result = {
+        "slug": "kurtis-blow",
+        "image": "/static/dictionary/img/artists/thumb/kurtis-blow.png",
+        "name": "Kurtis Blow",
+        "origin": {
+            "longitude": -73.986581,
+            "slug": "new-york-city-new-york-usa",
+            "latitude": 40.730599,
+            "name": "New York City"
+        }
+    }
+
     def test_artist_json_extract(self):
 
-        result = {
-            "slug": "kurtis-blow",
-            "image": "/static/dictionary/img/artists/thumb/kurtis-blow.png",
-            "name": "Kurtis Blow",
-            "origin": {
-                "longitude": -73.986581,
-                "slug": "new-york-city-new-york-usa",
-                "latitude": 40.730599,
-                "name": "New York City"
-            }
-        }
-
-        extracted = json_extract(result, self.user, "artist")
+        extracted = json_extract(self.result, self.user, "artist")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
         self.assertTrue(isinstance(extracted['origin'], Place))
+
+    def test_artist_persist(self):
+
+        extracted = json_extract(self.result, self.user, "artist")
+        persisted = persist("artist", extracted)
+        self.assertTrue(isinstance(persisted, Artist))
+
+    def test_artist_with_and_without_origin_persist(self):
+
+        without_origin = copy.deepcopy(self.result)
+        without_origin.pop("origin")
+        self.assertTrue("origin" not in without_origin)
+        without_extracted = json_extract(self.result, self.user, "artist")
+        without_persisted = persist("artist", without_extracted)
+
+        with_extracted = json_extract(self.result, self.user, "artist")
+        with_persisted = persist("artist", with_extracted)
+
+        self.assertTrue(Artist.objects.count(), 1)
+        self.assertEqual(Artist.objects.first().name, "Kurtis Blow")
+
+
 
