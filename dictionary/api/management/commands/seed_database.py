@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 import django.conf.global_settings as settings
 from django.contrib.auth.models import User
 from api.models import Sense, Artist, Song, Example, Place
+from api.utils import clean_up_date
 
 
 class Command(BaseCommand):
@@ -28,20 +29,22 @@ def get_random(what="sense"):
         "example": "https://www.therightrhymes.com/data/examples/random",
     }
 
-    url = urls[what]
+    if what in urls:
+        url = urls[what]
 
-    try:
-        r = requests.get(url)
-    except Exception as e:
-        print(e)
-    else:
-        return json.loads(r.text)
+        try:
+            r = requests.get(url)
+        except Exception as e:
+            print(e)
+        else:
+            return json.loads(r.text)
+    return None
 
 
 def json_extract(result, owner, what="sense"):
     keys = {
         "sense": ('headword', 'part_of_speech', 'definition'),
-        "song": ('title', 'release_date_string', 'album'),
+        "song": ('title', 'release_date', 'release_date_string', 'album'),
         "place": ('full_name', "longitude", "latitude"),
         "artist": ("name",)
     }
@@ -74,7 +77,6 @@ def persist(what, data_dict):
     elif what == 'song':
         PA = "primary_artists"
         FA = "featured_artists"
-        data_dict["release_date"] = data_dict.pop("release_date_string")
         primary_artists, featured_artists = [], []
         if PA in data_dict:
             primary_artists = data_dict.pop(PA)

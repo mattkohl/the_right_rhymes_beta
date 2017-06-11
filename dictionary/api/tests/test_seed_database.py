@@ -18,6 +18,10 @@ class TestSeedDatabase(BaseTest):
         r = random_pipeline(self.user, "song")
         self.assertTrue(isinstance(r, Song))
 
+    def test_random_pipeline_bad_input(self):
+        r = random_pipeline(self.user, "blah")
+        self.assertTrue(r is None)
+
 
 class TestSeedDatabaseSense(BaseTest):
 
