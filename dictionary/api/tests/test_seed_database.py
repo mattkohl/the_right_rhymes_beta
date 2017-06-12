@@ -188,3 +188,7 @@ class TestSeedDatabaseSong(BaseTest):
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
 
+    def test_song_persist(self):
+        extracted = json_extract(self.result, self.user, "song")
+        persisted = persist("song", extracted)
+        self.assertTrue(isinstance(persisted, Song))
