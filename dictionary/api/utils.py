@@ -71,7 +71,7 @@ def slugify(text):
     if slug[0] == "'" or slug[0] == "-":
         slug = slug[1:]
     slug = re.sub("^[\-']]", "", slug)
-    slug = re.sub("[\s\.]", "-", slug)
+    slug = re.sub("[\s.]", "-", slug)
     slug = re.sub("[:/]", "", slug)
     slug = re.sub("\$", "s", slug)
     slug = re.sub("\*", "", slug)
@@ -92,7 +92,7 @@ def slugify(text):
     slug = re.sub(",", "", slug)
     slug = re.sub("-$", "", slug)
     slug = re.sub("\?", "", slug)
-    slug = re.sub("[\(\)]", "", slug)
+    slug = re.sub("[()]", "", slug)
     return slug
 
 
