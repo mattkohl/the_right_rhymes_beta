@@ -8,7 +8,7 @@ from api.management.commands.seed_database import json_extract, persist, get_ran
 null = None
 
 
-class TestSeedDatabase(BaseTest):
+class SeedDatabaseTest(BaseTest):
 
     def test_get_random(self):
         r = get_random()
@@ -23,7 +23,7 @@ class TestSeedDatabase(BaseTest):
         self.assertTrue(r is None)
 
 
-class TestSeedDatabaseSense(BaseTest):
+class SeedDatabaseSenseTest(BaseTest):
 
     result = {
         "form": null,
@@ -110,7 +110,7 @@ class TestSeedDatabaseSense(BaseTest):
         self.assertTrue(isinstance(persisted, Sense))
 
 
-class TestSeedDatabaseArtist(BaseTest):
+class SeedDatabaseArtistTest(BaseTest):
 
     result = {
         "slug": "kurtis-blow",
@@ -152,7 +152,7 @@ class TestSeedDatabaseArtist(BaseTest):
         self.assertEqual(Artist.objects.first().name, "Kurtis Blow")
 
 
-class TestSeedDatabaseSong(BaseTest):
+class SeedDatabaseSongTest(BaseTest):
 
     result = {
         "release_date_string": "1994-09-27",

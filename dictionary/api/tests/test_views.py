@@ -226,3 +226,56 @@ class ExampleApiTest(BaseApiTest):
         self.assertEqual(example_['text'], self.example_data['text'])
         test_example = Example.objects.get()
         self.assertEqual(example_['text'], test_example.text)
+
+
+class AnnotationApiTest(BaseApiTest):
+
+    url = reverse('annotation-list')
+    data = {
+        "text": "test annotation",
+        "offset": 0
+    }
+
+    artist_url = reverse('artist-list')
+    artist_data = {
+        "name": "test artist",
+        "annotations": [],
+    }
+
+    song_url = reverse('song-list')
+    song_data = {
+        "title": "test song",
+        "release_date_string": "2001-10-12",
+        "album": "test album",
+        "annotations": [],
+        "featured_artists": [],
+        "examples": []
+    }
+
+    example_url = reverse('example-list')
+    example_data = {
+        'text': "This is a test example",
+        'annotations': []
+    }
+
+    def test_POST_annotation(self):
+        self.client.post(self.artist_url, self.artist_data)
+        test_artist = Artist.objects.get()
+        test_artist_uri = make_uri(self.host, 'artists', test_artist.id)
+
+        self.song_data.update({"primary_artists": [test_artist_uri]})
+        self.client.post(self.song_url, self.song_data, format='json')
+        test_song = Song.objects.get()
+        test_song_uri = make_uri(self.host, 'songs', test_song.id)
+
+        self.example_data.update({"primary_artists": [test_artist_uri], "from_song": test_song_uri})
+        response = self.client.post(self.example_url, self.example_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        test_example = Example.objects.get()
+        test_example_uri = make_uri(self.host, 'examples', test_example.id)
+        self.data['example'] = test_example_uri
+
+        response = self.client.post(self.url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Annotation.objects.count(), 1)
+        self.assertEqual(Annotation.objects.get().text, 'test annotation')
