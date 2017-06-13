@@ -78,3 +78,27 @@ class PlaceModelTest(BaseTest):
         place_.artists.add(artist_)
         self.assertEqual(place_.artists.count(), 1)
         self.assertEqual(place_.artists.first().name, "test artist")
+
+
+class SongModelTest(BaseTest):
+
+    artist_data = {
+        "name": "Test artist"
+    }
+
+    song_data = {
+        "title": "Test song",
+        "album": "Test album",
+        "release_date": "2017-03-30",
+    }
+
+    def test_saving_and_retrieving_songs(self):
+        artist_ = Artist(owner=self.user, **self.artist_data)
+        artist_.save()
+        song_ = Song(owner=self.user, **self.song_data)
+        song_.save()
+        song_.primary_artists.add(artist_)
+        self.assertEqual(Song.objects.count(), 1)
+        self.assertEqual(song_, Song.objects.first())
+        self.assertEqual(song_.primary_artists.count(), 1)
+        self.assertEqual(song_.primary_artists.first().name, "Test artist")

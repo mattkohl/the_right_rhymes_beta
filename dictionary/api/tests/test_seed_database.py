@@ -36,7 +36,7 @@ class SeedDatabaseTest(BaseTest):
                       status=202,
                       content_type='application/json')
         r = random_pipeline(self.user, "sense")
-        self.assertTrue(isinstance(r, Sense))
+        self.assertIsInstance(r, Sense)
 
     def test_random_pipeline_bad_input(self):
         r = random_pipeline(self.user, "blah")
@@ -127,7 +127,7 @@ class SeedDatabaseSenseTest(BaseTest):
 
         extracted = json_extract(self.result, self.user, "sense")
         persisted = persist("sense", extracted)
-        self.assertTrue(isinstance(persisted, Sense))
+        self.assertIsInstance(persisted, Sense)
 
 
 class SeedDatabaseArtistTest(BaseTest):
@@ -149,13 +149,13 @@ class SeedDatabaseArtistTest(BaseTest):
         extracted = json_extract(self.result, self.user, "artist")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
-        self.assertTrue(isinstance(extracted['origin'], Place))
+        self.assertIsInstance(extracted['origin'], Place)
 
     def test_artist_persist(self):
 
         extracted = json_extract(self.result, self.user, "artist")
         persisted = persist("artist", extracted)
-        self.assertTrue(isinstance(persisted, Artist))
+        self.assertIsInstance(persisted, Artist)
 
     def test_artist_with_and_without_origin_persist(self):
 
@@ -211,4 +211,4 @@ class SeedDatabaseSongTest(BaseTest):
     def test_song_persist(self):
         extracted = json_extract(self.result, self.user, "song")
         persisted = persist("song", extracted)
-        self.assertTrue(isinstance(persisted, Song))
+        self.assertIsInstance(persisted, Song)
