@@ -1,4 +1,5 @@
 import copy
+import responses
 
 from api.tests.test_models import BaseTest
 from api.models import Sense, Artist, Song, Example, Place
@@ -10,13 +11,32 @@ null = None
 
 class SeedDatabaseTest(BaseTest):
 
+    @responses.activate
     def test_get_random(self):
+        responses.add(responses.GET, "https://www.therightrhymes.com/data/senses/random",
+                      body='{"definition": "test definition"}', status=202,
+                      content_type='application/json')
+
         r = get_random()
         self.assertTrue("definition" in r)
+        self.assertEqual(r["definition"], "test definition")
 
+    @responses.activate
     def test_random_pipeline(self):
-        r = random_pipeline(self.user, "song")
-        self.assertTrue(isinstance(r, Song))
+        responses.add(responses.GET, "https://www.therightrhymes.com/data/senses/random",
+                      body="""
+                        {
+                            "headword": "test headword", 
+                            "definition": "test definition", 
+                            "part_of_speech": "noun", 
+                            "notes": "test notes", 
+                            "etymology": "test etym"
+                        }
+                        """,
+                      status=202,
+                      content_type='application/json')
+        r = random_pipeline(self.user, "sense")
+        self.assertTrue(isinstance(r, Sense))
 
     def test_random_pipeline_bad_input(self):
         r = random_pipeline(self.user, "blah")
