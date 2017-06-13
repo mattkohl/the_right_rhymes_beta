@@ -218,8 +218,15 @@ class SongViewSet(viewsets.ModelViewSet):
                     "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
-                    "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if
-                                 q.lower() in line.lower()]
+                    "examples": [
+                        {
+                            'id': example.id,
+                            'text': example.text,
+                            'song': example.from_song,
+                            'annotations': example.annotations.all(),
+                            'primary_artists': example.primary_artists.all(),
+                            'featured_artists': example.featured_artists.all(),
+                        } for example in song.examples.all()]
                 } for song in titles
             ]
             data['song_lyrics'] = [
@@ -230,8 +237,15 @@ class SongViewSet(viewsets.ModelViewSet):
                     "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
-                    "examples": [build_example_serializer(request, song, line) for line in song.lyrics.split('\n') if
-                                 q.lower() in line.lower()]
+                    "examples": [
+                        {
+                            'id': example.id,
+                            'text': example.text,
+                            'song': example.from_song,
+                            'annotations': example.annotations.all(),
+                            'primary_artists': example.primary_artists.all(),
+                            'featured_artists': example.featured_artists.all(),
+                        } for example in song.examples.filter(text__icontains=q)]
                 } for song in lyrics
             ]
         else:
@@ -242,7 +256,16 @@ class SongViewSet(viewsets.ModelViewSet):
                     "title": song.title,
                     "album": song.album,
                     "primary_artists": song.primary_artists.all(),
-                    "featured_artists": song.featured_artists.all()
+                    "featured_artists": song.featured_artists.all(),
+                    "examples": [
+                        {
+                            'id': example.id,
+                            'text': example.text,
+                            'song': example.from_song,
+                            'annotations': example.annotations.all(),
+                            'primary_artists': example.primary_artists.all(),
+                            'featured_artists': example.featured_artists.all(),
+                        } for example in song.examples.all()]
                 } for song in queryset
             ]
 
