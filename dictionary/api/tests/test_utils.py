@@ -92,6 +92,7 @@ class UtilTest(BaseTest):
     def test_serialize_examples(self):
         artist_ = self.create_an_artist()
         song_ = self.create_a_song(artist_)
-        examples = serialize_examples(self.request, song_, "hat")
-        self.assertEqual(len(examples), 2)
+        q = "hat"
+        examples = serialize_examples(self.request, song_, q)
+        self.assertEqual(len(examples), song_.lyrics.count(q))
         self.assertEqual(Example.objects.count(), 0)
