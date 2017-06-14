@@ -64,7 +64,7 @@ class SenseApiTest(BaseApiTest):
 
     def test_GET_list_all_senses(self):
         self.create_a_sense()
-        response = self.client.get(self.list_url, format="json")
+        response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
 
@@ -73,7 +73,7 @@ class SenseApiTest(BaseApiTest):
 
     def test_GET_search_all_senses(self):
         self.create_a_sense()
-        response = self.client.get(self.search_url, {"q": "test"}, format="json")
+        response = self.client.get(self.search_url, {"q": "test"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['senses'].count(), 1)
         sense_ = response.data['senses'].first()
@@ -82,7 +82,7 @@ class SenseApiTest(BaseApiTest):
 
     def test_GET_a_sense(self):
         self.create_a_sense()
-        response = self.client.get(self.detail_url, format="json")
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_GET_a_sense_highlight(self):
@@ -111,7 +111,7 @@ class ArtistApiTest(BaseApiTest):
 
     def test_GET_all_artists(self):
         self.create_an_artist()
-        response = self.client.get(self.list_url, format="json")
+        response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
 
@@ -120,7 +120,7 @@ class ArtistApiTest(BaseApiTest):
 
     def test_GET_search_all_artists(self):
         self.create_an_artist()
-        response = self.client.get(self.search_url, {"q": "test"}, format="json")
+        response = self.client.get(self.search_url, {"q": "test"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['artists'].count(), 1)
         artist_ = response.data['artists'].first()
@@ -128,7 +128,7 @@ class ArtistApiTest(BaseApiTest):
 
     def test_GET_an_artist(self):
         self.create_an_artist()
-        response = self.client.get(self.detail_url, format="json")
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_GET_an_artist_highlight(self):
@@ -159,7 +159,7 @@ class PlaceApiTest(BaseApiTest):
 
     def test_GET_all_places(self):
         self.create_a_place()
-        response = self.client.get(self.list_url, format="json")
+        response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
 
@@ -168,7 +168,7 @@ class PlaceApiTest(BaseApiTest):
 
     def test_GET_search_all_places(self):
         self.create_a_place()
-        response = self.client.get(self.search_url, {"q": "test"}, format="json")
+        response = self.client.get(self.search_url, {"q": "test"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['places'].count(), 1)
         place_ = response.data['places'].first()
@@ -176,7 +176,7 @@ class PlaceApiTest(BaseApiTest):
 
     def test_GET_a_place(self):
         self.create_a_place()
-        response = self.client.get(self.detail_url, format="json")
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_GET_a_place_highlight(self):
@@ -226,7 +226,7 @@ class SongApiTest(BaseApiTest):
     def test_GET_all_songs(self):
         self.create_a_song()
 
-        response = self.client.get(self.list_url, format="json")
+        response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
 
@@ -241,7 +241,7 @@ class SongApiTest(BaseApiTest):
 
     def test_GET_search_all_songs(self):
         self.create_a_song()
-        response = self.client.get(self.search_url, {"q": "test"}, format="json")
+        response = self.client.get(self.search_url, {"q": "test"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # TODO: change this API? all the other responses are querysets
@@ -251,7 +251,7 @@ class SongApiTest(BaseApiTest):
 
     def test_GET_a_song(self):
         self.create_a_song()
-        response = self.client.get(self.detail_url, format="json")
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_GET_a_song_highlight(self):
@@ -314,7 +314,7 @@ class ExampleApiTest(BaseApiTest):
         self.example_data.update({"primary_artists": [test_artist_uri], "from_song": test_song_uri})
         self.client.post(self.list_url, self.example_data, format="json")
 
-        response = self.client.get(self.list_url, format="json")
+        response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 1)
         example_ = response.data['results'][0]
