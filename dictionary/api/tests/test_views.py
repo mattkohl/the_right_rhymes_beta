@@ -424,3 +424,46 @@ class DomainApiTest(BaseApiTest):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+class SemanticClassApiTest(BaseApiTest):
+    list_url = reverse('semanticclass-list')
+    search_url = reverse('semanticclass-search')
+    detail_url = reverse('semanticclass-detail', kwargs={'pk': 1})
+    highlight_url = reverse('semanticclass-highlight', kwargs={'pk': 1})
+
+    data = {
+        "name": "test semantic class",
+        "narrower": []
+    }
+
+    def test_POST_a_semantic_class(self):
+        response = self.client.post(self.list_url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(SemanticClass.objects.count(), 1)
+        self.assertEqual(SemanticClass.objects.get().name, 'test semantic class')
+
+    def test_GET_all_semantic_classes(self):
+        self.create_a_semantic_class()
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def create_a_semantic_class(self):
+        self.client.post(self.list_url, self.data, format='json')
+
+    def test_GET_search_all_semantic_classes(self):
+        self.create_a_semantic_class()
+        response = self.client.get(self.search_url, {"q": "test"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['semantic_classes'].count(), 1)
+        semantic_class_ = response.data['semantic_classes'].first()
+        self.assertEqual(semantic_class_.name, self.data['name'])
+
+    def test_GET_a_semantic_class(self):
+        self.create_a_semantic_class()
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_GET_a_semantic_class_highlight(self):
+        self.create_a_semantic_class()
+        response = self.client.get(self.highlight_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
