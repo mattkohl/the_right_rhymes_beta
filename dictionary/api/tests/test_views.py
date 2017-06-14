@@ -377,3 +377,50 @@ class AnnotationApiTest(BaseApiTest):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Annotation.objects.count(), 1)
         self.assertEqual(Annotation.objects.get().text, 'test annotation')
+
+
+class DomainApiTest(BaseApiTest):
+    list_url = reverse('domain-list')
+    search_url = reverse('domain-search')
+    detail_url = reverse('domain-detail', kwargs={'pk': 1})
+    highlight_url = reverse('domain-highlight', kwargs={'pk': 1})
+
+    data = {
+        "name": "test domain",
+        "narrower": []
+    }
+
+    def test_POST_a_domain(self):
+        response = self.client.post(self.list_url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Domain.objects.count(), 1)
+        self.assertEqual(Domain.objects.get().name, 'test domain')
+
+    def test_GET_all_domains(self):
+        self.create_a_domain()
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+
+    def create_a_domain(self):
+        self.client.post(self.list_url, self.data, format='json')
+
+    def test_GET_search_all_domains(self):
+        self.create_a_domain()
+        response = self.client.get(self.search_url, {"q": "test"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['domains'].count(), 1)
+        domain_ = response.data['domains'].first()
+        self.assertEqual(domain_.name, self.data['name'])
+
+    def test_GET_a_domain(self):
+        self.create_a_domain()
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_GET_a_domain_highlight(self):
+        self.create_a_domain()
+        response = self.client.get(self.highlight_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
