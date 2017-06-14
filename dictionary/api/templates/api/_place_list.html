@@ -2,7 +2,13 @@
     <strong>{{ label }}</strong>:
     {% for s in places %}
         <div>
-            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">{{ s.name }}</a>
+            <a href="{% url 'place-highlight' pk=s.id%}" class="place-link">
+                {% if s.name %}
+                    {{s.name}}
+                {% else %}
+                    {{ s.full_name }}
+                {% endif %}
+            </a>
         </div>
     {% endfor %}
 </div>
