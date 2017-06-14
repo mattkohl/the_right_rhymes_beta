@@ -1,6 +1,7 @@
 from api.tests.test_models import BaseTest
 from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
-from api.utils import clean_up_date, slugify, extract_rhymes, build_example_serializer, build_annotation_serializer
+from api.utils import clean_up_date, slugify, extract_rhymes, \
+    build_example_serializer, build_annotation_serializer, serialize_examples
 from api.models import Annotation, Example, Song, Artist
 
 
@@ -14,6 +15,7 @@ class UtilTest(BaseTest):
         "title": "Test song",
         "album": "Test album",
         "release_date": "2017-03-30",
+        "lyrics": "Cat in the hat\n This song is about the cat in the hat\n",
     }
 
     example_data = {
@@ -86,3 +88,10 @@ class UtilTest(BaseTest):
         example_serializer_ = build_example_serializer(self.request, song_, "Cat in the hat")
         self.assertIsInstance(example_serializer_, ExampleHyperlinkedSerializer)
         self.assertEqual(example_serializer_.validated_data['from_song'], song_)
+
+    def test_serialize_examples(self):
+        artist_ = self.create_an_artist()
+        song_ = self.create_a_song(artist_)
+        examples = serialize_examples(self.request, song_, "hat")
+        self.assertEqual(len(examples), 2)
+        self.assertEqual(Example.objects.count(), 0)
