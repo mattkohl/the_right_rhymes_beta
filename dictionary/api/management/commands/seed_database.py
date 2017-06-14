@@ -10,10 +10,18 @@ from api.utils import clean_up_date
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+        parser.add_argument('--what',
+                            default="sense",
+                            help="What would you like to seed? (sense | song | artist | place)")
+
     def handle(self, *args, **options):
         owner = User.objects.first()
-        if owner:
-            r = random_pipeline(owner, "sense")
+        if owner and owner.is_superuser:
+            what = "sense"
+            if 'what' in options:
+                what = options['what']
+            r = random_pipeline(owner, what)
             print(r)
             self.stdout.write(self.style.SUCCESS('Done!'))
         else:
