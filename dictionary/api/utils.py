@@ -21,12 +21,11 @@ def make_uri(host, object_type, pk):
     return uri
 
 
-def build_annotation_serializer(request, example, text="", start_position=None, end_position=None):
+def build_annotation_serializer(request, example, text="", offset=None):
     host = request.get_host()
     serializer_data = {
         "text": text,
-        "start_position": start_position,
-        "end_position": end_position,
+        "offset": offset,
         "example": make_uri(host, 'examples', example.id)
     }
     annotation_serializer = AnnotationSerializer(context={'request': request}, data=serializer_data, partial=True)

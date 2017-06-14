@@ -1,5 +1,6 @@
 from api.tests.test_models import BaseTest
-from api.utils import clean_up_date, slugify, extract_rhymes
+from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
+from api.utils import clean_up_date, slugify, extract_rhymes, build_example_serializer, build_annotation_serializer
 from api.models import Annotation, Example, Song, Artist
 
 
@@ -36,16 +37,9 @@ class UtilTest(BaseTest):
         self.assertEqual(slugify(pathological_case), result)
 
     def test_extract_rhymes(self):
-        artist_ = Artist(owner=self.user, **self.artist_data)
-        artist_.save()
-        self.assertEqual(Artist.objects.count(), 1)
-        song_ = Song(owner=self.user, **self.song_data)
-        song_.save()
-        song_.primary_artists.add(artist_)
-        self.assertEqual(Song.objects.count(), 1)
-        example_ = Example(owner=self.user, from_song=song_, **self.example_data)
-        example_.save()
-        example_.primary_artists.add(artist_)
+        artist_ = self.create_an_artist()
+        song_ = self.create_a_song(artist_)
+        example_ = self.create_an_example(song_, artist_)
         self.assertEqual(Example.objects.count(), 1)
         self.assertEqual(example_.from_song, song_)
         annotation_1 = Annotation(owner=self.user, text="Cat", offset=0, example=example_)
@@ -60,3 +54,35 @@ class UtilTest(BaseTest):
         self.assertTrue('left' in rhymes[0])
         self.assertIsInstance(rhymes[0]["right"], Annotation)
         self.assertIsInstance(rhymes[0]["left"], Annotation)
+
+    def create_an_example(self, song_, artist_):
+        example_ = Example(owner=self.user, from_song=song_, **self.example_data)
+        example_.save()
+        example_.primary_artists.add(artist_)
+        return example_
+
+    def create_a_song(self, artist_):
+        song_ = Song(owner=self.user, **self.song_data)
+        song_.save()
+        song_.primary_artists.add(artist_)
+        return song_
+
+    def create_an_artist(self):
+        artist_ = Artist(owner=self.user, **self.artist_data)
+        artist_.save()
+        return artist_
+
+    def test_build_annotation_serializer(self):
+        artist_ = self.create_an_artist()
+        song_ = self.create_a_song(artist_)
+        example_ = self.create_an_example(song_, artist_)
+        annotation_serializer_ = build_annotation_serializer(self.request, example_, "Cat", 0)
+        self.assertIsInstance(annotation_serializer_, AnnotationSerializer)
+        self.assertEqual(annotation_serializer_.validated_data['example'], example_)
+
+    def test_build_example_serializer(self):
+        artist_ = self.create_an_artist()
+        song_ = self.create_a_song(artist_)
+        example_serializer_ = build_example_serializer(self.request, song_, "Cat in the hat")
+        self.assertIsInstance(example_serializer_, ExampleHyperlinkedSerializer)
+        self.assertEqual(example_serializer_.validated_data['from_song'], song_)

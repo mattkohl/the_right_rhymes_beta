@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.test.client import RequestFactory
 from django.contrib.auth.models import User
 from api.models import Sense, Artist, Song, Example, Place
 
@@ -7,6 +8,9 @@ class BaseTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create(username="test", email="ad@min.com", password="admin", is_superuser=True)
+        self.factory = RequestFactory()
+        self.request = self.factory.get('/')
+        self.host = self.request.get_host()
 
 
 class SenseModelTest(BaseTest):
