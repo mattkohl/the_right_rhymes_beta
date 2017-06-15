@@ -3,7 +3,8 @@ import responses
 
 from api.tests.test_models import BaseTest
 from api.models import Sense, Artist, Song, Example, Place
-from api.management.commands.seed_database import json_extract, persist, get_random, random_pipeline, inject_owner
+from api.management.commands.seed_database import json_extract, persist, get_random, random_pipeline, \
+    inject_owner, remove_image, process_origin
 
 
 null = None
@@ -171,6 +172,17 @@ class SeedDatabaseArtistTest(BaseTest):
 
         self.assertTrue(Artist.objects.count(), 1)
         self.assertEqual(Artist.objects.first().name, "Kurtis Blow")
+
+    def test_remove_image(self):
+        self.assertTrue("image" in self.result)
+        remove_image(self.result)
+        self.assertTrue("image" not in self.result)
+
+    def test_process_origin(self):
+        self.assertTrue("origin" in self.result)
+        self.assertIsInstance(self.result["origin"], dict)
+        process_origin(self.result)
+        self.assertIsInstance(self.result["origin"], Place)
 
 
 class SeedDatabaseSongTest(BaseTest):

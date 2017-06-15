@@ -83,7 +83,8 @@ def persist(what, data_dict):
 
 
 def create_an_artist(data_dict):
-    add_origin_remove_img(data_dict)
+    process_origin(data_dict)
+    remove_image(data_dict)
     obj, created = Artist.objects.get_or_create(**data_dict)
     return obj
 
@@ -136,10 +137,12 @@ def inject_owner(owner, data_dict):
                     inject_owner(owner, item)
 
 
-def add_origin_remove_img(data_dict):
+def process_origin(data_dict):
     if "origin" in data_dict:
         origin = data_dict["origin"]
         data_dict["origin"] = persist("place", origin)
+
+
+def remove_image(data_dict):
     if "image" in data_dict:
         data_dict.pop("image")
-    return data_dict
