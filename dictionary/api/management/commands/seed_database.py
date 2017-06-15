@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 import django.conf.global_settings as settings
 from django.contrib.auth.models import User
 from api.models import Sense, Artist, Song, Example, Place
+from api.utils import clean_text
 
 
 class Command(BaseCommand):
@@ -90,7 +91,7 @@ def create_an_artist(data_dict):
 
 
 def create_an_example(data_dict, featured_artists, primary_artists):
-    text = data_dict.pop("text")
+    text = clean_text(data_dict.pop("text"))
     links = data_dict.pop("links")
     song = create_a_song(data_dict, featured_artists, primary_artists)
     obj, created = Example.objects.get_or_create(text=text, from_song=song, owner=data_dict["owner"])

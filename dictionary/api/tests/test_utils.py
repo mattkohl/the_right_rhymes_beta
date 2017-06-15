@@ -1,7 +1,8 @@
 from api.tests.test_models import BaseTest
 from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
 from api.utils import clean_up_date, slugify, extract_rhymes, \
-    build_example_serializer, build_annotation_serializer, serialize_examples
+    build_example_serializer, build_annotation_serializer, \
+    serialize_examples, clean_text
 from api.models import Annotation, Example, Song, Artist
 
 
@@ -96,3 +97,9 @@ class UtilTest(BaseTest):
         examples = serialize_examples(self.request, song_, q)
         self.assertEqual(len(examples), song_.lyrics.count(q))
         self.assertEqual(Example.objects.count(), 0)
+
+    def test_clean_text(self):
+        bad_apostrophe = "All this bread can’t be too good for my cholesterol"
+        okay_apostrophe = "All this bread can't be too good for my cholesterol"
+        cleaned = clean_text(bad_apostrophe)
+        self.assertEqual(cleaned, okay_apostrophe)

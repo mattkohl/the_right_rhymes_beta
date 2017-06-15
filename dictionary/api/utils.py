@@ -93,3 +93,8 @@ def clean_up_date(unformatted_date):
     if len(new_date) == 4:
         return new_date + '-12-31'
     return new_date
+
+
+def clean_text(text):
+    t1 = text.replace("’", "'")
+    return t1
