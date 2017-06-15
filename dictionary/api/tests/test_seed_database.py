@@ -3,7 +3,7 @@ import responses
 
 from api.tests.test_models import BaseTest
 from api.models import Sense, Artist, Song, Example, Place
-from api.management.commands.seed_database import json_extract, persist, get_random, random_pipeline
+from api.management.commands.seed_database import json_extract, persist, get_random, random_pipeline, inject_owner
 
 
 null = None
@@ -212,3 +212,25 @@ class SeedDatabaseSongTest(BaseTest):
         extracted = json_extract(self.result, self.user, "song")
         persisted = persist("song", extracted)
         self.assertIsInstance(persisted, Song)
+
+    def test_inject_owner(self):
+        data = {
+            "a": "a",
+            "b": {"c": "c"},
+            "d": [
+                {"e": "e"},
+                {"f": "f"},
+            ],
+        }
+        injected = {
+            'a': 'a',
+            'b': {'c': 'c', 'owner': 'user'},
+            'd': [
+                {'e': 'e', 'owner': 'user'},
+                {'f': 'f', 'owner': 'user'}
+            ],
+            'owner': 'user'
+        }
+
+        inject_owner("user", data)
+        self.assertEqual(data, injected)

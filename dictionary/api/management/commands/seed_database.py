@@ -130,3 +130,15 @@ def random_pipeline(owner, what):
         persisted = persist(what, data_dict)
         return persisted
     return None
+
+
+def inject_owner(owner, data_dict):
+    data_dict["owner"] = owner
+    for k, v in data_dict.items():
+        if isinstance(v, dict):
+            inject_owner(owner, v)
+        if isinstance(v, list):
+            for item in v:
+                if isinstance(item, dict):
+                    inject_owner(owner, item)
+
