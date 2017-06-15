@@ -149,13 +149,14 @@ class SeedDatabaseArtistTest(BaseTest):
         extracted = json_extract(self.result, self.user, "artist")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
-        self.assertIsInstance(extracted['origin'], Place)
+        self.assertTrue("origin" in extracted)
 
     def test_artist_persist(self):
 
         extracted = json_extract(self.result, self.user, "artist")
         persisted = persist("artist", extracted)
         self.assertIsInstance(persisted, Artist)
+        self.assertIsInstance(persisted.origin, Place)
 
     def test_artist_with_and_without_origin_persist(self):
 

@@ -51,28 +51,15 @@ def get_random(what="sense"):
 def json_extract(result, owner, what="sense"):
     keys = {
         "sense": ('headword', 'part_of_speech', 'definition', 'notes', 'etymology'),
-        "song": ('title', 'release_date', 'release_date_string', 'album'),
-        "example": ('title', 'release_date', 'release_date_string', 'album', "text", "links"),
+        "song": ('title', 'release_date', 'release_date_string', "primary_artists", "featured_artists", 'album'),
+        "example": ('title', 'release_date', 'release_date_string', "primary_artists", "featured_artists", 'album', "text", "links"),
         "place": ('full_name', "longitude", "latitude"),
-        "artist": ("name",)
+        "artist": ("name", "origin")
     }
 
-    s = dict((k, result[k]) for k in keys[what])
+    s = dict((k, result[k]) for k in keys[what] if k in result)
+    inject_owner(owner, s)
 
-    if what == "song" or what == "example":
-        add_keys = ("primary_artists", "featured_artists",)
-        for key in add_keys:
-            if key in result:
-                # TODO: handle origins
-                s[key] = [persist("artist", {"name": o["name"], "owner": owner}) for o in result[key]]
-
-    if what == "artist":
-        key = "origin"
-        if key in result:
-            d = result[key]
-            d.update({"owner": owner})
-            s[key] = persist("place", d)
-    s.update({"owner": owner})
     return s
 
 
@@ -80,7 +67,7 @@ def persist(what, data_dict):
     if what == 'sense':
         obj, created = Sense.objects.get_or_create(**data_dict)
     elif what == 'artist':
-        obj, created = Artist.objects.get_or_create(**data_dict)
+        obj = create_an_artist(data_dict)
     elif what == 'place':
         obj, created = Place.objects.get_or_create(**data_dict)
     elif what == 'song':
@@ -92,6 +79,12 @@ def persist(what, data_dict):
     else:
         obj = None
         print("Failed to persist", what, ": ", str(data_dict))
+    return obj
+
+
+def create_an_artist(data_dict):
+    add_origin_remove_img(data_dict)
+    obj, created = Artist.objects.get_or_create(**data_dict)
     return obj
 
 
@@ -117,9 +110,9 @@ def extract_artists(data_dict):
     FA = "featured_artists"
     primary_artists, featured_artists = [], []
     if PA in data_dict:
-        primary_artists = data_dict.pop(PA)
+        primary_artists = [create_an_artist(artist) for artist in data_dict.pop(PA)]
     if FA in data_dict:
-        featured_artists = data_dict.pop(FA)
+        primary_artists = [create_an_artist(artist) for artist in data_dict.pop(FA)]
     return featured_artists, primary_artists, data_dict
 
 
@@ -142,3 +135,11 @@ def inject_owner(owner, data_dict):
                 if isinstance(item, dict):
                     inject_owner(owner, item)
 
+
+def add_origin_remove_img(data_dict):
+    if "origin" in data_dict:
+        origin = data_dict["origin"]
+        data_dict["origin"] = persist("place", origin)
+    if "image" in data_dict:
+        data_dict.pop("image")
+    return data_dict
