@@ -1,6 +1,6 @@
 import json
 import requests
-
+from collections.abc import Iterable
 from django.core.management.base import BaseCommand, CommandError
 import django.conf.global_settings as settings
 from django.contrib.auth.models import User
@@ -137,7 +137,7 @@ def inject_owner(owner, data_dict):
     for k, v in data_dict.items():
         if isinstance(v, dict):
             inject_owner(owner, v)
-        if isinstance(v, list):
+        if isinstance(v, Iterable):
             for item in v:
                 if isinstance(item, dict):
                     inject_owner(owner, item)
