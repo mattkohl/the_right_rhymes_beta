@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand, CommandError
 import django.conf.global_settings as settings
 from django.contrib.auth.models import User
 from api.models import Sense, Artist, Song, Example, Place
-from api.utils import clean_up_date
 
 
 class Command(BaseCommand):
@@ -13,7 +12,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--what',
                             default="sense",
-                            help="What would you like to seed? (sense | song | artist | place)")
+                            help="What would you like to seed? (sense | song | artist | example | place)")
 
     def handle(self, *args, **options):
         owner = User.objects.first()
@@ -64,6 +63,7 @@ def json_extract(result, owner, what="sense"):
         add_keys = ("primary_artists", "featured_artists",)
         for key in add_keys:
             if key in result:
+                # TODO: handle origins
                 s[key] = [persist("artist", {"name": o["name"], "owner": owner}) for o in result[key]]
 
     if what == "artist":
@@ -121,52 +121,6 @@ def extract_artists(data_dict):
     if FA in data_dict:
         featured_artists = data_dict.pop(FA)
     return featured_artists, primary_artists, data_dict
-
-
-
-test_example = {
-        "album": "Tha Absolute Truth",
-        "text": "Big Tuck in the building, the chillest nigga in town",
-        "featured_artists": [
-            {
-                "image": "/static/dictionary/img/artists/thumb/__none.png",
-                "name": "Dre",
-                "slug": "dre"
-            }
-        ],
-        "primary_artists": [
-            {
-                "image": "/static/dictionary/img/artists/thumb/big-tuck.jpg",
-                "name": "Big Tuck",
-                "origin": {
-                    "latitude": 32.776272,
-                    "name": "Dallas",
-                    "slug": "dallas-texas-usa",
-                    "longitude": -96.796856
-                },
-                "slug": "big-tuck"
-            }
-        ],
-        "title": "That What's Up",
-        "release_date": "2006-12-12",
-        "links": [
-            {
-                "offset": 0,
-                "target_lemma": "Big Tuck",
-                "type": "artist",
-                "target_slug": "big-tuck",
-                "text": "Big Tuck"
-            },
-            {
-                "offset": 30,
-                "target_lemma": "chill",
-                "type": "xref",
-                "target_slug": "chill#e4000_adj_1",
-                "text": "chillest"
-            }
-        ],
-        "release_date_string": "2006-12-12"
-    }
 
 
 def random_pipeline(owner, what):
