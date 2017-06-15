@@ -27,7 +27,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Add a superuser first!'))
 
 
-def get_random(what="sense"):
+def get_random_thing(what="sense"):
     urls = {
         "song": "https://www.therightrhymes.com/data/songs/random",
         "sense": "https://www.therightrhymes.com/data/senses/random",
@@ -48,7 +48,7 @@ def get_random(what="sense"):
     return None
 
 
-def json_extract(result, owner, what="sense"):
+def extract_dict(result, owner, what="sense"):
     keys = {
         "sense": ('headword', 'part_of_speech', 'definition', 'notes', 'etymology'),
         "song": ('title', 'release_date', 'release_date_string', "primary_artists", "featured_artists", 'album'),
@@ -71,10 +71,10 @@ def persist(what, data_dict):
     elif what == 'place':
         obj, created = Place.objects.get_or_create(**data_dict)
     elif what == 'song':
-        featured_artists, primary_artists, data_dict = extract_artists(data_dict)
+        featured_artists, primary_artists, data_dict = extract_and_process_artists(data_dict)
         obj = create_a_song(data_dict, featured_artists, primary_artists)
     elif what == 'example':
-        featured_artists, primary_artists, data_dict = extract_artists(data_dict)
+        featured_artists, primary_artists, data_dict = extract_and_process_artists(data_dict)
         obj = create_an_example(data_dict, featured_artists, primary_artists)
     else:
         obj = None
@@ -106,21 +106,21 @@ def create_a_song(data_dict, featured_artists, primary_artists):
     return obj
 
 
-def extract_artists(data_dict):
+def extract_and_process_artists(data_dict):
     PA = "primary_artists"
     FA = "featured_artists"
     primary_artists, featured_artists = [], []
     if PA in data_dict:
-        primary_artists = [create_an_artist(artist) for artist in data_dict.pop(PA)]
+        primary_artists += [create_an_artist(artist) for artist in data_dict.pop(PA)]
     if FA in data_dict:
-        primary_artists = [create_an_artist(artist) for artist in data_dict.pop(FA)]
+        primary_artists += [create_an_artist(artist) for artist in data_dict.pop(FA)]
     return featured_artists, primary_artists, data_dict
 
 
 def random_pipeline(owner, what):
-    random_json = get_random(what)
+    random_json = get_random_thing(what)
     if random_json:
-        data_dict = json_extract(random_json, owner, what)
+        data_dict = extract_dict(random_json, owner, what)
         persisted = persist(what, data_dict)
         return persisted
     return None

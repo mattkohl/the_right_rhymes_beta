@@ -3,8 +3,8 @@ import responses
 
 from api.tests.test_models import BaseTest
 from api.models import Sense, Artist, Song, Example, Place
-from api.management.commands.seed_database import json_extract, persist, get_random, random_pipeline, \
-    inject_owner, remove_image, process_origin
+from api.management.commands.seed_database import extract_dict, persist, get_random_thing, random_pipeline, \
+    inject_owner, remove_image, process_origin, extract_and_process_artists
 
 
 null = None
@@ -13,12 +13,12 @@ null = None
 class SeedDatabaseTest(BaseTest):
 
     @responses.activate
-    def test_get_random(self):
+    def test_get_random_thing(self):
         responses.add(responses.GET, "https://www.therightrhymes.com/data/senses/random",
                       body='{"definition": "test definition"}', status=202,
                       content_type='application/json')
 
-        r = get_random()
+        r = get_random_thing()
         self.assertTrue("definition" in r)
         self.assertEqual(r["definition"], "test definition")
 
@@ -42,6 +42,28 @@ class SeedDatabaseTest(BaseTest):
     def test_random_pipeline_bad_input(self):
         r = random_pipeline(self.user, "blah")
         self.assertTrue(r is None)
+
+    def test_inject_owner(self):
+        data = {
+            "a": "a",
+            "b": {"c": "c"},
+            "d": [
+                {"e": "e"},
+                {"f": "f"},
+            ],
+        }
+        injected = {
+            'a': 'a',
+            'b': {'c': 'c', 'owner': 'user'},
+            'd': [
+                {'e': 'e', 'owner': 'user'},
+                {'f': 'f', 'owner': 'user'}
+            ],
+            'owner': 'user'
+        }
+
+        inject_owner("user", data)
+        self.assertEqual(data, injected)
 
 
 class SeedDatabaseSenseTest(BaseTest):
@@ -118,15 +140,15 @@ class SeedDatabaseSenseTest(BaseTest):
         "xml_id": "e8680_adv_1"
     }
 
-    def test_sense_json_extract(self):
+    def test_extract_dict(self):
 
-        extracted = json_extract(self.result, self.user, "sense")
+        extracted = extract_dict(self.result, self.user, "sense")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
 
-    def test_sense_persist(self):
+    def test_persist(self):
 
-        extracted = json_extract(self.result, self.user, "sense")
+        extracted = extract_dict(self.result, self.user, "sense")
         persisted = persist("sense", extracted)
         self.assertIsInstance(persisted, Sense)
 
@@ -145,16 +167,16 @@ class SeedDatabaseArtistTest(BaseTest):
         }
     }
 
-    def test_artist_json_extract(self):
+    def test_extract_dict(self):
 
-        extracted = json_extract(self.result, self.user, "artist")
+        extracted = extract_dict(self.result, self.user, "artist")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
         self.assertTrue("origin" in extracted)
 
-    def test_artist_persist(self):
+    def test_persist(self):
 
-        extracted = json_extract(self.result, self.user, "artist")
+        extracted = extract_dict(self.result, self.user, "artist")
         persisted = persist("artist", extracted)
         self.assertIsInstance(persisted, Artist)
         self.assertIsInstance(persisted.origin, Place)
@@ -164,10 +186,10 @@ class SeedDatabaseArtistTest(BaseTest):
         without_origin = copy.deepcopy(self.result)
         without_origin.pop("origin")
         self.assertTrue("origin" not in without_origin)
-        without_extracted = json_extract(self.result, self.user, "artist")
+        without_extracted = extract_dict(self.result, self.user, "artist")
         persist("artist", without_extracted)
 
-        with_extracted = json_extract(self.result, self.user, "artist")
+        with_extracted = extract_dict(self.result, self.user, "artist")
         persist("artist", with_extracted)
 
         self.assertTrue(Artist.objects.count(), 1)
@@ -183,6 +205,14 @@ class SeedDatabaseArtistTest(BaseTest):
         self.assertIsInstance(self.result["origin"], dict)
         process_origin(self.result)
         self.assertIsInstance(self.result["origin"], Place)
+
+    def test_extract_and_process_artists(self):
+        extracted = extract_dict(self.result, self.user, "artist")
+        data = {"primary_artists": [extracted]}
+        featured_artists, primary_artists, data_dict = extract_and_process_artists(data)
+        self.assertTrue("primary_artists" not in data_dict)
+        self.assertEqual(len(primary_artists), 1)
+        self.assertIsInstance(primary_artists[0], Artist)
 
 
 class SeedDatabaseSongTest(BaseTest):
@@ -215,35 +245,75 @@ class SeedDatabaseSongTest(BaseTest):
         "title": "I'll Wait"
     }
 
-    def test_song_json_extract(self):
-
-        extracted = json_extract(self.result, self.user, "song")
+    def test_extract_dict(self):
+        extracted = extract_dict(self.result, self.user, "song")
         self.assertTrue("owner" in extracted)
         self.assertEqual(extracted['owner'], self.user)
 
-    def test_song_persist(self):
-        extracted = json_extract(self.result, self.user, "song")
+    def test_persist(self):
+        extracted = extract_dict(self.result, self.user, "song")
         persisted = persist("song", extracted)
         self.assertIsInstance(persisted, Song)
 
-    def test_inject_owner(self):
-        data = {
-            "a": "a",
-            "b": {"c": "c"},
-            "d": [
-                {"e": "e"},
-                {"f": "f"},
-            ],
-        }
-        injected = {
-            'a': 'a',
-            'b': {'c': 'c', 'owner': 'user'},
-            'd': [
-                {'e': 'e', 'owner': 'user'},
-                {'f': 'f', 'owner': 'user'}
-            ],
-            'owner': 'user'
-        }
 
-        inject_owner("user", data)
-        self.assertEqual(data, injected)
+class SeedDatabaseExampleTest(BaseTest):
+
+    result = {
+        "links": [
+            {
+                "offset": 10,
+                "target_lemma": "gaffle",
+                "type": "xref",
+                "target_slug": "gaffle#e5593_trV_2",
+                "text": "gaffle"
+            },
+            {
+                "offset": 21,
+                "target_lemma": "scratch",
+                "type": "xref",
+                "target_slug": "scratch#e9290_n_1",
+                "text": "scratch"
+            },
+            {
+                "offset": 32,
+                "target_lemma": "gat",
+                "type": "xref",
+                "target_slug": "gat#e5680_n_1",
+                "text": "gat"
+            }
+        ],
+        "title": "Kill Street Blues",
+        "text": "Tryin' to gaffle the scratch my gat consumes",
+        "featured_artists": [],
+        "release_date_string": "1997-10-28",
+        "release_date": "1997-10-28",
+        "album": "The Black Bossalini",
+        "primary_artists": [
+            {
+                "origin": {
+                    "slug": "hayward-california-usa",
+                    "name": "Hayward",
+                    "latitude": 37.668821,
+                    "longitude": -122.080796
+                },
+                "slug": "spice-1",
+                "name": "Spice 1",
+                "image": "/static/dictionary/img/artists/thumb/spice-1.png"
+            }
+        ]
+    }
+
+    def test_extract_dict(self):
+        extracted = extract_dict(self.result, self.user, "example")
+        self.assertTrue("owner" in extracted)
+        self.assertEqual(extracted['owner'], self.user)
+
+    def test_persist(self):
+        extracted = extract_dict(self.result, self.user, "example")
+        persisted = persist("example", extracted)
+        self.assertIsInstance(persisted, Example)
+        self.assertEqual(persisted.primary_artists.count(), 1)
+        [self.assertIsInstance(a, Artist) for a in persisted.primary_artists.all()]
+        self.assertEqual(Song.objects.count(), 1)
+        self.assertIsInstance(persisted.from_song, Song)
+
