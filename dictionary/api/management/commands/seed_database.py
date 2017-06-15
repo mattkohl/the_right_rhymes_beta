@@ -169,7 +169,6 @@ test_example = {
     }
 
 
-
 def random_pipeline(owner, what):
     random_json = get_random(what)
     if random_json:
