@@ -43,15 +43,7 @@ class SenseViewSet(viewsets.ModelViewSet):
         sense = self.get_object()
         annotations = sense.annotations.all()
         rhymes = extract_rhymes(annotations)
-        examples = [
-            {
-                "id": a.example.id,
-                "text": a.example.text,
-                "rendered": render_example_with_annotations(request, a.example),
-                "song": a.example.from_song,
-                "primary_artists": a.example.from_song.primary_artists.all(),
-                "featured_artists": a.example.from_song.featured_artists.all(),
-            } for a in annotations]
+        examples = build_examples_from_annotations(annotations, request)
         data = {
             'sense': sense,
             'examples': examples,
@@ -97,15 +89,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
         artist = self.get_object()
         annotations = artist.annotations.all()
         rhymes = extract_rhymes(annotations)
-        examples = [
-            {
-                "id": a.example.id,
-                "text": a.example.text,
-                "rendered": render_example_with_annotations(request, a.example),
-                "song": a.example.from_song,
-                "primary_artists": a.example.from_song.primary_artists.all(),
-                "featured_artists": a.example.from_song.featured_artists.first(),
-            } for a in annotations]
+        examples = build_examples_from_annotations(annotations, request)
         data = {
             "artist": artist,
             "also_known_as": artist.also_known_as.all(),
@@ -171,15 +155,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
         contains = place.contains.all()
         within = place.within.all()
         artists = place.artists.all()
-        examples = [
-            {
-                "id": a.example.id,
-                "text": a.example.text,
-                "rendered": render_example_with_annotations(request, a.example),
-                "song": a.example.from_song,
-                "primary_artists": a.example.from_song.primary_artists.all(),
-                "featured_artists": a.example.from_song.featured_artists.first(),
-            } for a in annotations]
+        examples = build_examples_from_annotations(annotations, request)
         data = {
             'place': place,
             'contains': contains,
@@ -222,16 +198,7 @@ class SongViewSet(viewsets.ModelViewSet):
                     "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
-                    "examples": [
-                        {
-                            'id': example.id,
-                            'text': example.text,
-                            "rendered": render_example_with_annotations(request, example),
-                            'song': example.from_song,
-                            'annotations': example.annotations.all(),
-                            'primary_artists': example.primary_artists.all(),
-                            'featured_artists': example.featured_artists.all(),
-                        } for example in song.examples.all()]
+                    "examples": build_examples_from_queryset(song.examples.all(), request)
                 } for song in titles
             ]
             data['song_lyrics'] = [
@@ -242,16 +209,7 @@ class SongViewSet(viewsets.ModelViewSet):
                     "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
-                    "examples": [
-                        {
-                            'id': example.id,
-                            'text': example.text,
-                            "rendered": render_example_with_annotations(request, example),
-                            'song': example.from_song,
-                            'annotations': example.annotations.all(),
-                            'primary_artists': example.primary_artists.all(),
-                            'featured_artists': example.featured_artists.all(),
-                        } for example in song.examples.filter(text__icontains=q)]
+                    "examples": build_examples_from_queryset(song.examples.filter(text__icontains=q), request)
                 } for song in lyrics
             ]
         else:
@@ -263,16 +221,7 @@ class SongViewSet(viewsets.ModelViewSet):
                     "album": song.album,
                     "primary_artists": song.primary_artists.all(),
                     "featured_artists": song.featured_artists.all(),
-                    "examples": [
-                        {
-                            'id': example.id,
-                            'text': example.text,
-                            "rendered": render_example_with_annotations(request, example),
-                            'song': example.from_song,
-                            'annotations': example.annotations.all(),
-                            'primary_artists': example.primary_artists.all(),
-                            'featured_artists': example.featured_artists.all(),
-                        } for example in song.examples.all()]
+                    "examples": build_examples_from_queryset(song.examples.all(), request)
                 } for song in queryset
             ]
 
@@ -403,16 +352,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(text__icontains=q)
         data = {
             "label": "Examples",
-            "examples": [
-                {
-                    'id': example.id,
-                    'text': example.text,
-                    "rendered": render_example_with_annotations(request, example),
-                    'song': example.from_song,
-                    'annotations': example.annotations.all(),
-                    'primary_artists': example.primary_artists.all(),
-                    'featured_artists': example.featured_artists.all(),
-                } for example in queryset]
+            "examples": build_examples_from_queryset(queryset, request)
         }
         return Response(data, template_name="api/_search.html")
 
@@ -485,3 +425,30 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+# functions
+def build_examples_from_annotations(annotations, request):
+    examples = [
+        {
+            "id": a.example.id,
+            "text": a.example.text,
+            "rendered": render_example_with_annotations(request, a.example),
+            "song": a.example.from_song,
+            "primary_artists": a.example.from_song.primary_artists.all(),
+            "featured_artists": a.example.from_song.featured_artists.first(),
+        } for a in annotations]
+    return examples
+
+
+def build_examples_from_queryset(queryset, request):
+    return [
+        {
+            'id': example.id,
+            'text': example.text,
+            "rendered": render_example_with_annotations(request, example),
+            'song': example.from_song,
+            'annotations': example.annotations.all(),
+            'primary_artists': example.primary_artists.all(),
+            'featured_artists': example.featured_artists.all(),
+        } for example in queryset]
