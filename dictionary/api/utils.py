@@ -127,3 +127,42 @@ def build_annotation_link(host, annotation):
             uri = make_uri(host, "places", target.id)
         return link.format(uri, annotation.text)
     return "<span>{}</span>".format(annotation.text)
+
+
+def build_examples_from_annotations(annotations, request):
+    return [
+        {
+            "id": a.example.id,
+            "text": a.example.text,
+            "rendered": render_example_with_annotations(request, a.example),
+            "song": a.example.from_song,
+            'annotations': a.example.annotations.all(),
+            "primary_artists": a.example.from_song.primary_artists.all(),
+            "featured_artists": a.example.from_song.featured_artists.first(),
+        } for a in annotations]
+
+
+def build_examples_from_queryset(queryset, request):
+    return [
+        {
+            'id': example.id,
+            'text': example.text,
+            "rendered": render_example_with_annotations(request, example),
+            'song': example.from_song,
+            'annotations': example.annotations.all(),
+            'primary_artists': example.primary_artists.all(),
+            'featured_artists': example.featured_artists.all(),
+        } for example in queryset]
+
+
+def build_songs_from_queryset(queryset, request, example_filter):
+    return [
+        {
+            "id": song.id,
+            "release_date": song.release_date,
+            "title": song.title,
+            "album": song.album,
+            "primary_artists": song.primary_artists.all(),
+            "featured_artists": song.featured_artists.all(),
+            "examples": build_examples_from_queryset(song.examples.filter(text__icontains=example_filter), request) if example_filter is not None else []
+        } for song in queryset]

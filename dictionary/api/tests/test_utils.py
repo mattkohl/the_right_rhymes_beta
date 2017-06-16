@@ -3,7 +3,8 @@ from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
 from api.utils import clean_up_date, slugify, extract_rhymes, \
     build_example_serializer, build_annotation_serializer, \
     serialize_examples, clean_text, render_example_with_annotations, \
-    build_annotation_link
+    build_annotation_link, build_songs_from_queryset, build_examples_from_queryset, \
+    build_examples_from_annotations
 from api.models import Annotation, Example, Song, Artist, Place, Sense
 
 
@@ -163,3 +164,43 @@ class UtilTest(BaseTest):
         rendered = '<a href="http://testserver/senses/1/">Cat</a> in <a href="http://testserver/places/1/">the</a> <span>hat</span>'
         result = render_example_with_annotations(self.request, example_)
         self.assertEqual(result, rendered)
+
+    def test_build_songs_from_queryset(self):
+        artist_ = self.create_an_artist()
+        song_ = self.create_a_song(artist_)
+        self.create_an_example(song_, artist_)
+        queryset = Song.objects.all()
+        results_no_examples = build_songs_from_queryset(queryset, self.request, None)
+        self.assertEqual(len(results_no_examples), 1)
+        self.assertEqual(len(results_no_examples[0]['examples']), 0)
+
+        results_with_all_examples = build_songs_from_queryset(queryset, self.request, "")
+        self.assertEqual(len(results_with_all_examples), 1)
+        self.assertEqual(len(results_with_all_examples[0]['examples']), 1)
+
+        q = "non-matching filter"
+        results_with_filtered_examples = build_songs_from_queryset(queryset, self.request, q)
+        self.assertEqual(len(results_with_filtered_examples), 1)
+        self.assertEqual(len(results_with_filtered_examples[0]['examples']), 0)
+
+        q = "Cat"
+        results_with_filtered_examples = build_songs_from_queryset(queryset, self.request, q)
+        self.assertEqual(len(results_with_filtered_examples), 1)
+        self.assertEqual(len(results_with_filtered_examples[0]['examples']), 1)
+
+    def test_build_examples_from_queryset(self):
+        artist_ = self.create_an_artist()
+        song_ = self.create_a_song(artist_)
+        self.create_an_example(song_, artist_)
+        results = build_examples_from_queryset(Example.objects.all(), self.request)
+        self.assertEqual(len(results), 1)
+
+    def test_build_examples_from_annotations(self):
+        artist_ = self.create_an_artist()
+        sense_ = self.create_a_sense()
+        song_ = self.create_a_song(artist_)
+        example_ = self.create_an_example(song_, artist_)
+        cat = Annotation(text="Cat", offset=example_.text.index("Cat"), example=example_, sense=sense_, owner=self.user)
+        cat.save()
+        results = build_examples_from_annotations(Annotation.objects.all(), self.request)
+        self.assertEqual(len(results), 1)
