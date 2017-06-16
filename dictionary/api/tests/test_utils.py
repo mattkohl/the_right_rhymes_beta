@@ -2,14 +2,25 @@ from api.tests.test_models import BaseTest
 from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
 from api.utils import clean_up_date, slugify, extract_rhymes, \
     build_example_serializer, build_annotation_serializer, \
-    serialize_examples, clean_text
-from api.models import Annotation, Example, Song, Artist
+    serialize_examples, clean_text, render_example_with_annotations, \
+    build_annotation_link
+from api.models import Annotation, Example, Song, Artist, Place, Sense
 
 
 class UtilTest(BaseTest):
 
     artist_data = {
         "name": "Test artist"
+    }
+
+    place_data = {
+        "full_name": "test city, test state, test country"
+    }
+    
+    sense_data = {
+        "definition": "test definition",
+        "headword": "Test headword",
+        "part_of_speech": "noun"
     }
 
     song_data = {
@@ -75,6 +86,16 @@ class UtilTest(BaseTest):
         artist_.save()
         return artist_
 
+    def create_a_place(self):
+        place_ = Place(owner=self.user, **self.place_data)
+        place_.save()
+        return place_
+
+    def create_a_sense(self):
+        sense_ = Sense(owner=self.user, **self.sense_data)
+        sense_.save()
+        return sense_
+
     def test_build_annotation_serializer(self):
         artist_ = self.create_an_artist()
         song_ = self.create_a_song(artist_)
@@ -103,3 +124,42 @@ class UtilTest(BaseTest):
         okay_apostrophe = "All this bread can't be too good for my cholesterol"
         cleaned = clean_text(bad_apostrophe)
         self.assertEqual(cleaned, okay_apostrophe)
+
+    def test_build_annotation_link(self):
+        artist_ = self.create_an_artist()
+        place_ = self.create_a_place()
+        sense_ = self.create_a_sense()
+        song_ = self.create_a_song(artist_)
+        example_ = self.create_an_example(song_, artist_)
+        cat = Annotation(text="Cat", offset=example_.text.index("Cat"), example=example_, sense=sense_, owner=self.user)
+        link = build_annotation_link(self.host, cat)
+        self.assertEqual(link, '<a href="http://testserver/senses/1/">Cat</a>')
+        cat.sense = None
+        cat.artist = artist_
+        cat.save()
+        link = build_annotation_link(self.host, cat)
+        self.assertEqual(link, '<a href="http://testserver/artists/1/">Cat</a>')
+        cat.artist = None
+        cat.place = place_
+        cat.save()
+        link = build_annotation_link(self.host, cat)
+        self.assertEqual(link, '<a href="http://testserver/places/1/">Cat</a>')
+        cat.place = None
+        link = build_annotation_link(self.host, cat)
+        self.assertEqual(link, '<span>Cat</span>')
+
+    def test_render_example_with_annotations(self):
+        artist_ = self.create_an_artist()
+        place_ = self.create_a_place()
+        sense_ = self.create_a_sense()
+        song_ = self.create_a_song(artist_)
+        example_ = self.create_an_example(song_, artist_)
+        cat = Annotation(text="Cat", offset=example_.text.index("Cat"), example=example_, sense=sense_, owner=self.user)
+        cat.save()
+        the = Annotation(text="the", offset=example_.text.index("the"), example=example_, place=place_, owner=self.user)
+        the.save()
+        hat = Annotation(text="hat", offset=example_.text.index("hat"), example=example_, owner=self.user)
+        hat.save()
+        rendered = '<a href="http://testserver/senses/1/">Cat</a> in <a href="http://testserver/places/1/">the</a> <span>hat</span>'
+        result = render_example_with_annotations(self.request, example_)
+        self.assertEqual(result, rendered)

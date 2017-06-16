@@ -342,6 +342,15 @@ class Annotation(models.Model):
         # yield "place", self.place.to_xref()
         # yield "rhymes", [r.to_xref() for r in self.rhymes.all()]
 
+    def get_link(self):
+        if self.sense:
+            return self.sense
+        if self.artist:
+            return self.artist
+        if self.place:
+            return self.place
+        return None
+
     def to_dict(self):
         return {
             "text": self.text,

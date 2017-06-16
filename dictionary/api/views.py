@@ -4,7 +4,8 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer,\
     SongSerializer, DomainSerializer, SemanticClassSerializer, AnnotationSerializer, DictionarySerializer,\
     ExampleHyperlinkedSerializer
-from api.utils import slugify, extract_rhymes, clean_up_date, build_example_serializer, build_annotation_serializer
+from api.utils import slugify, extract_rhymes, clean_up_date, build_example_serializer, \
+    build_annotation_serializer, render_example_with_annotations
 from django.contrib.auth.models import User
 from rest_framework import permissions, renderers, viewsets, filters
 from rest_framework.decorators import detail_route, list_route
@@ -46,6 +47,7 @@ class SenseViewSet(viewsets.ModelViewSet):
             {
                 "id": a.example.id,
                 "text": a.example.text,
+                "rendered": render_example_with_annotations(request, a.example),
                 "song": a.example.from_song,
                 "primary_artists": a.example.from_song.primary_artists.all(),
                 "featured_artists": a.example.from_song.featured_artists.all(),
@@ -99,6 +101,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
             {
                 "id": a.example.id,
                 "text": a.example.text,
+                "rendered": render_example_with_annotations(request, a.example),
                 "song": a.example.from_song,
                 "primary_artists": a.example.from_song.primary_artists.all(),
                 "featured_artists": a.example.from_song.featured_artists.first(),
@@ -172,6 +175,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
             {
                 "id": a.example.id,
                 "text": a.example.text,
+                "rendered": render_example_with_annotations(request, a.example),
                 "song": a.example.from_song,
                 "primary_artists": a.example.from_song.primary_artists.all(),
                 "featured_artists": a.example.from_song.featured_artists.first(),
@@ -222,6 +226,7 @@ class SongViewSet(viewsets.ModelViewSet):
                         {
                             'id': example.id,
                             'text': example.text,
+                            "rendered": render_example_with_annotations(request, example),
                             'song': example.from_song,
                             'annotations': example.annotations.all(),
                             'primary_artists': example.primary_artists.all(),
@@ -241,6 +246,7 @@ class SongViewSet(viewsets.ModelViewSet):
                         {
                             'id': example.id,
                             'text': example.text,
+                            "rendered": render_example_with_annotations(request, example),
                             'song': example.from_song,
                             'annotations': example.annotations.all(),
                             'primary_artists': example.primary_artists.all(),
@@ -261,6 +267,7 @@ class SongViewSet(viewsets.ModelViewSet):
                         {
                             'id': example.id,
                             'text': example.text,
+                            "rendered": render_example_with_annotations(request, example),
                             'song': example.from_song,
                             'annotations': example.annotations.all(),
                             'primary_artists': example.primary_artists.all(),
@@ -400,6 +407,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
                 {
                     'id': example.id,
                     'text': example.text,
+                    "rendered": render_example_with_annotations(request, example),
                     'song': example.from_song,
                     'annotations': example.annotations.all(),
                     'primary_artists': example.primary_artists.all(),

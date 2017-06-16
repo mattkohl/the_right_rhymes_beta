@@ -1,5 +1,6 @@
 import re
 from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
+from api.models import Sense, Place, Artist
 
 
 def extract_rhymes(annotations):
@@ -98,3 +99,31 @@ def clean_up_date(unformatted_date):
 def clean_text(text):
     t1 = text.replace("’", "'")
     return t1
+
+
+def render_example_with_annotations(request, example):
+    host = request.get_host()
+    buffer = 0
+    rendered = example.text
+    for annotation in example.annotations.order_by('offset'):
+        link = build_annotation_link(host, annotation)
+        start = buffer + annotation.offset
+        end = start + len(annotation.text)
+        rendered = rendered[:start] + link + rendered[end:]
+        buffer += len(link) - len(annotation.text)
+    return rendered
+
+
+def build_annotation_link(host, annotation):
+    link = '<a href="{}">{}</a>'
+    uri = "#"
+    target = annotation.get_link()
+    if target:
+        if isinstance(target, Sense):
+            uri = make_uri(host, "senses", target.id)
+        if isinstance(target, Artist):
+            uri = make_uri(host, "artists", target.id)
+        if isinstance(target, Place):
+            uri = make_uri(host, "places", target.id)
+        return link.format(uri, annotation.text)
+    return "<span>{}</span>".format(annotation.text)

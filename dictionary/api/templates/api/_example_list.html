@@ -23,7 +23,7 @@
                 {% endif %}
                 <span class="album">[{{example.song.album}}]</span>
             {% endifchanged %}
-            <div class="lyric"><a href="{% url 'example-highlight' pk=example.id %}">{{ example.text }}</a></div>
+            <div class="lyric">{{ example.rendered | safe }}</div>
         {% endfor %}
     </div>
 </div>
