@@ -365,3 +365,11 @@ class Annotation(models.Model):
             "rhymes": [r.to_xref() for r in self.rhymes.all()]
         }
 
+    def to_link(self):
+        if self.sense:
+            return '<a href="{}">{}</a>'.format(self.sense.slug, self.text)
+        if self.artist:
+            return '<a href="{}">{}</a>'.format(self.artist.slug, self.text)
+        if self.place:
+            return '<a href="{}">{}</a>'.format(self.place.slug, self.text)
+        return '<a href="#">{}</a>'.format(self.text)
