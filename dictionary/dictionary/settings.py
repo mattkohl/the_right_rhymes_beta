@@ -22,6 +22,8 @@ if 'TRAVIS' in os.environ:
         }
     }
     SECRET_KEY = '1234567890'
+    ALLOWED_HOSTS = []
+
 else:
     DATABASES = {
         'default': {
@@ -34,13 +36,14 @@ else:
         }
     }
     SECRET_KEY = env['SECRET_KEY']
+    ALLOWED_HOSTS = [env['HOST'], ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [env['HOST'],]
+
 
 
 # Application definition
