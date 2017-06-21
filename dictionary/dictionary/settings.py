@@ -38,11 +38,11 @@ else:
     }
     SECRET_KEY = env['SECRET_KEY']
     ALLOWED_HOSTS = [env['HOST'], ]
+    DEBUG = False if env['DEBUG'] == "False" else True
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if env['DEBUG'] == "False" else True
 
 # Application definition
 
