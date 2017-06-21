@@ -23,6 +23,7 @@ if 'TRAVIS' in os.environ:
     }
     SECRET_KEY = '1234567890'
     ALLOWED_HOSTS = []
+    DEBUG = True
 
 else:
     DATABASES = {
