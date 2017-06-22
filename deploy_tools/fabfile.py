@@ -1,5 +1,5 @@
 from fabric.contrib.files import append, exists, sed
-from fabric.api import env, local, run
+from fabric.api import env, local, run, sudo
 import random
 
 REPO_URL = 'https://github.com/mattkohl/the_right_rhymes_beta.git'
@@ -14,6 +14,7 @@ def deploy():
     _update_virtualenv(virtualenv_folder, source_folder)
     _update_static_files(virtualenv_folder, source_folder)
     _update_database(virtualenv_folder, source_folder)
+    _restart_apache()
 
 
 def _get_latest_source(source_folder):
@@ -50,3 +51,7 @@ def _update_static_files(virtualenv_folder, source_folder):
 
 def _update_database(virtualenv_folder, source_folder):
     run('cd {}/dictionary'.format(source_folder) + ' && {}/bin/python manage.py migrate --noinput'.format(virtualenv_folder))
+
+
+def _restart_apache():
+    sudo('systemctl restart apache2', pty=False)
