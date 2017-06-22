@@ -1,6 +1,8 @@
+from copy import deepcopy
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from api.models import Sense, Artist, Song, Example, Place
 
 
@@ -43,6 +45,30 @@ class SenseModelTest(BaseTest):
         self.assertEqual(second_saved_sense.definition, 'Sense the second')
         self.assertEqual(first_saved_sense.headword, second_saved_sense.headword)
 
+    def test_cannot_save_sense_without_definition(self):
+        copied = deepcopy(self.first_data)
+        copied.pop("definition")
+        sense = Sense(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            sense.save()
+            sense.full_clean()
+
+    def test_cannot_save_sense_without_part_of_speech(self):
+        copied = deepcopy(self.first_data)
+        copied.pop("part_of_speech")
+        sense = Sense(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            sense.save()
+            sense.full_clean()
+
+    def test_cannot_save_sense_without_headword(self):
+        copied = deepcopy(self.first_data)
+        copied.pop("headword")
+        sense = Sense(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            sense.save()
+            sense.full_clean()
+
 
 class ArtistModelTest(BaseTest):
 
@@ -55,6 +81,14 @@ class ArtistModelTest(BaseTest):
         artist_.save()
         self.assertEqual(Artist.objects.count(), 1)
         self.assertEqual(artist_, Artist.objects.first())
+        
+    def test_cannot_save_artist_without_name(self):
+        copied = deepcopy(self.data)
+        copied.pop("name")
+        artist = Artist(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            artist.save()
+            artist.full_clean()
 
 
 class PlaceModelTest(BaseTest):
@@ -69,19 +103,27 @@ class PlaceModelTest(BaseTest):
     }
 
     def test_saving_and_retrieving_places(self):
-        place_ = Place(owner=self.user, **self.data)
-        place_.save()
+        place = Place(owner=self.user, **self.data)
+        place.save()
         self.assertEqual(Place.objects.count(), 1)
-        self.assertEqual(place_, Place.objects.first())
+        self.assertEqual(place, Place.objects.first())
 
     def test_add_artist(self):
-        artist_ = Artist(owner=self.user, name="test artist")
-        artist_.save()
-        place_ = Place(owner=self.user, **self.data)
-        place_.save()
-        place_.artists.add(artist_)
-        self.assertEqual(place_.artists.count(), 1)
-        self.assertEqual(place_.artists.first().name, "test artist")
+        artist = Artist(owner=self.user, name="test artist")
+        artist.save()
+        place = Place(owner=self.user, **self.data)
+        place.save()
+        place.artists.add(artist)
+        self.assertEqual(place.artists.count(), 1)
+        self.assertEqual(place.artists.first().name, "test artist")
+        
+    def test_cannot_save_place_without_full_name(self):
+        copied = deepcopy(self.data)
+        copied.pop("full_name")
+        place = Place(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            place.save()
+            place.full_clean()
 
 
 class SongModelTest(BaseTest):
@@ -97,12 +139,36 @@ class SongModelTest(BaseTest):
     }
 
     def test_saving_and_retrieving_songs(self):
-        artist_ = Artist(owner=self.user, **self.artist_data)
-        artist_.save()
-        song_ = Song(owner=self.user, **self.song_data)
-        song_.save()
-        song_.primary_artists.add(artist_)
+        artist = Artist(owner=self.user, **self.artist_data)
+        artist.save()
+        song = Song(owner=self.user, **self.song_data)
+        song.save()
+        song.primary_artists.add(artist)
         self.assertEqual(Song.objects.count(), 1)
-        self.assertEqual(song_, Song.objects.first())
-        self.assertEqual(song_.primary_artists.count(), 1)
-        self.assertEqual(song_.primary_artists.first().name, "Test artist")
+        self.assertEqual(song, Song.objects.first())
+        self.assertEqual(song.primary_artists.count(), 1)
+        self.assertEqual(song.primary_artists.first().name, "Test artist")
+        
+    def test_cannot_save_song_without_title(self):
+        copied = deepcopy(self.song_data)
+        copied.pop("title")
+        song = Song(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            song.save()
+            song.full_clean()
+
+    def test_cannot_save_song_without_album(self):
+        copied = deepcopy(self.song_data)
+        copied.pop("album")
+        song = Song(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            song.save()
+            song.full_clean()
+
+    def test_cannot_save_song_with_invalid_date(self):
+        copied = deepcopy(self.song_data)
+        copied["release_date"] = "bounce with me"
+        song = Song(owner=self.user, **copied)
+        with self.assertRaises(ValidationError):
+            song.save()
+            song.full_clean()
