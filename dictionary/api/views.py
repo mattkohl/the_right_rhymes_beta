@@ -25,8 +25,7 @@ class SenseViewSet(viewsets.ModelViewSet):
     serializer_class = SenseSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = SenseFilter
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -71,8 +70,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
     serializer_class = ArtistSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ArtistFilter
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -116,8 +114,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
     serializer_class = PlaceSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = PlaceFilter
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -162,8 +159,7 @@ class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = SongFilter
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -208,8 +204,7 @@ class SongViewSet(viewsets.ModelViewSet):
 class DictionaryViewSet(viewsets.ModelViewSet):
     queryset = Dictionary.objects.all()
     serializer_class = DictionarySerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @detail_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -228,8 +223,7 @@ class DictionaryViewSet(viewsets.ModelViewSet):
 class DomainViewSet(viewsets.ModelViewSet):
     queryset = Domain.objects.all()
     serializer_class = DomainSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -260,8 +254,7 @@ class DomainViewSet(viewsets.ModelViewSet):
 class SemanticClassViewSet(viewsets.ModelViewSet):
     queryset = SemanticClass.objects.all()
     serializer_class = SemanticClassSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -294,8 +287,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
     serializer_class = ExampleHyperlinkedSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ExampleFilter
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
@@ -343,8 +335,7 @@ class ExampleViewSet(viewsets.ModelViewSet):
 class AnnotationViewSet(viewsets.ModelViewSet):
     queryset = Annotation.objects.all()
     serializer_class = AnnotationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @list_route(renderer_classes=[renderers.TemplateHTMLRenderer])
     def search(self, request, *args, **kwargs):
