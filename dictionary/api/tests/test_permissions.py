@@ -12,12 +12,11 @@ class UnauthenticatedPermissionsTest(APITestCase):
     def setUp(self):
         self.client = APIClient()
 
-
     def test_unauthenticated_GET_all_senses(self):
 
         url = reverse('sense-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unauthenticated_POST_new_sense(self):
 
