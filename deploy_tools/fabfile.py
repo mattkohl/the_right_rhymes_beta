@@ -54,4 +54,4 @@ def _update_database(virtualenv_folder, source_folder):
 
 
 def _restart_apache():
-    sudo('systemctl restart apache2', pty=False)
+    sudo('systemctl restart apache2')
