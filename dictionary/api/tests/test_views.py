@@ -2,6 +2,7 @@ from datetime import date
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from django.test.client import RequestFactory
@@ -23,6 +24,7 @@ class BaseApiTest(APITestCase):
         self.factory = RequestFactory()
         self.request = self.factory.get('/')
         self.host = self.request.get_host()
+        self.token, self.token_created = Token.objects.get_or_create(user=self.user)
 
 
 class DictionaryApiTest(BaseApiTest):

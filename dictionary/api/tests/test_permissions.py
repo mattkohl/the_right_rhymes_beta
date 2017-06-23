@@ -1,6 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from api.tests.test_views import BaseApiTest
@@ -16,7 +17,7 @@ class UnauthenticatedPermissionsTest(APITestCase):
 
         url = reverse('sense-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_unauthenticated_POST_new_sense(self):
 
@@ -28,11 +29,14 @@ class UnauthenticatedPermissionsTest(APITestCase):
 
         url = reverse('sense-list')
         response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn("Authentication credentials were not provided", str(response.content))
 
 
 class AuthenticatedPermissionsTest(BaseApiTest):
+
+    def test_token_authentication_GET_all_senses(self):
+        pass
 
     def test_authenticated_PUT_existing_sense(self):
         data = {
