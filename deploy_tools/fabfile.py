@@ -46,11 +46,11 @@ def _update_virtualenv(virtualenv_folder, source_folder):
 
 
 def _update_static_files(virtualenv_folder, source_folder):
-    run('cd {}/dictionary'.format(source_folder) + ' && {}/bin/python manage.py collectstatic --noinput'.format(virtualenv_folder))
+    run('source /etc/apache2/envvars && cd {}/dictionary'.format(source_folder) + ' && {}/bin/python manage.py collectstatic --noinput'.format(virtualenv_folder))
 
 
 def _update_database(virtualenv_folder, source_folder):
-    run('cd {}/dictionary'.format(source_folder) + ' && {}/bin/python manage.py migrate --noinput'.format(virtualenv_folder))
+    run('source /etc/apache2/envvars && cd {}/dictionary'.format(source_folder) + ' && {}/bin/python manage.py migrate --noinput'.format(virtualenv_folder))
 
 
 def _restart_apache():
