@@ -1,5 +1,5 @@
 import re
-from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
+from api.serializers import AnnotationSerializer, ExampleSerializer
 from api.models import Sense, Place, Artist
 
 
@@ -42,8 +42,8 @@ def build_example_serializer(request, song, text):
         "featured_artists": [make_uri(host, 'artists', artist.id) for artist in song.featured_artists.all()],
         "from_song": make_uri(host, 'songs', song.id)
     }
-    example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data,
-                                                      partial=True)
+    example_serializer = ExampleSerializer(context={'request': request}, data=serializer_data,
+                                           partial=True)
     example_serializer.is_valid()
     return example_serializer
 
@@ -59,7 +59,7 @@ def serialize_examples(request, song, q):
             "featured_artists": [make_uri(host, 'artists', artist.id) for artist in song.featured_artists.all()],
             "from_song": make_uri(host, 'songs', song.id)
         }
-        example_serializer = ExampleHyperlinkedSerializer(context={'request': request}, data=serializer_data, partial=True)
+        example_serializer = ExampleSerializer(context={'request': request}, data=serializer_data, partial=True)
         example_serializer.is_valid()
         serializers.append(example_serializer)
 

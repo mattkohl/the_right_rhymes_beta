@@ -8,7 +8,7 @@ from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annota
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, \
     SongSerializer, DomainSerializer, SemanticClassSerializer, AnnotationSerializer, DictionarySerializer, \
-    ExampleHyperlinkedSerializer
+    ExampleSerializer
 from api.utils import slugify, extract_rhymes, clean_up_date, build_example_serializer, \
     build_annotation_serializer, build_examples_from_annotations, \
     build_examples_from_queryset, build_songs_from_queryset
@@ -284,7 +284,7 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
 
 class ExampleViewSet(viewsets.ModelViewSet):
     queryset = Example.objects.all()
-    serializer_class = ExampleHyperlinkedSerializer
+    serializer_class = ExampleSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ExampleFilter
     permission_classes = (permissions.IsAuthenticated,)

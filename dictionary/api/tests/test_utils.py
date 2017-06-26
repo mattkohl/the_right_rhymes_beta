@@ -1,5 +1,5 @@
 from api.tests.test_models import BaseTest
-from api.serializers import AnnotationSerializer, ExampleHyperlinkedSerializer
+from api.serializers import AnnotationSerializer, ExampleSerializer
 from api.utils import clean_up_date, slugify, extract_rhymes, \
     build_example_serializer, build_annotation_serializer, \
     serialize_examples, clean_text, render_example_with_annotations, \
@@ -109,7 +109,7 @@ class UtilTest(BaseTest):
         artist_ = self.create_an_artist()
         song_ = self.create_a_song(artist_)
         example_serializer_ = build_example_serializer(self.request, song_, "Cat in the hat")
-        self.assertIsInstance(example_serializer_, ExampleHyperlinkedSerializer)
+        self.assertIsInstance(example_serializer_, ExampleSerializer)
         self.assertEqual(example_serializer_.validated_data['from_song'], song_)
 
     def test_serialize_examples(self):

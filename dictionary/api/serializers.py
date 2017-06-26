@@ -143,7 +143,7 @@ class SemanticClassSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ExampleHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+class ExampleSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='example-highlight', format='html')
 
