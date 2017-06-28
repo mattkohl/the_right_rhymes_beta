@@ -8,6 +8,7 @@ from rest_framework.test import APIClient
 from django.test.client import RequestFactory
 
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary, Example
+from api.forms import ArtistForm, PlaceForm
 from api.utils import make_uri
 
 ###
@@ -127,6 +128,10 @@ class ArtistApiTest(BaseApiTest):
         self.assertEqual(response.data['artists'].count(), 1)
         artist_ = response.data['artists'].first()
         self.assertEqual(artist_.name, self.data['name'])
+
+    def test_GET_search_all_artists_uses_artist_form(self):
+        response = self.client.get(self.search_url)
+        self.assertIsInstance(response.context['form'], ArtistForm)
 
     def test_GET_an_artist(self):
         self.create_an_artist()
