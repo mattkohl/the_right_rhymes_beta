@@ -42,4 +42,11 @@
     {% include 'api/_song_list.html' with songs=song_lyrics label="Results" %}
 {% endif %}
 
+{% if form %}
+  <form method="POST" action="{% block form_action %}{% endblock %}">
+    {{ form.as_p }}
+    {% csrf_token %}
+  </form>
+{% endif %}
+
 {% endblock %}

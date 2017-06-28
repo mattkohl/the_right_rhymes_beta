@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from api.filters import ArtistFilter, SongFilter, PlaceFilter, SenseFilter, ExampleFilter
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary, Example
-from api.permissions import IsOwnerOrReadOnly
+from api.forms import ArtistForm, PlaceForm
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, \
     SongSerializer, DomainSerializer, SemanticClassSerializer, AnnotationSerializer, DictionarySerializer, \
     ExampleSerializer
@@ -76,11 +76,14 @@ class ArtistViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
+        form = ArtistForm()
         if q is not None:
             queryset = queryset.filter(name__icontains=q)
         data = {
             "label": "Artists",
-            "artists": queryset
+            "artists": queryset,
+            "form": form,
+            "form_action": "{% url 'artist-list' %}"
         }
         return Response(data, template_name="api/_search.html")
 

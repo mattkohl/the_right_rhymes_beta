@@ -16,5 +16,14 @@ class ArtistForm(forms.models.ModelForm):
         }
 
 
-class ExampleForm(forms.Form):
-    pass
+class PlaceForm(forms.models.ModelForm):
+
+    class Meta:
+        model = Place
+        fields = ('full_name', 'latitude', 'longitude')
+        widgets = {
+            'full_name': forms.fields.TextInput(attrs={
+                'placeholder': 'E.g. Houston, Texas, USA',
+                'class': 'input-field',
+            })
+        }
