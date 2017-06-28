@@ -46,6 +46,12 @@
   <form method="POST" action="{% block form_action %}{% endblock %}">
     {{ form.as_p }}
     {% csrf_token %}
+    {% if form.errors %}
+      <div class="has-error">
+        <div class="help-block">{{ form.text.errors }}</div>
+      </div>
+    {% endif %}
+    <button class="btn waves-effect waves-light" type="submit" name="action">Submit</button>
   </form>
 {% endif %}
 
