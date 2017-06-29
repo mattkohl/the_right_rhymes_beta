@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from api.filters import ArtistFilter, SongFilter, PlaceFilter, SenseFilter, ExampleFilter
 from api.models import Sense, Artist, Place, Song, Domain, SemanticClass, Annotation, Dictionary, Example
-from api.forms import ArtistForm, PlaceForm
+from api.forms import AnnotationForm, ArtistForm, DomainForm, ExampleForm, PlaceForm, SemanticClassForm, SenseForm, SongForm
 from api.serializers import SenseSerializer, UserSerializer, ArtistSerializer, PlaceSerializer, \
     SongSerializer, DomainSerializer, SemanticClassSerializer, AnnotationSerializer, DictionarySerializer, \
     ExampleSerializer
@@ -31,11 +31,14 @@ class SenseViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset.order_by('headword')
         q = self.request.query_params.get('q', None)
+        form = SenseForm()
         if q is not None:
             queryset = queryset.filter(definition__icontains=q)
         data = {
             "label": "Senses",
-            "senses": queryset
+            "senses": queryset,
+            "form": form,
+            "form_action": "sense-list"
         }
         return Response(data, template_name="api/_search.html")
 
@@ -171,7 +174,8 @@ class SongViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset.order_by('title')
         q = self.request.query_params.get('q', None)
-        data = {"label": "Songs"}
+        form = SongForm()
+        data = {"label": "Songs", "form": form, "form_action": "song-list"}
         if q is not None:
             titles = queryset.filter(title__icontains=q)
             lyrics = queryset.filter(lyrics__icontains=q).order_by('release_date')
@@ -235,11 +239,14 @@ class DomainViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
+        form = DomainForm()
         if q is not None:
             queryset = queryset.filter(name__icontains=q)
         data = {
             "label": "Domains",
-            "domains": queryset
+            "domains": queryset,
+            "form": form,
+            "form_action": "domain-list"
         }
         return Response(data, template_name="api/_search.html")
 
@@ -266,11 +273,14 @@ class SemanticClassViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
+        form = SemanticClassForm()
         if q is not None:
             queryset = queryset.filter(name__icontains=q)
         data = {
             "label": "Semantic Classes",
-            "semantic_classes": queryset
+            "semantic_classes": queryset,
+            "form": form,
+            "form_action": "semanticclass-list"
         }
         return Response(data, template_name="api/_search.html")
 
@@ -299,11 +309,14 @@ class ExampleViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset
         q = self.request.query_params.get('q', None)
+        form = ExampleForm()
         if q is not None:
             queryset = queryset.filter(text__icontains=q)
         data = {
             "label": "Examples",
-            "examples": build_examples_from_queryset(queryset, request)
+            "examples": build_examples_from_queryset(queryset, request),
+            "form": form,
+            "form_action": "example-list"
         }
         return Response(data, template_name="api/_search.html")
 
@@ -347,11 +360,14 @@ class AnnotationViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset
         q = self.request.query_params.get('q', None)
+        form = AnnotationForm()
         if q is not None:
             queryset = queryset.filter(text__icontains=q)
         data = {
             "label": "Annotations",
-            "annotations": queryset
+            "annotations": queryset,
+            "form": form,
+            "form_action": "annotation-list"
         }
         return Response(data, template_name="api/_search.html")
 

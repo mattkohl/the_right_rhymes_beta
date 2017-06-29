@@ -48,6 +48,7 @@ class Sense(models.Model):
 
     class Meta:
         ordering = ('headword', 'created',)
+        unique_together = ('headword', 'part_of_speech', 'definition')
 
     def __str__(self):
         return self.headword + ', ' + self.part_of_speech + ' - ' + self.definition + ' [Published: ' + str(self.published) + ']'
@@ -111,6 +112,7 @@ class Artist(models.Model):
 
     class Meta:
         ordering = ('name', 'created',)
+        unique_together = ('name', 'origin')
 
     def __str__(self):
         return self.name
@@ -156,6 +158,7 @@ class Place(models.Model):
 
     class Meta:
         ordering = ('name', 'created',)
+        unique_together = ('full_name', 'latitude', 'longitude')
 
     def __str__(self):
         return self.name
@@ -196,6 +199,7 @@ class Song(models.Model):
 
     class Meta:
         ordering = ["title", "album"]
+        unique_together = ('title', 'album', 'release_date_string')
 
     def __str__(self):
         return '"' + str(self.title) + '" (' + str(self.album) + ') '
@@ -236,6 +240,7 @@ class Example(models.Model):
 
     class Meta:
         ordering = ["text"]
+        unique_together = ('text', 'from_song')
 
     def __str__(self):
         return str(self.text)
@@ -271,6 +276,7 @@ class Domain(models.Model):
 
     class Meta:
         ordering = ["name"]
+        unique_together = ("name",)
 
     def __str__(self):
         return self.name
@@ -300,6 +306,7 @@ class SemanticClass(models.Model):
     class Meta:
         ordering = ["name"]
         verbose_name_plural = "Semantic Classes"
+        unique_together = ("name",)
 
     def __str__(self):
         return self.name
@@ -332,6 +339,7 @@ class Annotation(models.Model):
 
     class Meta:
         ordering = ["text"]
+        unique_together = ("text", "offset", "example")
 
     def __str__(self):
         return self.text + " [" + self.example.text + "]"
