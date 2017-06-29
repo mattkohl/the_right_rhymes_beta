@@ -83,7 +83,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
             "label": "Artists",
             "artists": queryset,
             "form": form,
-            "form_action": "{% url 'artist-list' %}"
+            "form_action": "artist-list"
         }
         return Response(data, template_name="api/_search.html")
 
@@ -123,11 +123,14 @@ class PlaceViewSet(viewsets.ModelViewSet):
     def search(self, request, *args, **kwargs):
         queryset = self.queryset.order_by('name')
         q = self.request.query_params.get('q', None)
+        form = PlaceForm()
         if q is not None:
             queryset = queryset.filter(full_name__icontains=q)
         data = {
             "label": "Places",
-            "places": queryset
+            "places": queryset,
+            "form": form,
+            "form_action": "place-list"
         }
         return Response(data, template_name="api/_search.html")
 

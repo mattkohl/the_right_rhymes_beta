@@ -43,7 +43,7 @@
 {% endif %}
 
 {% if form %}
-  <form method="POST" action="{% block form_action %}{% endblock %}">
+  <form method="POST" action="{% url form_action %}">
     {{ form.as_p }}
     {% csrf_token %}
     {% if form.errors %}
