@@ -147,7 +147,7 @@ class Place(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=1000)
-    full_name = models.CharField(max_length=1000)
+    full_name = models.CharField(max_length=1000, unique=True)
     slug = models.CharField(max_length=1000)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
@@ -157,7 +157,6 @@ class Place(models.Model):
 
     class Meta:
         ordering = ('name', 'created',)
-        unique_together = ('full_name',)
 
     def __str__(self):
         return self.name
@@ -267,7 +266,7 @@ class Example(models.Model):
 class Domain(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=1000)
+    name = models.CharField(max_length=1000, unique=True)
     slug = models.SlugField(max_length=1000)
     senses = models.ManyToManyField('Sense', through=Sense.domains.through, related_name='+', blank=True)
     broader = models.ManyToManyField("self", related_name="narrower", blank=True, symmetrical=False)
@@ -275,7 +274,6 @@ class Domain(models.Model):
 
     class Meta:
         ordering = ["name"]
-        unique_together = ("name",)
 
     def __str__(self):
         return self.name
@@ -296,7 +294,7 @@ class Domain(models.Model):
 class SemanticClass(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=1000)
+    name = models.CharField(max_length=1000, unique=True)
     slug = models.SlugField(max_length=1000)
     senses = models.ManyToManyField('Sense', through=Sense.semantic_classes.through, related_name='+', blank=True)
     broader = models.ManyToManyField("self", related_name="narrower", blank=True, symmetrical=False)
@@ -305,7 +303,6 @@ class SemanticClass(models.Model):
     class Meta:
         ordering = ["name"]
         verbose_name_plural = "Semantic Classes"
-        unique_together = ("name",)
 
     def __str__(self):
         return self.name
