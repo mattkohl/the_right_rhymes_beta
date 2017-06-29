@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from api.models import Annotation, Artist, Domain, Example, Place, SemanticClass, Sense, Song
 
 
-EMPTY_NAME_ERROR = "You can't have an empty name"
+BLANK_ERROR = "This can't be blank"
 DUPLICATE_ERROR = "You've already got this"
 
 
@@ -37,7 +37,7 @@ class ArtistForm(forms.models.ModelForm):
             })
         }
         error_messages = {
-            'name': {'required': EMPTY_NAME_ERROR}
+            'name': {'required': BLANK_ERROR}
         }
 
     def validate_unique(self):
@@ -60,7 +60,7 @@ class DomainForm(forms.models.ModelForm):
             })
         }
         error_messages = {
-            'name': {'required': EMPTY_NAME_ERROR}
+            'name': {'required': BLANK_ERROR}
         }
 
     def validate_unique(self):
@@ -96,7 +96,7 @@ class PlaceForm(forms.models.ModelForm):
             })
         }
         error_messages = {
-            'full_name': {'required': EMPTY_NAME_ERROR}
+            'full_name': {'required': BLANK_ERROR}
         }
 
     def validate_unique(self):
@@ -119,7 +119,7 @@ class SemanticClassForm(forms.models.ModelForm):
             })
         }
         error_messages = {
-            'name': {'required': EMPTY_NAME_ERROR}
+            'name': {'required': BLANK_ERROR}
         }
 
     def validate_unique(self):

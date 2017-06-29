@@ -112,7 +112,6 @@ class Artist(models.Model):
 
     class Meta:
         ordering = ('name', 'created',)
-        unique_together = ('name', 'origin')
 
     def __str__(self):
         return self.name
@@ -158,7 +157,7 @@ class Place(models.Model):
 
     class Meta:
         ordering = ('name', 'created',)
-        unique_together = ('full_name', 'latitude', 'longitude')
+        unique_together = ('full_name',)
 
     def __str__(self):
         return self.name

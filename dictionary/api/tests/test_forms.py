@@ -12,7 +12,7 @@ class ArtistFormTest(TestCase):
     def test_form_validation_for_blank_items(self):
         form = ArtistForm(data={'name': ''})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], [EMPTY_NAME_ERROR])
+        self.assertEqual(form.errors['name'], [BLANK_ERROR])
         
         
 class DomainFormTest(TestCase):
@@ -25,7 +25,7 @@ class DomainFormTest(TestCase):
     def test_form_validation_for_blank_items(self):
         form = DomainForm(data={'name': ''})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], [EMPTY_NAME_ERROR])
+        self.assertEqual(form.errors['name'], [BLANK_ERROR])
 
 
 class PlaceFormTest(TestCase):
@@ -38,7 +38,7 @@ class PlaceFormTest(TestCase):
     def test_form_validation_for_blank_items(self):
         form = PlaceForm(data={'full_name': ''})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['full_name'], [EMPTY_NAME_ERROR])
+        self.assertEqual(form.errors['full_name'], [BLANK_ERROR])
 
 
 class SemanticClassFormTest(TestCase):
@@ -51,4 +51,4 @@ class SemanticClassFormTest(TestCase):
     def test_form_validation_for_blank_items(self):
         form = SemanticClassForm(data={'name': ''})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], [EMPTY_NAME_ERROR])
+        self.assertEqual(form.errors['name'], [BLANK_ERROR])
