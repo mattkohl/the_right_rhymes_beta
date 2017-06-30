@@ -41,14 +41,17 @@ class Sense(models.Model):
     antonyms = models.ManyToManyField("self", related_name="+", blank=True, symmetrical=True)
     hypernyms = models.ManyToManyField("self", related_name="hyponyms", blank=True, symmetrical=False)
     meronyms = models.ManyToManyField("self", related_name="holonyms", blank=True, symmetrical=False)
-    domains = models.ManyToManyField('Domain', related_name="+", blank=True, symmetrical=False)
-    semantic_classes = models.ManyToManyField('SemanticClass', related_name="+", blank=True, symmetrical=False)
-    dictionaries = models.ManyToManyField('Dictionary', related_name="+", blank=True, symmetrical=False)
+    domains = models.ManyToManyField('Domain', blank=True, symmetrical=False)
+    semantic_classes = models.ManyToManyField('SemanticClass', blank=True, symmetrical=False)
+    dictionaries = models.ManyToManyField('Dictionary', blank=True, symmetrical=False)
     owner = models.ForeignKey("auth.User", related_name="senses")
 
     class Meta:
         ordering = ('headword', 'created',)
         unique_together = ('headword', 'part_of_speech', 'definition')
+        indexes = [
+            models.Index(fields=['headword'], name='sense_headword_idx'),
+        ]
 
     def __str__(self):
         return self.headword + ', ' + self.part_of_speech + ' - ' + self.definition + ' [Published: ' + str(self.published) + ']'
@@ -198,6 +201,9 @@ class Song(models.Model):
     class Meta:
         ordering = ["title", "album"]
         unique_together = ('title', 'album', 'release_date_string')
+        indexes = [
+            models.Index(fields=['release_date'], name='song_release_date_idx'),
+        ]
 
     def __str__(self):
         return '"' + str(self.title) + '" (' + str(self.album) + ') '
@@ -230,7 +236,7 @@ class Example(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     slug = models.CharField(max_length=1000)
-    from_song = models.ForeignKey("Song", related_name="examples")
+    from_song = models.ForeignKey("Song", related_name="examples", on_delete=models.CASCADE)
     primary_artists = models.ManyToManyField(Artist, through=Artist.primary_examples.through, related_name="+")
     featured_artists = models.ManyToManyField(Artist, through=Artist.featured_examples.through, related_name="+", blank=True)
     text = models.CharField(max_length=1000)
@@ -239,6 +245,9 @@ class Example(models.Model):
     class Meta:
         ordering = ["text"]
         unique_together = ('text', 'from_song')
+        indexes = [
+            models.Index(fields=['text'], name='example_text_idx'),
+        ]
 
     def __str__(self):
         return str(self.text)
@@ -326,7 +335,7 @@ class Annotation(models.Model):
     text = models.CharField(max_length=1000)
     slug = models.SlugField(max_length=1000)
     offset = models.IntegerField()
-    example = models.ForeignKey("Example", related_name="annotations")
+    example = models.ForeignKey("Example", related_name="annotations", on_delete=models.CASCADE)
     sense = models.ForeignKey("Sense", related_name="annotations", blank=True, null=True)
     artist = models.ForeignKey("Artist", related_name="annotations", blank=True, null=True)
     place = models.ForeignKey("Place", related_name="annotations", blank=True, null=True)
