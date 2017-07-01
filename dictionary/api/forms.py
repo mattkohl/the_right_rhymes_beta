@@ -154,6 +154,12 @@ class SongForm(forms.models.ModelForm):
         model = Song
         fields = ('title', 'primary_artists', 'featured_artists', 'release_date_string',
                   'album', 'lyrics', 'release_date_verified')
+        widgets = {
+            'release_date_verified': forms.fields.CheckboxInput(attrs={
+                'placeholder': 'Release date verified',
+                'type': 'checkbox'
+            })
+        }
 
     def validate_unique(self):
         try:
